@@ -1,10 +1,13 @@
 package it.insubria.cookingapp
 
 import android.os.Bundle
+import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
@@ -42,6 +45,8 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
         val ricetta = RicetteModel(1, "pasta al pesto", "content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F1000000033/ORIGINAL/NONE/image%2Fjpeg/1464257778", "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto", 5, 20, "*", "Pasta","Primo", "Onnivora", true)
         ricetteModel.add(ricetta)
+        val ricetta2 = RicetteModel(1, "Tortino al cioccolato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
+        ricetteModel.add(ricetta2)
 
         val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
 

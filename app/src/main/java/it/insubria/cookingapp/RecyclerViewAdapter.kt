@@ -1,12 +1,14 @@
 package it.insubria.cookingapp
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
+import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class RecyclerViewAdapter(private val context: Context,
@@ -24,7 +26,11 @@ class RecyclerViewAdapter(private val context: Context,
         holder.txtName.text = ricettaModel.get(position).nome
         holder.difficolta.text = ricettaModel.get(position).difficolta
         holder.portata.text = ricettaModel.get(position).portata
-        holder.imageV.setImageURI(ricettaModel.get(position).pathFoto.toUri())
+
+        val path = ricettaModel.get(position).pathFoto
+        if(!path.equals("default")){
+            holder.imageV.setImageURI(path.toUri())
+        }
     }
 
     override fun getItemCount(): Int {
@@ -55,6 +61,5 @@ class RecyclerViewAdapter(private val context: Context,
 //                }
 //            }
         }
-
     }
 }

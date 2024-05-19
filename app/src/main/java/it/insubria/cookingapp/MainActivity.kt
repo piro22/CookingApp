@@ -14,9 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import android.os.Build
+import android.util.TypedValue
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +43,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = ContextCompat.getColor(this, R.color.coquelicot)
         }
+
+
 
         //SETUP DRAWER
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)

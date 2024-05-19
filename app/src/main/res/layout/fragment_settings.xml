@@ -8,8 +8,17 @@
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:id="@+id/txtScroll"
+        android:textSize="20dp"
+        android:text="iabfaofvuhabolvbhnasovnbaolivnbaiovsaopnbaosdvnbaovbnaovbnaolsbvaovbioabvoibiuoabvao"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:freezesText="true"/>
 
 
 </FrameLayout>
