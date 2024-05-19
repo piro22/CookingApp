@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -16,10 +18,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), RecyclerViewInterface {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    val ricetteModel: ArrayList<RicetteModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +38,20 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        val ret = inflater.inflate(R.layout.fragment_home, container, false)
+
+        val ricetta = RicetteModel(1, "pasta al pesto", "content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F1000000033/ORIGINAL/NONE/image%2Fjpeg/1464257778", "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto", 5, 20, "*", "Pasta","Primo", "Onnivora", true)
+        ricetteModel.add(ricetta)
+
+        val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
+
+        //POSSO METTERE QUI UNA FUNZIONE PER RIEMPIRE LA LISTA ricetteModel
+
+        var adapter : RecyclerViewAdapter = RecyclerViewAdapter(requireContext(), ricetteModel, this)
+        recView.adapter = adapter
+        recView.layoutManager = LinearLayoutManager(requireContext())
+
+        return ret
     }
 
     companion object {
@@ -56,4 +73,5 @@ class HomeFragment : Fragment() {
                 }
             }
     }
+
 }
