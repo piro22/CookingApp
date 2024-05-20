@@ -30,10 +30,10 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:padding="5dp"
-                app:tint="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:scaleType="centerInside"
                 app:srcCompat="@drawable/baseline_pizza_24"
                 />
 

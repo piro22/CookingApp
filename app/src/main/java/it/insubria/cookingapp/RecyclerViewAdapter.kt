@@ -1,6 +1,7 @@
 package it.insubria.cookingapp
 
 import android.content.Context
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -29,7 +30,8 @@ class RecyclerViewAdapter(private val context: Context,
 
         val path = ricettaModel.get(position).pathFoto
         if(!path.equals("default")){
-            holder.imageV.setImageURI(path.toUri())
+            holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
+            Log.d("HO MESSO L'URI", "${path.toUri()}")
         }
     }
 

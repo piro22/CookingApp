@@ -6,7 +6,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +45,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val ricetta = RicetteModel(1, "pasta al pesto", "content://com.google.android.apps.photos.contentprovider/-1/1/content%3A%2F%2Fmedia%2Fexternal%2Fimages%2Fmedia%2F1000000033/ORIGINAL/NONE/image%2Fjpeg/1464257778", "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto", 5, 20, "*", "Pasta","Primo", "Onnivora", true)
+        val ricetta = RicetteModel(1, "pasta al pesto", "content://media/external/images/media/1000000028", "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto", 5, 20, "*", "Pasta","Primo", "Onnivora", true)
         ricetteModel.add(ricetta)
         val ricetta2 = RicetteModel(1, "Tortino al cioccolato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
         ricetteModel.add(ricetta2)
