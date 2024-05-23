@@ -1,5 +1,6 @@
 package it.insubria.cookingapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,12 +32,20 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
     val ricetteModel: ArrayList<RicetteModel> = ArrayList()
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
+
+
+
         }
+
+
+
     }
 
     override fun onCreateView(
@@ -58,7 +68,24 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         recView.adapter = adapter
         recView.layoutManager = LinearLayoutManager(requireContext())
 
+
+        val fab = ret.findViewById<FloatingActionButton>(R.id.btn_fab)
+
+
+        fab.setOnClickListener {
+            val intent =Intent(requireActivity(), newRecipeActivity::class.java)
+            startActivity(intent)
+        }
+
+
+
+
         return ret
+
+
+
+
+
     }
 
     companion object {
@@ -79,6 +106,14 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
                     putString(ARG_PARAM2, param2)
                 }
             }
+
+
+
+
     }
+
+
+
+
 
 }

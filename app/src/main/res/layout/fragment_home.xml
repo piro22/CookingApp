@@ -7,12 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Main content layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- Search and filter layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
             android:id="@+id/linear">
 
             <EditText
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:hint="Pasta al Pomodoro"
                 android:layout_weight="1"
@@ -29,8 +30,8 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:startIconDrawable="@drawable/baseline_portata_24"
                 android:hint="Filtro">
@@ -38,8 +39,7 @@
                 <AutoCompleteTextView
                     android:id="@+id/autoCompletePortate"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:paddingStart="45dp"
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
@@ -48,19 +48,25 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-
         </LinearLayout>
 
+        <!-- RecyclerView for displaying recipes -->
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/mRecyclerView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            android:layout_marginTop="8dp" />
 
     </LinearLayout>
+
+    <!-- Floating Action Button positioned at the bottom right corner -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:backgroundTint="#FF3333"
+        android:src="@drawable/baseline_add_24" />
 
 </FrameLayout>
