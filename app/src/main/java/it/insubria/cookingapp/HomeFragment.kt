@@ -1,5 +1,6 @@
 package it.insubria.cookingapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.fragment.app.Fragment
@@ -45,7 +46,17 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val ricetta = RicetteModel(1, "pasta al pesto", "content://media/external/images/media/1000000028", "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto", 5, 20, "*", "Pasta","Primo", "Onnivora", true)
+        val ricetta = RicetteModel(1,
+            "pasta al pesto",
+            "content://media/external/images/media/1000000028",
+            "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto",
+            5,
+            20,
+            "*",
+            "Pasta",
+            "Primo",
+            "Onnivora",
+            true)
         ricetteModel.add(ricetta)
         val ricetta2 = RicetteModel(1, "Tortino al cioccolato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
         ricetteModel.add(ricetta2)
@@ -79,6 +90,24 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onItemClick(position: Int) {
+        //Toast.makeText(requireContext(), "LOGGED OUT", Toast.LENGTH_SHORT).show()
+
+        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).commit()
+
+//        intent.putExtra("NAME", ricetteModel.get(position).nome)
+//        intent.putExtra("PATH", ricetteModel.get(position).pathFoto)
+//        intent.putExtra("PREP", ricetteModel.get(position).preparazione)
+//        intent.putExtra("PORZ", ricetteModel.get(position).porzioni)
+//        intent.putExtra("TEMP", ricetteModel.get(position).tempo)
+//        intent.putExtra("DIFF", ricetteModel.get(position).difficolta)
+//        intent.putExtra("TIPO", ricetteModel.get(position).tipologia)
+//        intent.putExtra("PORT", ricetteModel.get(position).portata)
+//        intent.putExtra("DIET", ricetteModel.get(position).dieta)
+//        intent.putExtra("PREF", ricetteModel.get(position).preferito)
+
     }
 
 }
