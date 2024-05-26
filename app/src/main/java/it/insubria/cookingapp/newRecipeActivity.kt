@@ -31,7 +31,7 @@ class newRecipeActivity : AppCompatActivity()  {
 
 
             // Find the main view by ID
-            val mainView = findViewById<View>(R.id.main)
+            val mainView = findViewById<View>(R.id.main2)
 
             ViewCompat.setOnApplyWindowInsetsListener(mainView) { v, insets ->
                 val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -48,7 +48,7 @@ class newRecipeActivity : AppCompatActivity()  {
 //----------------------------------------------------------------------------------------------------------------------------
 
             //setto variabili  per database
-            val dbHelper = Database(this)
+           val dbHelper = Database_SQL(this)
             val db = dbHelper.readableDatabase
 //----------------------------------------------------------------------------------------------------------------------------
 
@@ -62,77 +62,79 @@ class newRecipeActivity : AppCompatActivity()  {
 //----------------------------------------------------------------------------------------------------------------------------
 
 
-            val dialog = Dialog(this)
-            dialog.setContentView(R.layout.pop_up_portate)
+                        val dialog = Dialog(this)
+                        dialog.setContentView(R.layout.pop_up_portate)
 
-            var arrayPortate: MutableList<String>  = mutableListOf()
-
-
+                        var arrayPortate: MutableList<String>  = mutableListOf()
 
 
-            fun populatePortateList() {
 
-                val cursor = db.rawQuery("SELECT portata FROM portate", null)
-                arrayPortate.clear()
-                if (cursor != null && cursor.moveToFirst()) {
-                    do {
-                        val portataIndex = cursor.getColumnIndex("portata")
-                        if (portataIndex >= 0) {
-                            val p = cursor.getString(portataIndex)
-                            arrayPortate.add(p)
+
+                        fun populatePortateList() {
+
+                            val cursor = db.rawQuery("SELECT portata FROM portate", null)
+                            arrayPortate.clear()
+                            if (cursor != null && cursor.moveToFirst()) {
+                                do {
+                                    val portataIndex = cursor.getColumnIndex("portata")
+                                    if (portataIndex >= 0) {
+                                        val p = cursor.getString(portataIndex)
+                                        arrayPortate.add(p)
+                                    }
+                                } while (cursor.moveToNext())
+                                cursor.close()
+                            }
                         }
-                    } while (cursor.moveToNext())
-                    cursor.close()
-                }
-            }
 
-            // Popola arrayPortate con i dati esistenti nel database all'avvio
-            populatePortateList()
+                        // Popola arrayPortate con i dati esistenti nel database all'avvio
+                        populatePortateList()
 
 
 
-            val listaPortate: AutoCompleteTextView = findViewById(R.id.autoCompleteTextView2)
-            val adapterAutoComplete = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, arrayPortate.toTypedArray())
-            listaPortate.setAdapter(adapterAutoComplete)
+                        val listaPortate: AutoCompleteTextView = findViewById(R.id.tendina)
+                        val adapterAutoComplete = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, arrayPortate.toTypedArray())
+                        listaPortate.setAdapter(adapterAutoComplete)
 
 
 
 
-            val btn_salva: Button = dialog.findViewById(R.id.save)
-            val btn_annulla: Button = dialog.findViewById(R.id.annulla)
+                        val btn_salva: Button = dialog.findViewById(R.id.save)
+                        val btn_annulla: Button = dialog.findViewById(R.id.annulla)
 
 
-            btn_annulla.setOnClickListener {
-                dialog.dismiss()
-                Log.d("MainActivity2", "Dialogo chiuso")
-            }
+                        btn_annulla.setOnClickListener {
+                            dialog.dismiss()
+                            Log.d("MainActivity2", "Dialogo chiuso")
+                        }
 
-            btn_salva.setOnClickListener {
-                val aggiungi = dialog.findViewById<EditText>(R.id.aggiungi)
-                val newPortata = aggiungi.text.toString()
+                        btn_salva.setOnClickListener {
+                            val aggiungi = dialog.findViewById<EditText>(R.id.aggiungi)
+                            val newPortata = aggiungi.text.toString()
 
-                // Controlla se la nuova portata esiste già nella lista
-                if (!arrayPortate.contains(newPortata)) {
-                    val values = ContentValues().apply {
-                        put("portata", newPortata)
-                    }
-                    db.insert("portate", null, values)
-                    arrayPortate.add(newPortata)
+                            // Controlla se la nuova portata esiste già nella lista
+                            if (!arrayPortate.contains(newPortata)) {
+                                val values = ContentValues().apply {
+                                    put("portata", newPortata)
+                                }
+                                db.insert("portate", null, values)
+                                arrayPortate.add(newPortata)
 
-                    // Aggiorna l'adapter dell'AutoCompleteTextView
-                    val updatedAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, arrayPortate.toTypedArray())
-                    listaPortate.setAdapter(updatedAdapter)
-                } else {
-                    Log.d("MainActivity2", "Portata già presente")
-                }
+                                // Aggiorna l'adapter dell'AutoCompleteTextView
+                                val updatedAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, arrayPortate.toTypedArray())
+                                listaPortate.setAdapter(updatedAdapter)
+                            } else {
+                                Log.d("MainActivity2", "Portata già presente")
+                            }
 
-                dialog.dismiss()
-            }
-
-
+                            dialog.dismiss()
+                        }
 
 
-            val btn_portate: Button = findViewById(R.id.btnPortate)
+
+
+
+
+            val btn_portate: Button = findViewById(R.id.btnAddPortate)
 
 
 
