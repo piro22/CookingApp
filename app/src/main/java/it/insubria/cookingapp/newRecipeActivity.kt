@@ -229,7 +229,7 @@ class newRecipeActivity : AppCompatActivity()  {
                 if(testo.isNotEmpty()){
 
                     listViewIngredients.setAdapter(adapters)
-                    //ArrayListaIngredienti.add(testo) // Aggiungi il testo alla lista degli ingredienti
+                    ArrayListaIngredienti.add(testo) // Aggiungi il testo alla lista degli ingredienti
                     adapter.notifyDataSetChanged()
                     // Aggiorna l'adapter della ListView
 

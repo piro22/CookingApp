@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="10dp">
+    app:cardCornerRadius="30dp"
+    app:cardElevation="20dp"
+    android:layout_margin="40dp">
 
 
         <LinearLayout
@@ -20,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:hint="insert name portata"
                 android:textSize="16dp"
-                android:layout_marginLeft="100dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -35,19 +35,22 @@
 
                 <Button
                     android:id="@+id/annulla"
-                    android:layout_width="30dp"
+                    android:layout_width="40dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
+                    android:layout_weight="1"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-
+                    android:backgroundTint="#FF4510"
+                    android:textColor="@color/black"
                     android:text="annulla"
                     />
 
                 <Button
                     android:id="@+id/save"
-                    android:layout_weight="0.5"
-                    android:layout_width="30dp"
+                    android:layout_weight="1"
+                    android:layout_width="40dp"
+                    android:backgroundTint="#FF4510"
+                    android:textColor="@color/black"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
