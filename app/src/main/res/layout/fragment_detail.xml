@@ -67,7 +67,7 @@
                 android:id="@+id/listaIngredienti"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Riso: 500g \n Sugo di pomodoro: 200g \n Riso: 500g \n Sugo di pomodoro: 200g \n Riso: 500g \n Sugo di pomodoro: 200g"
+                android:text="Riso: 500g \nSugo di pomodoro: 200g \nRiso: 500g \nSugo di pomodoro: 200g \nRiso: 500g \nSugo di pomodoro: 200g"
                 android:textColor="@color/smokey_black"
                 android:textSize="18sp"
                 android:paddingLeft="10dp"
