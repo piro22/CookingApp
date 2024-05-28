@@ -53,15 +53,15 @@ class RecyclerViewAdapter(private val context: Context,
             difficolta = itemView.findViewById(R.id.textView2)
             portata = itemView.findViewById(R.id.textView3)
 
-//            itemView.setOnClickListener{
-//                if(recyclerViewInterface != null){
-//                    var pos : Int = adapterPosition
-//
-//                    if(pos != RecyclerView.NO_POSITION){
-//                        recyclerViewInterface.onItemClick(pos)
-//                    }
-//                }
-//            }
+            itemView.setOnClickListener{
+                if(recyclerViewInterface != null){
+                    var pos : Int = adapterPosition
+
+                    if(pos != RecyclerView.NO_POSITION){
+                        recyclerViewInterface.onItemClick(pos)
+                    }
+                }
+            }
         }
     }
 }

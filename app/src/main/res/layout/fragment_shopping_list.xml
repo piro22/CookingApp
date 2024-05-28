@@ -1,14 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShoppingListFragment">
+    tools:context=".ShoppingListFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        >
 
-</FrameLayout>
+        <EditText
+            android:id="@+id/txtAddFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/baseline_add_to_list_24"
+            android:hint="Prodotto"
+            android:layout_weight="0.5" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:layout_weight="0.8" />
+
+        <Button
+            android:id="@+id/bottoneAddFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/coquelicot"
+            android:text="ADD ITEM"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/listViewShopping"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.18"
+        />
+
+    <Button
+        android:id="@+id/buttonClearList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="clear ALL"
+        android:backgroundTint="@color/vermilion"
+        android:layout_weight="0"
+        android:layout_gravity="bottom"/>
+
+</LinearLayout>
