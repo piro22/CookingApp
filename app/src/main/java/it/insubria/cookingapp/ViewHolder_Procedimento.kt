@@ -15,8 +15,6 @@ class RecyclerView_newRecipe
 
         private var counter = 0
 
-        //implementata in mainActivity2
-
         interface OnDeleteIconClickListener {
             fun onDeleteIconClick(position: Int)
         }
