@@ -39,13 +39,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
-
-
-
         }
-
-
-
     }
 
     override fun onCreateView(
@@ -55,7 +49,9 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_home, container, false)
 
-        val ricetta = RicetteModel(1,
+
+        ricetteModel.clear()
+        var ricetta = RicetteModel(1,
             "pasta al pesto",
             "content://media/external/images/media/1000000028",
             "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto",
@@ -67,8 +63,20 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
             "Onnivora",
             true)
         ricetteModel.add(ricetta)
-        val ricetta2 = RicetteModel(1, "Tortino al cioccolato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
-        ricetteModel.add(ricetta2)
+        ricetta = RicetteModel(2, "Tortino al cioccolatoatoato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
+        ricetteModel.add(ricetta)
+        ricetta = RicetteModel(3,
+            "Tiramisù",
+            "content://media/external/images/media/1000000028",
+            "Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ",
+            5,
+            35,
+            "***",
+            "Dolce",
+            "Sempre Buono",
+            "Onnivora",
+            true)
+        ricetteModel.add(ricetta)
 
         val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
 
@@ -91,11 +99,6 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
 
         return ret
-
-
-
-
-
     }
 
     companion object {
@@ -125,7 +128,23 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
     override fun onItemClick(position: Int) {
         //Toast.makeText(requireContext(), "LOGGED OUT", Toast.LENGTH_SHORT).show()
 
-        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).commit()
+        val ricetta = RicetteModel(
+            ricetteModel.get(position).ID,
+            ricetteModel.get(position).nome,
+            ricetteModel.get(position).pathFoto,
+            ricetteModel.get(position).preparazione,
+            ricetteModel.get(position).porzioni,
+            ricetteModel.get(position).tempo,
+            ricetteModel.get(position).difficolta,
+            ricetteModel.get(position).tipologia,
+            ricetteModel.get(position).portata,
+            ricetteModel.get(position).dieta,
+            ricetteModel.get(position).preferito)
+
+        val detail: DetailFragment = DetailFragment()
+        detail.setRicetta(ricetta)
+
+        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, detail).addToBackStack(null).commit()
 
 //        intent.putExtra("NAME", ricetteModel.get(position).nome)
 //        intent.putExtra("PATH", ricetteModel.get(position).pathFoto)
@@ -137,7 +156,6 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 //        intent.putExtra("PORT", ricetteModel.get(position).portata)
 //        intent.putExtra("DIET", ricetteModel.get(position).dieta)
 //        intent.putExtra("PREF", ricetteModel.get(position).preferito)
-
     }
 
 }
