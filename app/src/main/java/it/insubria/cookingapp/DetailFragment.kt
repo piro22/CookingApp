@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
+import androidx.lifecycle.ViewModelProvider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,7 +29,8 @@ class DetailFragment() : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var ricetta: RicetteModel
+    private lateinit var ricettaViewModel: DetailViewModel
+    private var ricetta: RicetteModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,9 +40,9 @@ class DetailFragment() : Fragment() {
         }
     }
 
-    fun setRicetta(model: RicetteModel){
-        this.ricetta = model
-    }
+//    fun setRicetta(model: RicetteModel){
+//        this.ricetta = model
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,46 +51,53 @@ class DetailFragment() : Fragment() {
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_detail, container, false)
 
-        //PER TITOLO CHE SCORRE
-        val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
-        textTitolo.text = ricetta.nome
-        textTitolo.isSelected = true
+        ricettaViewModel = ViewModelProvider(requireActivity()).get(DetailViewModel::class.java)
 
-        //INSERISCO TUTTI I VALORI nelle view
-        val textDiff: TextView = ret.findViewById(R.id.textDiff)
-        val t1 = "Difficoltà:\n${ricetta.difficolta}"
-        textDiff.text = soloInizioGrassetto("Difficoltà:", t1)
-//      textDiff.text = "Difficoltà:\n ${ricetta.difficolta}"
+        // Recupera i dati dal ViewModel
+        ricetta = ricettaViewModel.ricetta
 
-        val textPortata: TextView = ret.findViewById(R.id.textPortata)
-        val t2 = "Portata:\n ${ricetta.portata}"
-        textPortata.text = soloInizioGrassetto("Poratata:", t2)
-        //textPortata.text = "Portata:\n ${ricetta.portata}"
+        if(ricetta != null){
 
-        val textTipologia: TextView = ret.findViewById(R.id.textTipologia)
-        val t3 = "Tipologia:\n ${ricetta.tipologia}"
-        textTipologia.text = soloInizioGrassetto("Tipologia:", t3)
-        //textTipologia.text = "Tipologia:\n ${ricetta.tipologia}"
+            //PER TITOLO CHE SCORRE
+            val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
+            textTitolo.text = ricetta!!.nome
+            textTitolo.isSelected = true
 
-        val textDieta: TextView = ret.findViewById(R.id.textDieta)
-        val t4 = "Dieta:\n ${ricetta.dieta}"
-        textDieta.text = soloInizioGrassetto("Dieta:", t4)
-        //textDieta.text = "Dieta:\n ${ricetta.dieta}"
+            //INSERISCO TUTTI I VALORI nelle view
+            val textDiff: TextView = ret.findViewById(R.id.textDiff)
+            val t1 = "Difficoltà:\n${ricetta!!.difficolta}"
+            textDiff.text = soloInizioGrassetto("Difficoltà:", t1)
+    //      textDiff.text = "Difficoltà:\n ${ricetta.difficolta}"
 
-        val txtTempo: TextView = ret.findViewById(R.id.txtTempo)
-        txtTempo.text = "Tempo preparazione: ${ricetta.tempo} min"
+            val textPortata: TextView = ret.findViewById(R.id.textPortata)
+            val t2 = "Portata:\n ${ricetta!!.portata}"
+            textPortata.text = soloInizioGrassetto("Poratata:", t2)
+            //textPortata.text = "Portata:\n ${ricetta.portata}"
 
-        val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
-        editPorzioni.setText(ricetta.porzioni.toString())
+            val textTipologia: TextView = ret.findViewById(R.id.textTipologia)
+            val t3 = "Tipologia:\n ${ricetta!!.tipologia}"
+            textTipologia.text = soloInizioGrassetto("Tipologia:", t3)
+            //textTipologia.text = "Tipologia:\n ${ricetta.tipologia}"
 
-        val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
-        textPreparazione.text = ricetta.preparazione
+            val textDieta: TextView = ret.findViewById(R.id.textDieta)
+            val t4 = "Dieta:\n ${ricetta!!.dieta}"
+            textDieta.text = soloInizioGrassetto("Dieta:", t4)
+            //textDieta.text = "Dieta:\n ${ricetta.dieta}"
 
-        val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
-        if(!ricetta.pathFoto.equals("default")){
-            imgRicetta.setImageURI(ricetta.pathFoto.toUri())
+            val txtTempo: TextView = ret.findViewById(R.id.txtTempo)
+            txtTempo.text = "Tempo preparazione: ${ricetta!!.tempo} min"
+
+            val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
+            editPorzioni.setText(ricetta!!.porzioni.toString())
+
+            val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
+            textPreparazione.text = ricetta!!.preparazione
+
+            val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
+            if(!ricetta!!.pathFoto.equals("default")){
+                imgRicetta.setImageURI(ricetta!!.pathFoto.toUri())
+            }
         }
-
 
         return ret
     }

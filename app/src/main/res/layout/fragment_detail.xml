@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="modifica"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toTopOf="@id/layoutInfo"

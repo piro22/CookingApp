@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -141,21 +142,14 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
             ricetteModel.get(position).dieta,
             ricetteModel.get(position).preferito)
 
-        val detail: DetailFragment = DetailFragment()
-        detail.setRicetta(ricetta)
+        val ricettaViewModel = ViewModelProvider(requireActivity()).get(DetailViewModel::class.java)
+        ricettaViewModel.ricetta = ricetta
 
-        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, detail).addToBackStack(null).commit()
+//        val detail: DetailFragment = DetailFragment()
+//        detail.setRicetta(ricetta)
 
-//        intent.putExtra("NAME", ricetteModel.get(position).nome)
-//        intent.putExtra("PATH", ricetteModel.get(position).pathFoto)
-//        intent.putExtra("PREP", ricetteModel.get(position).preparazione)
-//        intent.putExtra("PORZ", ricetteModel.get(position).porzioni)
-//        intent.putExtra("TEMP", ricetteModel.get(position).tempo)
-//        intent.putExtra("DIFF", ricetteModel.get(position).difficolta)
-//        intent.putExtra("TIPO", ricetteModel.get(position).tipologia)
-//        intent.putExtra("PORT", ricetteModel.get(position).portata)
-//        intent.putExtra("DIET", ricetteModel.get(position).dieta)
-//        intent.putExtra("PREF", ricetteModel.get(position).preferito)
+        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).addToBackStack(null).commit()
+
     }
 
 }
