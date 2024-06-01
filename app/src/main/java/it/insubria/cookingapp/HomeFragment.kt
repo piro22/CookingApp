@@ -2,15 +2,10 @@ package it.insubria.cookingapp
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.TypedValue
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.core.net.toUri
-import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -51,32 +46,74 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
 
         ricetteModel.clear()
-        var ricetta = RicetteModel(1,
-            "pasta al pesto",
-            "content://media/external/images/media/1000000028",
-            "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto",
-            5,
-            20,
-            "*",
-            "Pasta",
-            "Primo",
-            "Onnivora",
-            true)
-        ricetteModel.add(ricetta)
-        ricetta = RicetteModel(2, "Tortino al cioccolatoatoato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
-        ricetteModel.add(ricetta)
-        ricetta = RicetteModel(3,
-            "Tiramisù",
-            "content://media/external/images/media/1000000028",
-            "Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ",
-            5,
-            35,
-            "***",
-            "Dolce",
-            "Sempre Buono",
-            "Onnivora",
-            true)
-        ricetteModel.add(ricetta)
+//        var ricetta = RicetteModel(1,
+//            "pasta al pesto",
+//            "content://media/external/images/media/1000000028",
+//            "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto",
+//            5,
+//            20,
+//            "*",
+//            "Pasta",
+//            "Primo",
+//            "Onnivora",
+//            true)
+//        ricetteModel.add(ricetta)
+//        ricetta = RicetteModel(2, "Tortino al cioccolatoatoato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
+//        ricetteModel.add(ricetta)
+//        val ricetta = RicetteModel(3,
+//            "Tiramisù",
+//            "content://media/external/images/media/1000000028",
+//            "Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ",
+//            5,
+//            35,
+//            "***",
+//            "Dolce",
+//            "Sempre Buono",
+//            "Onnivora",
+//            true)
+//        ricetteModel.add(ricetta)
+
+        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        val dbHelper = dataModel.dbHelper
+        val dbr = dbHelper!!.readableDatabase
+
+
+        val cursor = dbr.rawQuery("SELECT * FROM ricetta", null)
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val nomeIndex = cursor.getColumnIndex("nome")
+                val pathIndex = cursor.getColumnIndex("pathFoto")
+                val preparazioneIndex = cursor.getColumnIndex("preparazione")
+                val porzioniIndex = cursor.getColumnIndex("porzioni")
+                val tempoIndex = cursor.getColumnIndex("tempo_di_preparazione")
+                val difficoltaIndex = cursor.getColumnIndex("difficolta")
+                val tipologiaIndex = cursor.getColumnIndex("tipologia")
+                val portataIndex = cursor.getColumnIndex("portata")
+                val dietaIndex = cursor.getColumnIndex("dieta")
+                val preferitoIndex = cursor.getColumnIndex("preferito")
+                val etnicitaIndex = cursor.getColumnIndex("etnicita")
+
+                val tempRic: RicetteModel = RicetteModel(
+                    cursor.getString(nomeIndex),
+                    cursor.getString(pathIndex),
+                    cursor.getString(preparazioneIndex),
+                    cursor.getInt(porzioniIndex),
+                    cursor.getInt(tempoIndex),
+                    cursor.getString(difficoltaIndex),
+                    cursor.getString(tipologiaIndex),
+                    cursor.getString(portataIndex),
+                    cursor.getString(dietaIndex),
+                    cursor.getString(etnicitaIndex),
+                    cursor.getInt(preferitoIndex)
+                )
+
+                ricetteModel.add(tempRic)
+
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+
 
         val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
 
@@ -129,7 +166,6 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         //Toast.makeText(requireContext(), "LOGGED OUT", Toast.LENGTH_SHORT).show()
 
         val ricetta = RicetteModel(
-            ricetteModel.get(position).ID,
             ricetteModel.get(position).nome,
             ricetteModel.get(position).pathFoto,
             ricetteModel.get(position).preparazione,
@@ -139,9 +175,10 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
             ricetteModel.get(position).tipologia,
             ricetteModel.get(position).portata,
             ricetteModel.get(position).dieta,
+            ricetteModel.get(position).etnicita,
             ricetteModel.get(position).preferito)
 
-        val ricettaViewModel = ViewModelProvider(requireActivity()).get(DetailViewModel::class.java)
+        val ricettaViewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
         ricettaViewModel.ricetta = ricetta
 
 //        val detail: DetailFragment = DetailFragment()

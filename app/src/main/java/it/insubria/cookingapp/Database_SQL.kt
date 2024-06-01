@@ -130,7 +130,7 @@ class Database_SQL(context: Context) :
         db.execSQL(
             """
               CREATE TABLE listaSpesa (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id_ricetta INTEGER PRIMARY KEY AUTOINCREMENT,
                     ingrediente text NOT NULL,
                     quantita INTEGER DEFAULT -1
               )
@@ -155,14 +155,14 @@ class Database_SQL(context: Context) :
         db.execSQL("INSERT INTO unita_di_misura VALUES ('- - -'), ('L'), ('cl'), ('ml'), ('Kg'), ('g'), ('tsp'), ('tbsp'), ('oz'), ('lb'), ('qb')")
 
         //INSERISCO TRE RICETTE
-        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('pasta al pesto', 5, 20, '*', 'pasta', 'primo', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto', 1)")
-        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tortino al cioccolato', 6, 100, '***', 'tortino', 'dolce', 'onnivora', 'francese', 'default', 'non so come si faccia bro, non sono un pasticcere', 0)")
-        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tiramisù', 5, 80, '**', 'dolce', 'dolce', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ', 1)")
+        db.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('pasta al pesto', 5, 20, '*', 'pasta', 'primo', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto', 1)")
+        db.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tortino al cioccolato', 6, 100, '***', 'tortino', 'dolce', 'onnivora', 'francese', 'default', 'non so come si faccia bro, non sono un pasticcere', 0)")
+        db.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tiramisù', 5, 80, '**', 'dolce', 'dolce', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ', 1)")
 
         //ASSOCIO GLI INGREDIENTI ALLE RICETTE UNA PER VOLTA
-        db.execSQL("INSERT INTO listaSpesa (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (1, 'farina', 200, 'g'), (1, 'uova', 2, '- - -'), (1, 'latte', 350, 'ml')")
-        db.execSQL("INSERT INTO listaSpesa (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (2, 'farina', 1, 'Kg'), (2, 'acqua', 2, 'qb'), (2, 'latte', 35, 'cl'), (2, 'uova', 30, '- - -')")
-        db.execSQL("INSERT INTO listaSpesa (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (2, 'farina', 1, 'Kg'), (2, 'acqua', 2, 'qb')")
+        db.execSQL("INSERT INTO ingredienti_ricetta (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (1, 'farina', 200, 'g'), (1, 'uova', 2, '- - -'), (1, 'latte', 350, 'ml')")
+        db.execSQL("INSERT INTO ingredienti_ricetta (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (2, 'farina', 1, 'Kg'), (2, 'acqua', 2, 'qb'), (2, 'latte', 35, 'cl'), (2, 'uova', 30, '- - -')")
+        db.execSQL("INSERT INTO ingredienti_ricetta (id_ricetta, ingrediente, quantita, unita_di_misura) VALUES (3, 'farina', 1, 'Kg'), (3, 'acqua', 2, 'qb')")
     }
 
     private fun dropTables(db: SQLiteDatabase) {

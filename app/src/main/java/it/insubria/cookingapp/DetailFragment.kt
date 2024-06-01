@@ -29,7 +29,7 @@ class DetailFragment() : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var ricettaViewModel: DetailViewModel
+    private lateinit var ricettaViewModel: DataModel
     private var ricetta: RicetteModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +51,7 @@ class DetailFragment() : Fragment() {
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_detail, container, false)
 
-        ricettaViewModel = ViewModelProvider(requireActivity()).get(DetailViewModel::class.java)
+        ricettaViewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
 
         // Recupera i dati dal ViewModel
         ricetta = ricettaViewModel.ricetta

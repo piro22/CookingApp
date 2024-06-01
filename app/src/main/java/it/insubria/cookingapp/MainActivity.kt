@@ -14,12 +14,12 @@ import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout : DrawerLayout
-    private lateinit var dbHelper : Database_SQL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         //SETUP DATABASE
-        dbHelper = Database_SQL(this)
+        val dataModel = ViewModelProvider(this).get(DataModel::class.java)
+        dataModel.dbHelper = Database_SQL(this)
 
 
         //SETUP DRAWER
