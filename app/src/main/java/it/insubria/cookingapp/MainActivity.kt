@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             window.statusBarColor = ContextCompat.getColor(this, R.color.coquelicot)
         }
 
+        //SETUP DATABASE
+
 
 
         //SETUP DRAWER

@@ -5,71 +5,91 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
-class Database_SQL (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class Database_SQL(context: Context) :
+    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
-        companion object {
-            private const val DATABASE_NAME = "myapp.db"
-            private const val DATABASE_VERSION = 1
-        }
+    companion object {
+        private const val DATABASE_NAME = "myapp.db"
+        private const val DATABASE_VERSION = 1
+    }
 
-        //onCreate per inizializzare le tabelle
-        override fun onCreate(db: SQLiteDatabase) {
-            createTables(db)
-            populateTables(db)
-        }
+    //onCreate per inizializzare le tabelle
+    override fun onCreate(db: SQLiteDatabase) {
+        createTables(db)
+        populateTables(db)
+    }
 
-        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-            Log.d("Database Upgrade", "onUpgrade: Database version changed from $oldVersion to $newVersion")
-            dropTables(db)
-            onCreate(db)
-        }
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        Log.d(
+            "Database Upgrade",
+            "onUpgrade: Database version changed from $oldVersion to $newVersion"
+        )
+        dropTables(db)
+        onCreate(db)
+    }
 
     private fun createTables(db: SQLiteDatabase) {
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE portate (
             portata TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE dieta (
             dieta TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE difficolta (
             difficolta TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE tipologia (
             tipologia TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE etnicita (
             etnicita TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE ingrediente (
             nome TEXT PRIMARY KEY,
-            tipologia TEXT
+            tipologia TEXT,
+            FOREIGN KEY (tipologia) REFERENCES tipologia(tipologia)
         )
-    """)
+    """
+        )
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE unita_di_misura (
             unita TEXT PRIMARY KEY
         )
-    """)
+    """
+        )
 
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE ricetta (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT,
@@ -79,18 +99,22 @@ class Database_SQL (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
             tipologia TEXT,
             portata TEXT,
             dieta TEXT,
+            etnicita TEXT,
             pathFoto TEXT,
             preparazione TEXT,
             preferito INTEGER DEFAULT 0,
             FOREIGN KEY (difficolta) REFERENCES difficolta(difficolta),
             FOREIGN KEY (tipologia) REFERENCES tipologia(tipologia),
             FOREIGN KEY (portata) REFERENCES portate(portata),
-            FOREIGN KEY (dieta) REFERENCES dieta(dieta)
+            FOREIGN KEY (dieta) REFERENCES dieta(dieta),
+            FOREIGN KEY (etnicita) REFERENCES etnicita(etnicita)
         )
-    """)
+    """
+        )
 
 
-        db.execSQL("""
+        db.execSQL(
+            """
         CREATE TABLE ingredienti_ricetta (
             id_ricetta INTEGER PRIMARY KEY AUTOINCREMENT,
             ingrediente TEXT,
@@ -100,33 +124,41 @@ class Database_SQL (context: Context) : SQLiteOpenHelper(context, DATABASE_NAME,
             FOREIGN KEY (ingrediente) REFERENCES ingrediente(nome),
             FOREIGN KEY (unita_di_misura) REFERENCES unita_di_misura(unita)
         )
-    """)
-
-  /*
-        db.execSQL("""
-        CREATE TABLE listaSpesa (
-            FOREIGN KEY (ingrediente) REFERENCES ingrediente(nome)
+    """
         )
-    """)*/
+
+        /*
+              db.execSQL("""
+              CREATE TABLE listaSpesa (
+                  FOREIGN KEY (ingrediente) REFERENCES ingrediente(nome)
+              )
+          """)*/
     }
 
 
     private fun populateTables(db: SQLiteDatabase) {
-            db.execSQL("INSERT INTO portate (portata) VALUES ('antipasto')")
-            db.execSQL("INSERT INTO portate (portata) VALUES ('primo')")
-            db.execSQL("INSERT INTO portate (portata) VALUES ('secondo')")
-            db.execSQL("INSERT INTO portate (portata) VALUES ('dolce')")
+        //POPOLO TABELLE UTILI PER RICETTA
+        db.execSQL("INSERT INTO portate VALUES ('antipasto'), ('primo'), ('secondo'), ('dolce')")
+        db.execSQL("INSERT INTO dieta VALUES ('onnivora'), ('vegana'), ('carnivora'), ('vegetariana')")
+        db.execSQL("INSERT INTO tipologia VALUES ('pasta'), ('carne'), ('pesce'), ('tortino'), ('generico'), ('dolce')")
+        db.execSQL("INSERT INTO etnicita VALUES ('italiano'), ('cinese'), ('francese'), ('indiano')")
+        db.execSQL("INSERT INTO difficolta VALUES ('*'), ('**'), ('***'), ('****'), ('*****')")
 
-            // Example of populating other tables if needed
-            db.execSQL("INSERT INTO ricette (nome, descrizione, tempoPreparazione, difficolta, categoria) VALUES ('Pasta al Pomodoro', 'Descrizione della ricetta', 20, 'Facile', 'Primo')")
-            db.execSQL("INSERT INTO difficolta (difficolta) VALUES ('*')" )
-        db.execSQL("INSERT INTO difficolta (difficolta) VALUES ('**')" )
-        db.execSQL("INSERT INTO difficolta (difficolta) VALUES ('***')" )
-        }
+        //TABELLE PER INGREDIENTI
+        db.execSQL("INSERT INTO ingrediente VALUES ('Farina', 'generico'), ('Cioccolato', 'dolce'), ('uova', 'generico'), ('acqua', 'generico'), ('latte', 'generico')")
+        db.execSQL("INSERT INTO unita_di_misura VALUES ('L'), ('cl'), ('ml'), ('Kg'), ('g'), ('tsp'), ('tbsp'), ('oz'), ('lb')")
 
-        private fun dropTables(db: SQLiteDatabase) {
-            db.execSQL("DROP TABLE IF EXISTS portate")
-            db.execSQL("DROP TABLE IF EXISTS utenti")
-            db.execSQL("DROP TABLE IF EXISTS ricette")
-        }
+        //INSERISCO TRE RICETTE
+        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('pasta al pesto', 5, 20, '*', 'pasta', 'primo', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto', 1)")
+        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tortino al cioccolato', 6, 100, '***', 'tortino', 'dolce', 'onnivora', 'francese', 'default', 'non so come si faccia bro, non sono un pasticcere', 0)")
+        db.execSQL("INSERT INTO ricette(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('tiramisù', 5, 80, '**', 'dolce', 'dolce', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ', 1)")
+
+
+    }
+
+    private fun dropTables(db: SQLiteDatabase) {
+        db.execSQL("DROP TABLE IF EXISTS portate")
+        db.execSQL("DROP TABLE IF EXISTS utenti")
+        db.execSQL("DROP TABLE IF EXISTS ricette")
+    }
 }
