@@ -17,8 +17,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
 class newRecipeActivity : AppCompatActivity() {
 
@@ -178,6 +181,38 @@ class newRecipeActivity : AppCompatActivity() {
             adapterProcedimento.notifyDataSetChanged()
 
         }
+
+
+        //drag and drop
+        //SimpleCallBack è una classe contenuta all'interno di ItemTouchHelper
+        //object è un'istanza anonima della classe ItemTouchHelper.SimpleCallBack, come se fosse Rettangolo r = new Rettangolo
+
+
+
+
+       val simpleCallBack = object:  ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0 ){
+
+           override fun onMove( recyclerView: RecyclerView, viewHolder : RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean{
+               var fromPosizione: Int = viewHolder.adapterPosition
+               var toPosizione: Int = target.adapterPosition
+
+
+               Collections.swap(listaProcedimenti, fromPosizione, toPosizione)
+               recyclerView.adapter?.notifyItemMoved(fromPosizione,toPosizione)
+
+               return true
+
+        }
+
+            override fun onSwiped(viewHolder : RecyclerView.ViewHolder, direzione: Int){
+
+            }
+
+
+        }
+
+        val item = ItemTouchHelper(simpleCallBack)
+        item.attachToRecyclerView(recyclerViewProcedimento)
 
 
 
