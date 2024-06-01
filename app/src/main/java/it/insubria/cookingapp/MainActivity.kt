@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout : DrawerLayout
+    private lateinit var dbHelper : Database_SQL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         //SETUP DATABASE
-
+        dbHelper = Database_SQL(this)
 
 
         //SETUP DRAWER

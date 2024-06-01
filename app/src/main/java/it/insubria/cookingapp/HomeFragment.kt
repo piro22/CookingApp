@@ -34,7 +34,6 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
     val ricetteModel: ArrayList<RicetteModel> = ArrayList()
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
