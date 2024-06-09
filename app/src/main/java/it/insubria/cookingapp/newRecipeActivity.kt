@@ -227,31 +227,13 @@ class newRecipeActivity : AppCompatActivity() {
         val input = findViewById<EditText>(R.id.input)
         val ArrayListaIngredienti = ArrayList<String>()
         val adapters =
-            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, ArrayListaIngredienti)
+           ListView_adapter(this, ArrayListaIngredienti)
         val listViewIngredients = findViewById<ListView>(R.id.listviewl)
 
         val enter = findViewById<ImageView>(R.id.aggiungi)
         listViewIngredients.setAdapter(adapters)
 
-        fun removeItem(position: Int) {
-            // ArrayListaIngredienti.removeAt(position)
-            listViewIngredients.setAdapter(adapters)
-        }
 
-        //questo metodo viene ereditato da delle inerfacce
-        listViewIngredients.setOnItemLongClickListener { parent, view, position, id ->
-            val selectedItem = adapters.getItem(position)
-            removeItem(position)
-            // Esempio di azione da eseguire
-            Toast.makeText(
-                this,
-                "Hai premuto a lungo l'elemento: $selectedItem",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            // Restituisci true per indicare che l'evento è stato gestito correttamente
-            true
-        }
 
         fun inserisciInLista(testo: String) {
             if (testo.isNotEmpty()) {

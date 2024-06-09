@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <LinearLayout
         android:id="@+id/primolayout"
         android:layout_width="match_parent"
@@ -41,55 +42,54 @@
 
 
     <LinearLayout
+        android:id="@+id/portates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/portates"
         app:layout_constraintTop_toBottomOf="@+id/primolayout">
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginLeft="12dp"
-        app:layout_constraintHorizontal_bias="0.0"
-
-        >
-
-
-        <AutoCompleteTextView
-            android:id="@+id/tendina"
-            android:layout_width="190dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="portata"/>
+            android:layout_marginLeft="12dp"
+            android:layout_weight="1"
+            app:layout_constraintHorizontal_bias="0.0"
 
-    </com.google.android.material.textfield.TextInputLayout>
+            >
+
+
+            <AutoCompleteTextView
+                android:id="@+id/tendina"
+                android:layout_width="190dp"
+                android:layout_height="wrap_content"
+                android:hint="portata" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Space
             android:layout_width="40dp"
             android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/btnAddPortate"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="#FF4510"
-        android:layout_marginRight="12dp"
-        android:text="Add Portate"
-        android:textSize="14dp"
-        android:layout_weight="0.7"
-        />
+        <Button
+            android:id="@+id/btnAddPortate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
+            android:layout_weight="0.7"
+            android:backgroundTint="#FF4510"
+            android:text="Add Portate"
+            android:textSize="14dp" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/tipo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/tipo"
         app:layout_constraintTop_toBottomOf="@+id/portates">
 
 
@@ -97,8 +97,8 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="12dp"
+            android:layout_weight="1"
             app:layout_constraintHorizontal_bias="0.0"
 
             >
@@ -108,7 +108,7 @@
                 android:id="@+id/tendinaTipo"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:hint="tipo"/>
+                android:hint="tipo" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -120,20 +120,19 @@
             android:id="@+id/btnAddTipo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FF4510"
             android:layout_marginRight="12dp"
-            android:text="Add tipo"
-            android:textSize="14dp"
             android:layout_weight="0.7"
-            />
+            android:backgroundTint="#FF4510"
+            android:text="Add tipo"
+            android:textSize="14dp" />
 
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/difficolta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/difficolta"
         app:layout_constraintTop_toBottomOf="@+id/tipo">
 
 
@@ -141,8 +140,8 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="12dp"
+            android:layout_weight="1"
             app:layout_constraintHorizontal_bias="0.0"
 
             >
@@ -152,7 +151,7 @@
                 android:id="@+id/tendinaDifficolta"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:hint="difficolta"/>
+                android:hint="difficolta" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -163,12 +162,11 @@
     </LinearLayout>
 
 
-
     <LinearLayout
+        android:id="@+id/dieta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/dieta"
         app:layout_constraintTop_toBottomOf="@+id/difficolta">
 
 
@@ -176,8 +174,8 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="12dp"
+            android:layout_weight="1"
             app:layout_constraintHorizontal_bias="0.0"
 
             >
@@ -187,7 +185,7 @@
                 android:id="@+id/tendinaDieta"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:hint="dieta"/>
+                android:hint="dieta" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -199,21 +197,20 @@
             android:id="@+id/btnAddDieta"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FF4510"
             android:layout_marginRight="12dp"
-            android:text="Add Portate"
-            android:textSize="14dp"
             android:layout_weight="0.7"
-            />
+            android:backgroundTint="#FF4510"
+            android:text="Add Portate"
+            android:textSize="14dp" />
 
     </LinearLayout>
 
 
     <LinearLayout
+        android:id="@+id/etnia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:id="@+id/etnia"
         app:layout_constraintTop_toBottomOf="@+id/dieta">
 
 
@@ -222,8 +219,8 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="12dp"
+            android:layout_weight="1"
             app:layout_constraintHorizontal_bias="0.0"
 
             >
@@ -233,7 +230,7 @@
                 android:id="@+id/tendinaEtnia"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:hint="portata"/>
+                android:hint="portata" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -242,18 +239,16 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnAddEtnia"
+            android:id="@+id/btnAdEtnia"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#FF4510"
             android:layout_marginRight="12dp"
-            android:text="Add Portate"
-            android:textSize="14dp"
             android:layout_weight="0.7"
-            />
+            android:backgroundTint="#FF4510"
+            android:text="Add Portate"
+            android:textSize="14dp" />
 
     </LinearLayout>
-
 
 
     <LinearLayout
@@ -335,3 +330,17 @@
         app:layout_constraintTop_toBottomOf="@+id/procedimento" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
