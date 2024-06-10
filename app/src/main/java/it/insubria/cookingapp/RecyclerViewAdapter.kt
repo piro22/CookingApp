@@ -31,7 +31,7 @@ class RecyclerViewAdapter(private val context: Context,
         val path = ricettaModel.get(position).pathFoto
         if(!path.equals("default")){
             holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
-            Log.d("HO MESSO L'URI", "${path.toUri()}")
+            //Log.d("HO MESSO L'URI", "${path.toUri()}")
         }
     }
 

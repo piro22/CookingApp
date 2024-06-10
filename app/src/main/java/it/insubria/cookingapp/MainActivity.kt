@@ -14,6 +14,7 @@ import android.os.Build
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -38,6 +39,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             window.statusBarColor = ContextCompat.getColor(this, R.color.coquelicot)
         }
 
+        //SETUP DATABASE
+        val dataModel = ViewModelProvider(this).get(DataModel::class.java)
+        dataModel.dbHelper = Database_SQL(this)
 
 
         //SETUP DRAWER

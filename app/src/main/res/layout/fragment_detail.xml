@@ -30,11 +30,13 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:text="TORTINO AL CIOCCOLATO"
                 android:textColor="@color/smokey_black"
-                android:textSize="25sp"
+                android:textSize="30sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/layoutInfo"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:singleLine="true"
@@ -53,8 +55,10 @@
                 android:layout_height="wrap_content"
                 android:text="modifica"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toTopOf="@id/layoutInfo"
                 app:layout_constraintLeft_toRightOf="@id/titoloRicetta"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -62,11 +66,13 @@
                 />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/layoutInfo"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintTop_toBottomOf="@id/buttonModifica"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <TextView
@@ -74,10 +80,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Difficoltà: *****"
-                    android:layout_marginLeft="10dp"
                     android:background="@drawable/custom_bkg_textview"
                     android:textColor="@color/smokey_black"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="10dp"
                     />
 
                 <TextView
@@ -87,8 +92,8 @@
                     android:text="Portata: Primo"
                     android:background="@drawable/custom_bkg_textview"
                     android:textColor="@color/smokey_black"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="5dp"
                     />
 
                 <TextView
@@ -98,8 +103,8 @@
                     android:text="Tipo: Pasta"
                     android:background="@drawable/custom_bkg_textview"
                     android:textColor="@color/smokey_black"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="5dp"
                     />
 
                 <TextView
@@ -109,8 +114,8 @@
                     android:text="Dieta: Vegana"
                     android:background="@drawable/custom_bkg_textview"
                     android:textColor="@color/smokey_black"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="5dp"
                     />
 
             </LinearLayout>
@@ -150,7 +155,7 @@
                 android:id="@+id/txtTempo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tempo preparazione: 20min"
+                android:text="Tempo preparazione: 20 min"
                 android:textColor="@color/smokey_black"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -176,13 +181,14 @@
                 android:id="@+id/editPorzioni"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:hint="5"
+                android:hint="qb"
                 android:textAlignment="center"
                 android:textColor="@color/smokey_black"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@id/txtTempo"
                 app:layout_constraintLeft_toRightOf="@id/txtFissoPorzioni"
                 android:layout_marginLeft="5dp"
+                android:inputType="number"
                 />
 
             <Button
@@ -192,8 +198,8 @@
                 android:text="cambia porzioni"
                 android:backgroundTint="@color/coquelicot"
                 app:layout_constraintTop_toBottomOf="@id/txtTempo"
-                app:layout_constraintLeft_toRightOf="@id/editPorzioni"
                 app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="10dp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -221,13 +227,25 @@
                 />
 
             <TextView
+                android:id="@+id/textPreparazione"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. "
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtFissoPreparazione"
+                android:layout_marginTop="7dp"
                 />
+
+            <ImageView
+                android:id="@+id/imgRicetta"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                app:layout_constraintLeft_toRightOf="@id/textPreparazione"
+                app:layout_constraintTop_toBottomOf="@id/txtFissoPreparazione"
+                android:src="@drawable/logo"
+                />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
