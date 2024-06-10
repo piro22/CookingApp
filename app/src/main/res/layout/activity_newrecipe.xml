@@ -200,7 +200,7 @@
             android:layout_marginRight="12dp"
             android:layout_weight="0.7"
             android:backgroundTint="#FF4510"
-            android:text="Add Portate"
+            android:text="Add Dieta"
             android:textSize="14dp" />
 
     </LinearLayout>
@@ -230,7 +230,7 @@
                 android:id="@+id/tendinaEtnia"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:hint="portata" />
+                android:hint="etnia" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -245,7 +245,7 @@
             android:layout_marginRight="12dp"
             android:layout_weight="0.7"
             android:backgroundTint="#FF4510"
-            android:text="Add Portate"
+            android:text="Add Etnia"
             android:textSize="14dp" />
 
     </LinearLayout>
