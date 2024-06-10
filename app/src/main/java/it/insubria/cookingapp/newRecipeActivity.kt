@@ -17,8 +17,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
 class newRecipeActivity : AppCompatActivity() {
 
@@ -180,6 +183,38 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
+        //drag and drop
+        //SimpleCallBack è una classe contenuta all'interno di ItemTouchHelper
+        //object è un'istanza anonima della classe ItemTouchHelper.SimpleCallBack, come se fosse Rettangolo r = new Rettangolo
+
+
+
+
+       val simpleCallBack = object:  ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0 ){
+
+           override fun onMove( recyclerView: RecyclerView, viewHolder : RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean{
+               var fromPosizione: Int = viewHolder.adapterPosition
+               var toPosizione: Int = target.adapterPosition
+
+
+               Collections.swap(listaProcedimenti, fromPosizione, toPosizione)
+               recyclerView.adapter?.notifyItemMoved(fromPosizione,toPosizione)
+
+               return true
+
+        }
+
+            override fun onSwiped(viewHolder : RecyclerView.ViewHolder, direzione: Int){
+
+            }
+
+
+        }
+
+        val item = ItemTouchHelper(simpleCallBack)
+        item.attachToRecyclerView(recyclerViewProcedimento)
+
+
 
 
 
@@ -192,31 +227,13 @@ class newRecipeActivity : AppCompatActivity() {
         val input = findViewById<EditText>(R.id.input)
         val ArrayListaIngredienti = ArrayList<String>()
         val adapters =
-            ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, ArrayListaIngredienti)
+           ListView_adapter(this, ArrayListaIngredienti)
         val listViewIngredients = findViewById<ListView>(R.id.listviewl)
 
         val enter = findViewById<ImageView>(R.id.aggiungi)
         listViewIngredients.setAdapter(adapters)
 
-        fun removeItem(position: Int) {
-            // ArrayListaIngredienti.removeAt(position)
-            listViewIngredients.setAdapter(adapters)
-        }
 
-        //questo metodo viene ereditato da delle inerfacce
-        listViewIngredients.setOnItemLongClickListener { parent, view, position, id ->
-            val selectedItem = adapters.getItem(position)
-            removeItem(position)
-            // Esempio di azione da eseguire
-            Toast.makeText(
-                this,
-                "Hai premuto a lungo l'elemento: $selectedItem",
-                Toast.LENGTH_SHORT
-            ).show()
-
-            // Restituisci true per indicare che l'evento è stato gestito correttamente
-            true
-        }
 
         fun inserisciInLista(testo: String) {
             if (testo.isNotEmpty()) {

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -16,10 +17,12 @@ private const val ARG_PARAM2 = "param2"
  * Use the [FavoritesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FavoritesFragment : Fragment() {
+class FavoritesFragment : Fragment(), RecyclerViewInterface {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    val ricetteModel: ArrayList<RicetteModel> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,5 +58,28 @@ class FavoritesFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onItemClick(position: Int) {
+        val ricetta = RicetteModel(
+            ricetteModel.get(position).nome,
+            ricetteModel.get(position).pathFoto,
+            ricetteModel.get(position).preparazione,
+            ricetteModel.get(position).porzioni,
+            ricetteModel.get(position).tempo,
+            ricetteModel.get(position).difficolta,
+            ricetteModel.get(position).tipologia,
+            ricetteModel.get(position).portata,
+            ricetteModel.get(position).dieta,
+            ricetteModel.get(position).etnicita,
+            ricetteModel.get(position).preferito)
+
+        val ricettaViewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        ricettaViewModel.ricetta = ricetta
+
+//        val detail: DetailFragment = DetailFragment()
+//        detail.setRicetta(ricetta)
+
+        parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).addToBackStack(null).commit()
     }
 }
