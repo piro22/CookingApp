@@ -187,9 +187,6 @@ class newRecipeActivity : AppCompatActivity() {
         //SimpleCallBack è una classe contenuta all'interno di ItemTouchHelper
         //object è un'istanza anonima della classe ItemTouchHelper.SimpleCallBack, come se fosse Rettangolo r = new Rettangolo
 
-
-
-
        val simpleCallBack = object:  ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.START or ItemTouchHelper.END, 0 ){
 
            override fun onMove( recyclerView: RecyclerView, viewHolder : RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean{
@@ -225,30 +222,15 @@ class newRecipeActivity : AppCompatActivity() {
         //aggiungere gli ingredienti
 //----------------------------------------------------------------------------------------------------------------------------
         val input = findViewById<EditText>(R.id.input)
-        val ArrayListaIngredienti = ArrayList<String>()
-        val adapters =
-           ListView_adapter(this, ArrayListaIngredienti)
+        val ArrayListaIngredienti = mutableListOf<String>()
+        val adapt = ListView_adapter(this, ArrayListaIngredienti)
         val listViewIngredients = findViewById<ListView>(R.id.listviewl)
 
         val enter = findViewById<ImageView>(R.id.aggiungi)
-        listViewIngredients.setAdapter(adapters)
 
 
-
-        fun inserisciInLista(testo: String) {
-            if (testo.isNotEmpty()) {
-
-                listViewIngredients.setAdapter(adapters)
-                ArrayListaIngredienti.add(testo) // Aggiungi il testo alla lista degli ingredienti
-                adapters.notifyDataSetChanged()
-                // Aggiorna l'adapter della ListView
-
-                Toast.makeText(this, "Added: $testo", Toast.LENGTH_SHORT).show()
-                input.text.clear()
-            }
-        }
-
-
+        listViewIngredients.adapter= adapt
+/*
 
 
 
@@ -258,15 +240,32 @@ class newRecipeActivity : AppCompatActivity() {
                 inserisciInLista(testo)
             }
             true
-
-        }
+*/
 
 
         enter.setOnClickListener {
-            val testo = input.text.toString().trim()
-            inserisciInLista(testo)
+            // Get text from EditText
+            val ingredient = input.text.toString()
 
+            // Check if input is not empty
+            if (ingredient.isNotEmpty()) {
+                // Add ingredient to the list
+                ArrayListaIngredienti.add(ingredient)
+
+                // Notify the adapter of data change
+                adapt.notifyDataSetChanged()
+
+                // Clear the input field
+                input.text.clear()
+            }
         }
+
+
+
+
+
+
+        //per popolare gli t5
 
 
         //----------------------------------------------------------------------------------------------------------------------------

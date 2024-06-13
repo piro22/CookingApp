@@ -28,7 +28,8 @@
         android:id="@+id/tendina"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:hint="unità" />
+        android:hint="unità"
+        android:inputType="number"/>
 
 
     <ImageView
