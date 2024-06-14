@@ -28,7 +28,7 @@
                     android:id="@+id/editTextText"
                     android:layout_width="170dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.75"
                     android:hint="Name recipe"
                     android:inputType="text"
                     android:textSize="30dp" />
@@ -41,12 +41,54 @@
                     android:id="@+id/btnsalva"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:backgroundTint="#FF4510"
                     android:text="salva"
-                    android:textSize="20dp" />
+                    android:textSize="10dp" />
+
+
+                <Button
+                    android:id="@+id/btnfoto"
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:backgroundTint="#FF4510"
+                    android:text="aggiungi foto"
+                    android:textSize="10dp" />
+
 
             </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/secondolayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="porzioni:"
+                android:layout_marginLeft="15dp"
+                />
+
+
+            <EditText
+                android:layout_marginLeft="10dp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                />
+
+
+
+
+
+        </LinearLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/portates"
