@@ -53,7 +53,7 @@ class newRecipeActivity : AppCompatActivity() {
 //----------------------------------------------------------------------------------------------------------------------------
 
 
-        // Gestione pop_up per portate
+        // Gestione pop_up per portate + CONNESSIONE CON DB
 //----------------------------------------------------------------------------------------------------------------------------
         //creo il dialog (piccola finestra)
         val dialog = Dialog(this)
@@ -153,6 +153,352 @@ class newRecipeActivity : AppCompatActivity() {
             dialog.show()
         }
 
+//----------------------------------------------------------------------------------------------------------------------------
+
+        //POP UP DIETA + CONNESSIONE CON DATABASE
+//----------------------------------------------------------------------------------------------------------------------------
+        val dialogD = Dialog(this)
+        dialogD.setContentView(R.layout.dialog_dieta)
+
+//creo una lista dove aggiungo ogni volta una portata
+        var arrayListaDieta: MutableList<String> = mutableListOf()
+
+        //serve per popolare la tendina
+        fun populateDietaList() {
+            val cursor = dbr.rawQuery("SELECT dieta FROM dieta", null)
+
+            arrayListaDieta.clear() // Correctly clear the dieta list
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val dietaIndex = cursor.getColumnIndex("dieta")
+                    if (dietaIndex >= 0) {
+                        val d = cursor.getString(dietaIndex)
+                        arrayListaDieta.add(d)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+        }
+
+// Popola arrayListaDieta con i dati esistenti nel database all'avvio
+        populateDietaList()
+
+        val listaDieta: AutoCompleteTextView = findViewById(R.id.tendinaDieta) // Correct ID for dieta dropdown
+
+//creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterTendinaD = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaDieta.toTypedArray()
+        )
+//per aggiornare la vista(tendina)
+        listaDieta.setAdapter(adapterTendinaD)
+
+        val btn_annullaD: Button = dialogD.findViewById(R.id.annullaBtnD)
+        btn_annullaD.setOnClickListener {
+            dialogD.dismiss()
+            Log.d("MainActivity2", "Dialogo chiuso")
+        }
+
+        val btn_salvaD: Button = dialogD.findViewById(R.id.saveBtnD) // Correct reference to dialogD
+        btn_salvaD.setOnClickListener {
+            val nuovaDieta = (dialogD.findViewById<EditText>(R.id.aggiungiD)).text.toString()
+
+            // Controlla se la nuova dieta esiste già nella lista
+            if (!arrayListaDieta.contains(nuovaDieta)) {
+                val nuovoValore = ContentValues().apply {
+                    put("dieta", nuovaDieta)
+                }
+                //aggiungo il nuovoValore all'interno del db
+                dbw.insert("dieta", null, nuovoValore)
+                //aggiungo all'array la nuovaDieta
+                arrayListaDieta.add(nuovaDieta)
+
+                // Aggiorna l'adapter dell'AutoCompleteTextView
+                val updatedAdapterD = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    arrayListaDieta.toTypedArray()
+                )
+                //per aggiornare la vista(tendina)
+                listaDieta.setAdapter(updatedAdapterD)
+            } else {
+                Log.d("MainActivity2", "Dieta già presente")
+            }
+
+            dialogD.dismiss()
+        }
+
+//MANCA IL TASTO PER ELIMINARE LA DIETA DALLA TENDINA
+        val btn_dieta: Button = findViewById(R.id.btnAddDieta)
+
+        val widthInDpD = 250
+        val heightInDpD = 250
+        val scaleD = this.resources.displayMetrics.density
+        val widthInPxD = (widthInDpD * scaleD + 0.5f).toInt()
+        val heightInPxD = (heightInDpD * scaleD + 0.5f).toInt()
+
+        btn_dieta.setOnClickListener {
+            dialogD.window!!.setLayout(
+                widthInPxD,
+                heightInPxD
+            )
+            dialogD.setCancelable(false)
+            dialogD.show()
+        }
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+        //POP UP ETNIA + CONNESSIONE CON DATABASE
+//----------------------------------------------------------------------------------------------------------------------------
+        //creo il dialog (piccola finestra)
+        val dialogE = Dialog(this)
+        dialogE.setContentView(R.layout.dialog_etnia)
+
+
+        //creo una lista dove aggiungo ogni volta una portata
+        var arrayListaEtnia: MutableList<String> = mutableListOf()
+
+        //serve per popolare la tendina
+        fun populateEtniaList() {
+            val cursor = dbr.rawQuery("SELECT etnicita FROM etnicita", null)
+
+            arrayListaEtnia.clear()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val EtniaIndex = cursor.getColumnIndex("etnicita")
+                    if (EtniaIndex >= 0) {
+                        val p = cursor.getString(EtniaIndex)
+                        arrayListaEtnia.add(p)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+        }
+
+        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
+        populateEtniaList()
+
+        val listaEtnia: AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
+
+        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterEtnia = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaEtnia.toTypedArray()
+        )
+        //per aggiornare la vista(tendina)
+        listaEtnia.setAdapter(adapterEtnia)
+
+        val btn_annullaE: Button = dialogE.findViewById(R.id.annullaBtnE)
+        btn_annullaE.setOnClickListener {
+            dialogE.dismiss()
+            Log.d("MainActivity2", "Dialogo chiuso")
+        }
+
+        val btn_salvaE: Button = dialogE.findViewById(R.id.saveBtnE) // Correct reference to dialogD
+        btn_salvaE.setOnClickListener {
+            val nuovaEtnia = (dialogE.findViewById<EditText>(R.id.aggiungiE)).text.toString()
+
+            // Controlla se la nuova dieta esiste già nella lista
+            if (!arrayListaEtnia.contains(nuovaEtnia)) {
+                val nuovoValore = ContentValues().apply {
+                    put("etnicita", nuovaEtnia)
+                }
+                //aggiungo il nuovoValore all'interno del db
+                dbw.insert("etnicita", null, nuovoValore)
+                //aggiungo all'array la nuovaDieta
+                arrayListaEtnia.add(nuovaEtnia)
+
+                // Aggiorna l'adapter dell'AutoCompleteTextView
+                val updatedAdapterE = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    arrayListaEtnia.toTypedArray()
+                )
+                //per aggiornare la vista(tendina)
+                listaEtnia.setAdapter(updatedAdapterE)
+            } else {
+                Log.d("MainActivity2", "Etnia già presente")
+            }
+
+            dialogE.dismiss()
+        }
+
+
+        //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
+        val btn_Etnia: Button = findViewById(R.id.btnAddEtnia)
+
+
+        val widthInDpE = 250
+        val heightInDpE = 250
+        val scaleE = this.resources.displayMetrics.density
+        val widthInPxE = (widthInDpE * scaleE + 0.5f).toInt()
+        val heightInPxE = (heightInDpE * scaleE + 0.5f).toInt()
+
+        btn_Etnia.setOnClickListener {
+            dialogE.window!!.setLayout(
+                widthInPxE,
+                heightInPxE
+            )
+            dialogE.setCancelable(false)
+            dialogE.show()
+        }
+
+
+
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+        //POP UP TIPO + CONNESSIONE CON DATABASE
+//----------------------------------------------------------------------------------------------------------------------------
+        //creo il dialog (piccola finestra)
+        val dialogT = Dialog(this)
+        dialogT.setContentView(R.layout.dialog_tipo)
+
+        //creo una lista dove aggiungo ogni volta una portata
+        var arrayListaTipo: MutableList<String> = mutableListOf()
+
+        //serve per popolare la tendina
+        fun populateTipoList() {
+            val cursor = dbr.rawQuery("SELECT tipologia FROM tipologia", null)
+
+            arrayListaTipo.clear()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val tipoIndex = cursor.getColumnIndex("tipologia")
+                    if (tipoIndex >= 0) {
+                        val p = cursor.getString(tipoIndex)
+                        arrayListaTipo.add(p)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+        }
+
+        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
+        populateTipoList()
+
+        val listaTipo: AutoCompleteTextView = findViewById(R.id.tendinaTipo)
+
+        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterTipo = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaTipo.toTypedArray()
+        )
+        //per aggiornare la vista(tendina)
+        listaTipo.setAdapter(adapterTipo)
+
+        val btn_annullaT: Button = dialogT.findViewById(R.id.annullaBtnT)
+        btn_annullaT.setOnClickListener {
+            dialogT.dismiss()
+            Log.d("MainActivity2", "Dialogo chiuso")
+        }
+
+
+        val btn_salvaT: Button = dialogT.findViewById(R.id.saveBtnT) // Correct reference to dialogD
+        btn_salvaT.setOnClickListener {
+            val nuovaTipologia = (dialogT.findViewById<EditText>(R.id.aggiungiT)).text.toString()
+
+            // Controlla se la nuova dieta esiste già nella lista
+            if (!arrayListaTipo.contains(nuovaTipologia)) {
+                val nuovoValore = ContentValues().apply {
+                    put("tipologia", nuovaTipologia)
+                }
+                //aggiungo il nuovoValore all'interno del db
+                dbw.insert("tipologia", null, nuovoValore)
+                //aggiungo all'array la nuovaDieta
+                arrayListaTipo.add(nuovaTipologia)
+
+                // Aggiorna l'adapter dell'AutoCompleteTextView
+                val updatedAdapterT = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_dropdown_item_1line,
+                    arrayListaTipo.toTypedArray()
+                )
+                //per aggiornare la vista(tendina)
+                listaTipo.setAdapter(updatedAdapterT)
+            } else {
+                Log.d("MainActivity2", "Tipologia già presente")
+            }
+
+            dialogT.dismiss()
+        }
+
+
+
+        //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
+        val btn_Tipologia: Button = findViewById(R.id.btnAddTipo)
+
+
+        val widthInDpT = 250
+        val heightInDpT = 250
+        val scaleT= this.resources.displayMetrics.density
+        val widthInPxT= (widthInDpT * scaleT + 0.5f).toInt()
+        val heightInPxT = (heightInDpT * scaleT + 0.5f).toInt()
+
+        btn_Tipologia.setOnClickListener {
+            dialogT.window!!.setLayout(
+                widthInPxT,
+                heightInPxT
+            )
+            dialogT.setCancelable(false)
+            dialogT.show()
+        }
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------
+
+
+        //DIFFICOLTA + CONNESSIONE DB
+//----------------------------------------------------------------------------------------------------------------------------
+        //creo una lista dove aggiungo ogni volta una portata
+        var arrayListaDifficolta: MutableList<String> = mutableListOf()
+        fun populateDifficoltaList() {
+            val cursor = dbr.rawQuery("SELECT difficolta FROM difficolta", null)
+
+            arrayListaDifficolta.clear()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val difficoltaIndex = cursor.getColumnIndex("difficolta")
+                    if (difficoltaIndex >= 0) {
+                        val p = cursor.getString(difficoltaIndex)
+                        arrayListaDifficolta.add(p)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+        }
+
+        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
+        populateDifficoltaList()
+
+
+        val listaDiff: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+
+
+        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterDiff = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaDifficolta.toTypedArray()
+        )
+        //per aggiornare la vista(tendina)
+        listaDiff.setAdapter(adapterDiff)
 //----------------------------------------------------------------------------------------------------------------------------
 
 
