@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.textfield.TextInputLayout
 
 // Extends the ArrayAdapter class and inherits the getView method
 class ListView_adapter(context: Context, private val items: MutableList<String>) :
@@ -18,12 +20,11 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
     // Passes parameters: position, view, and viewGroup
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         // Recycle or create a new view as necessary
-        val view: View = convertView ?: LayoutInflater.from(context)
-            .inflate(R.layout.row_ingredienti, parent, false)
+        val view: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.row_ingredienti, parent, false)
 
         // Find views
 
-        val tendina: AutoCompleteTextView = view.findViewById(R.id.tendina)
+        val quantita: EditText = view.findViewById(R.id.tendina)
         val ingrediente: TextView = view.findViewById(R.id.ingrediente)
 
         val shoppingIcon: ImageView = view.findViewById(R.id.calendarIcon)

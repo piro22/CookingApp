@@ -51,7 +51,7 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
         val dbr = dbHelper!!.readableDatabase
 
 
-        val cursor = dbr.rawQuery("SELECT * FROM ricetta", null)
+        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito = 1", null)
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -106,9 +106,6 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             val intent = Intent(requireActivity(), newRecipeActivity::class.java)
             startActivity(intent)
         }
-
-
-
 
         return ret
     }
