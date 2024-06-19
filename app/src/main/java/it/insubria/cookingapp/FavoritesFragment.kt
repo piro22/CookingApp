@@ -1,11 +1,15 @@
 package it.insubria.cookingapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,8 +40,74 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        val ret = inflater.inflate(R.layout.fragment_favorites, container, false)
+
+
+        ricetteModel.clear()
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false)
+        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        val dbHelper = dataModel.dbHelper
+        val dbr = dbHelper!!.readableDatabase
+
+
+        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito = 1", null)
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val nomeIndex = cursor.getColumnIndex("nome")
+                val pathIndex = cursor.getColumnIndex("pathFoto")
+                val preparazioneIndex = cursor.getColumnIndex("preparazione")
+                val porzioniIndex = cursor.getColumnIndex("porzioni")
+                val tempoIndex = cursor.getColumnIndex("tempo_di_preparazione")
+                val difficoltaIndex = cursor.getColumnIndex("difficolta")
+                val tipologiaIndex = cursor.getColumnIndex("tipologia")
+                val portataIndex = cursor.getColumnIndex("portata")
+                val dietaIndex = cursor.getColumnIndex("dieta")
+                val preferitoIndex = cursor.getColumnIndex("preferito")
+                val etnicitaIndex = cursor.getColumnIndex("etnicita")
+
+                val tempRic: RicetteModel = RicetteModel(
+                    cursor.getString(nomeIndex),
+                    cursor.getString(pathIndex),
+                    cursor.getString(preparazioneIndex),
+                    cursor.getInt(porzioniIndex),
+                    cursor.getInt(tempoIndex),
+                    cursor.getString(difficoltaIndex),
+                    cursor.getString(tipologiaIndex),
+                    cursor.getString(portataIndex),
+                    cursor.getString(dietaIndex),
+                    cursor.getString(etnicitaIndex),
+                    cursor.getInt(preferitoIndex)
+                )
+
+                ricetteModel.add(tempRic)
+
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+
+
+
+
+        val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
+
+        //POSSO METTERE QUI UNA FUNZIONE PER RIEMPIRE LA LISTA ricetteModel
+
+        var adapter : RecyclerViewAdapter = RecyclerViewAdapter(requireContext(), ricetteModel, this)
+        recView.adapter = adapter
+        recView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        val fab = ret.findViewById<FloatingActionButton>(R.id.btn_fab)
+
+
+        fab.setOnClickListener {
+            val intent = Intent(requireActivity(), newRecipeActivity::class.java)
+            startActivity(intent)
+        }
+
+        return ret
     }
 
     companion object {

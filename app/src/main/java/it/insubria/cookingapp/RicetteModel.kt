@@ -1,6 +1,6 @@
 package it.insubria.cookingapp
 
-class RicetteModel(nome: String,
+class RicetteModel( nome: String,
                     pathFoto: String,
                     preparazione: String,
                     porzioni: Int,

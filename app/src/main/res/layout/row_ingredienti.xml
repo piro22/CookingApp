@@ -1,49 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
-    android:gravity="end"
-    >
+    android:gravity="end">
 
     <TextView
         android:id="@+id/ingrediente"
-        android:layout_width="wrap_content"
+        android:layout_width="165dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:hint="inserire ingrediente"
+        android:layout_marginLeft="5dp"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         />
 
-
-    <TextView
-        android:id="@+id/numeri"
-        android:layout_width="45dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="0" />
-
-
-    <AutoCompleteTextView
+    <EditText
         android:id="@+id/tendina"
-        android:layout_width="60dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="unità" />
+        android:hint="quantita"
+        android:inputType="number"
+        android:textSize="12sp"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintLeft_toRightOf="@id/ingrediente"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/dietaTenda"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dietaTenda"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        app:layout_constraintLeft_toRightOf="@id/tendina"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/deleteIcon">
+
+        <AutoCompleteTextView
+            android:id="@+id/tendinaDieta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dieta"
+            android:editable="false"
+            android:textSize="10sp"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <ImageView
         android:id="@+id/deleteIcon"
         android:layout_width="wrap_content"
         android:layout_height="50sp"
-        android:layout_marginEnd="8dp"
-        android:src="@drawable/baseline_auto_delete_24" />
+        android:layout_marginEnd="5dp"
+        android:src="@drawable/baseline_delete_24"
+        app:tint="@color/vermilion"
+        app:layout_constraintLeft_toRightOf="@id/dietaTenda"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/calendarIcon"/>
 
     <ImageView
         android:id="@+id/calendarIcon"
         android:layout_width="wrap_content"
         android:layout_height="50sp"
-        android:src="@drawable/baseline_add_shopping_cart_24" />
+        android:src="@drawable/baseline_add_shopping_cart_24"
+        app:tint="@color/fern_green"
+        app:layout_constraintLeft_toRightOf="@id/deleteIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
 
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

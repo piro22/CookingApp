@@ -1,73 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content">
 
 
     <TextView
         android:id="@+id/counterTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="15dp"
+        android:text="Passo 0"
+        android:textSize="17sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.5"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="10dp"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
         app:cardCornerRadius="20dp"
         app:cardElevation="8dp"
-        android:foreground="?attr/selectableItemBackground"
-        android:background="@color/white"
-        app:layout_constraintStart_toEndOf="@id/counterTextView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toEndOf="@id/counterTextView"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/row"
-                android:layout_width="0dp"
+                android:layout_width="230dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="20sp" />
+                android:text="passaggio del procedimento"
+                android:textSize="15sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/deleteIcon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_height="50sp"
+                android:src="@drawable/baseline_delete_24"
+                app:tint="@color/vermilion"
+                app:layout_constraintStart_toEndOf="@id/row"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/calendarIcon"/>
 
+            <ImageView
+                android:id="@+id/calendarIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="50sp"
+                android:src="@drawable/baseline_calendar_view_day_24"
+                app:tint="@color/smokey_black"
+                app:layout_constraintStart_toEndOf="@id/deleteIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
-                <ImageView
-                    android:id="@+id/deleteIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50sp"
-                    android:layout_marginEnd="8dp"
-                    android:src="@drawable/baseline_auto_delete_24" />
-
-                <ImageView
-                    android:id="@+id/calendarIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50sp"
-                    android:src="@drawable/baseline_calendar_view_day_24" />
-
-            </LinearLayout>
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

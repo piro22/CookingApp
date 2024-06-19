@@ -1,11 +1,11 @@
 package it.insubria.cookingapp
 
+import android.content.ContentValues
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -52,59 +52,76 @@ class ShoppingListFragment : Fragment() {
         //INIZIALIZZO LA LISTA CHE METTERO' NELLA ListView
         prodotti = ArrayList<String>()
 
-        prodotti.add("$DOT cacao")
-        prodotti.add("$DOT panna")
-        prodotti.add("$DOT farina")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT bastoncini findus però quelli alla sogliola vado a capo")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT acqua")
-        prodotti.add("$DOT fine")
-        prodotti.add("$DOT fine")
-
-
-        var adapter : ArrayAdapter<String> = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, prodotti)
+        // adapter per la listview
+        val adapter = ShoppingListAdapter(requireContext(), prodotti)
         lista.adapter = adapter
-
 
         val button = ret.findViewById<Button>(R.id.buttonClearList)
 
-        // Create a confirmation dialog
+
+        fun clearDatabase(adapter: ShoppingListAdapter) {
+            val dbHelper = Database_SQL(requireContext())
+            val dbw = dbHelper.writableDatabase
+
+            // Clear the entire database table
+            dbw.delete("listaSpesa", null, null)
+
+            // Clear the list and notify the adapter
+            prodotti.clear()
+            adapter.notifyDataSetChanged()
+        }
+
+
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Confirm Clear")
             .setMessage("Are you sure you want to clear this list?")
             .setPositiveButton("Yes") { _, _ ->
-                prodotti.clear()
-                adapter.notifyDataSetChanged()
+                clearDatabase(adapter)
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
 
-        // Set an OnClickListener on the button
+        // Set an OnClickListener on the clear button
         button.setOnClickListener {
-            dialog.show()
+            dialog.show()}
+
+
+
+
+        //DATABASE
+        //setto variabili  per database
+        val dbHelper = Database_SQL(requireContext())
+        val dbr = dbHelper.readableDatabase
+        val dbw = dbHelper.writableDatabase
+
+
+
+        fun populateIngredientiList() {
+            val cursor = dbr.rawQuery("SELECT ingrediente FROM listaSpesa", null)
+
+            prodotti.clear()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val portataIndex = cursor.getColumnIndex("ingrediente")
+                    if (portataIndex >= 0) {
+                        val p = cursor.getString(portataIndex)
+                        prodotti.add(p)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
         }
 
+        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
+        populateIngredientiList()
 
-        //AGGIUNGO ITEM ALLA LISTA
+
+
+
+            //AGGIUNGO ITEM ALLA LISTA
         btnLista.setOnClickListener {
             val food = txtFood.text.toString()
             if (food.isNullOrBlank()) {
@@ -113,6 +130,13 @@ class ShoppingListFragment : Fragment() {
 //                dbw = databaseHelper.writableDatabase
 //                dbw.execSQL("INSERT INTO lista VALUES(\"$food\")")
 //                dbw.close()
+
+
+                val nuovoValore = ContentValues().apply {
+                    put("ingrediente", food)
+                }
+                //aggiungo il nuovoValore all'interno del db
+                dbw.insert("listaSpesa", null, nuovoValore)
 
                 txtFood.setText("")
 
