@@ -606,13 +606,21 @@ class newRecipeActivity : AppCompatActivity() {
             dialogError.dismiss()
         }
 
+
+        //BOTTONE PER SALVARE TUTTI I DATI, PRIMA SI FANNO I CANTROLLI
         val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
         btnSalva.setOnClickListener{
-            val editTitolo: EditText = findViewById(R.id.editTextText)
-            val titoloFinale = editTitolo.text.toString()
+            //se questa variabile diventa false allora si blocca il procedimento
+            var esito: Boolean = true
 
-            if(titoloFinale.isEmpty()) {
-                messaggioErroreModificabile = "Il nome non può essere vuoto000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+
+            //CONTROLLO SUL TITOLO
+            val editTitolo: EditText = findViewById(R.id.editTextText)
+            var titoloFinale = editTitolo.text.toString()
+            if(titoloFinale.trim().isEmpty()) {
+                esito = false
+
+                messaggioErroreModificabile = "Il nome non può essere vuoto"
                 txtErrore.text = messaggioErroreModificabile
 
                 dialogError.window!!
@@ -620,10 +628,182 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.show()
             }
 
-            //TODO controllare tutti gli altri campi e dare errori
+            //CONTROLLO SULLA PORTATA
+            val portata: AutoCompleteTextView = findViewById(R.id.tendina)
+            var txtPortata = portata.text.toString()
+            if(txtPortata.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una portata"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA TIPOLOGIA
+            val tipologia : AutoCompleteTextView = findViewById(R.id.tendinaTipo)
+            var txtTipologia = tipologia.text.toString()
+            if(txtTipologia.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una tipologia"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA DIETA
+            val dieta : AutoCompleteTextView = findViewById(R.id.tendinaDieta)
+            var txtDieta = dieta.text.toString()
+            if(txtDieta.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una dieta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULL'ETNIA
+            val etnia : AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
+            var txtEtnia = etnia.text.toString()
+            if(txtEtnia.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere un'etnia"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA DIFFICOLTA
+            val difficolta : AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+            var txtDifficolta = difficolta.text.toString()
+            if(txtDifficolta.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una difficoltà"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SUL NUMERO DI PORZIONI
+            val porzioni : EditText = findViewById(R.id.editPorzioni)
+            var txtPorzioni = porzioni.text.toString()
+            var numPorzioni: Int = 0
+            if(txtPorzioni.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Bisogna inserire un numero di porzioni per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                numPorzioni = txtPorzioni.toInt()
+            }
+
+            //CONTROLLO SUL TEMPO
+            val tempo : EditText = findViewById(R.id.editTempo)
+            var txtTempo = tempo.text.toString()
+            var numTempo: Int = 0
+            if(txtTempo.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Bisogna inserire un tempo di preparazione totale per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                numTempo = txtTempo.toInt()
+            }
+
+
+            //CONTROLLO SUGLI INGREDIENTI
+            if(ArrayListaIngredienti.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Inserire minimo un ingrediente per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA PREPARAZIONE
+            var preparazione: String = ""
+            if(listaProcedimenti.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Inserire una procedura per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                preparazione = componiProcedura(listaProcedimenti)
+            }
+
+
+            //TODO controllare il path della foto, se è null mettere 'default'
+
+            //se tutto va bene creo la ricetta e la carico sul DB
+            if(esito) {
+                var ricetta = RicetteModel(
+                    -1,
+                    titoloFinale,
+                    "default",
+                    preparazione,
+                    numPorzioni,
+                    numTempo,
+                    txtDifficolta,
+                    txtTipologia,
+                    txtPortata,
+                    txtDieta,
+                    txtEtnia,
+                    0
+                )
+
+                //Log.d("222222222222222222222222222222222222222222", "qui dovrebbe essere dopo")
+
+                //TODO cambiare il path con quello selezionato
+                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', 'default', '$preparazione', 0)")
+            }
+
+            //TODO fare qualcosa per prendere gli ingredienti e le quantità
+            // poi inserirli uno alla volta con anche l'ID della ricetta
+
         }
 
 
+    }
+
+    //funzione per comporre la procedura a partire dai passi inseriti dal'utenteto
+    private fun componiProcedura(listaProcedimenti: ArrayList<String>): String {
+        var ret = ""
+
+        for(i in listaProcedimenti){
+            ret = ret + "[[Passo]]$i"
+            //Log.d("11111111111111111111111111111111111111111111111111", "$ret")
+        }
+
+        return ret
     }
 
 
