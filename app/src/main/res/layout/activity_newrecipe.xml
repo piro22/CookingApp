@@ -4,325 +4,414 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main2"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/primolayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="30dp">
+                android:layout_marginTop="10dp">
 
                 <EditText
                     android:id="@+id/editTextText"
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.75"
-                    android:hint="Name recipe"
-                    android:inputType="text"
-                    android:textSize="30dp" />
-
-                <Space
-                    android:layout_width="55dp"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:id="@+id/btnsalva"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:backgroundTint="#FF4510"
-                    android:text="salva"
-                    android:textSize="10dp" />
-
-
-                <Button
-                    android:id="@+id/btnfoto"
-                    android:layout_marginLeft="5dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:backgroundTint="#FF4510"
-                    android:text="aggiungi foto"
-                    android:textSize="10dp" />
-
-
-            </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/secondolayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="porzioni:"
-                android:layout_marginLeft="15dp"
-                />
-
-
-            <EditText
-                android:layout_marginLeft="10dp"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                />
-
-
-
-
-
-        </LinearLayout>
-
-
-
-            <LinearLayout
-                android:id="@+id/portates"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/textInputLayout"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
-                    app:layout_constraintHorizontal_bias="0.0">
+                    android:hint="Name recipe"
+                    android:inputType="text"
+                    android:textSize="30dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/btnfoto"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="@drawable/custom_bkg_button"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/baseline_add_photo_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@id/editTextText"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:tint="@color/coquelicot" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/portates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tendinaP"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
                     <AutoCompleteTextView
                         android:id="@+id/tendina"
-                        android:layout_width="190dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:hint="portata" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
                 <Button
                     android:id="@+id/btnAddPortate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
-                    android:layout_weight="0.7"
-                    android:backgroundTint="#FF4510"
-                    android:text="Add Portate"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/tipo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
-                    app:layout_constraintHorizontal_bias="0.0">
+                    android:layout_marginRight="12dp"
+                    android:backgroundTint="@color/coquelicot"
+                    android:text="Nuova Portata"
+                    android:textSize="14dp"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="@color/white"
+                    app:layout_constraintLeft_toRightOf="@id/tendinaP"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tipo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tendinaT"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
                     <AutoCompleteTextView
                         android:id="@+id/tendinaTipo"
-                        android:layout_width="190dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:hint="tipo" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
                 <Button
                     android:id="@+id/btnAddTipo"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
-                    android:layout_weight="0.7"
-                    android:backgroundTint="#FF4510"
-                    android:text="Add tipo"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/difficolta"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
-                    app:layout_constraintHorizontal_bias="0.0">
+                    android:layout_marginRight="12dp"
+                    android:backgroundTint="@color/coquelicot"
+                    android:text="Nuovo Tipo"
+                    android:textSize="14dp"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="@color/white"
+                    app:layout_constraintLeft_toRightOf="@id/tendinaT"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <AutoCompleteTextView
-                        android:id="@+id/tendinaDifficolta"
-                        android:layout_width="190dp"
-                        android:layout_height="wrap_content"
-                        android:hint="difficolta" />
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/dieta"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tendinaD"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
-                    app:layout_constraintHorizontal_bias="0.0">
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
                     <AutoCompleteTextView
                         android:id="@+id/tendinaDieta"
-                        android:layout_width="190dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:hint="dieta" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
                 <Button
                     android:id="@+id/btnAddDieta"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="12dp"
-                    android:layout_weight="0.7"
-                    android:backgroundTint="#FF4510"
-                    android:text="Add Dieta"
-                    android:textSize="14dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/etnia"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="0dp"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="12dp"
-                    android:layout_weight="1"
-                    app:layout_constraintHorizontal_bias="0.0">
+                    android:layout_marginRight="12dp"
+                    android:backgroundTint="@color/coquelicot"
+                    android:text="Nuova Dieta"
+                    android:textSize="14dp"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="@color/white"
+                    app:layout_constraintLeft_toRightOf="@id/tendinaD"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/etnia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tendinaE"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
                     <AutoCompleteTextView
                         android:id="@+id/tendinaEtnia"
-                        android:layout_width="190dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:hint="etnia" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <Space
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
                 <Button
                     android:id="@+id/btnAddEtnia"
-                    android:layout_width="0dp"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
                     android:layout_marginRight="12dp"
-                    android:layout_weight="0.7"
-                    android:backgroundTint="#FF4510"
-                    android:text="Add Etnia"
-                    android:textSize="14dp" />
-            </LinearLayout>
+                    android:backgroundTint="@color/coquelicot"
+                    android:text="Nuova Etnia"
+                    android:textSize="14dp"
+                    android:drawableLeft="@drawable/baseline_add_24"
+                    android:drawableTint="@color/white"
+                    app:layout_constraintLeft_toRightOf="@id/tendinaE"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/difficolta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tendinaDiff"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/tendinaDifficolta"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:hint="difficolta" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/secondolayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txtPorzioni"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:text="Quantità per:"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+                <EditText
+                    android:id="@+id/editPorzioni"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:hint="4"
+                    android:textAlignment="center"
+                    android:inputType="number"
+                    app:layout_constraintLeft_toRightOf="@id/txtPorzioni"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="persone"
+                    app:layout_constraintLeft_toRightOf="@id/editPorzioni"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginLeft="10dp"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@color/coquelicot"
+                app:layout_constraintTop_toBottomOf="@id/secondolayout"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/txtIngredienti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ingredienti"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/smokey_black"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="15dp"
+                app:layout_constraintTop_toBottomOf="@id/secondolayout"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/ingredienti"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/input"
-                    android:layout_width="match_parent"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_weight="1"
+                    android:layout_marginLeft="12dp"
                     android:ems="10"
-                    android:hint="enter ingredients here"
+                    android:hint="aggiungi ingrediente"
                     android:imeOptions="actionDone"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/listviewl"/>
 
                 <ImageView
-                    android:id="@+id/aggiungi"
-                    android:layout_width="100dp"
-                    android:layout_height="40sp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="7sp"
-                    android:layout_toRightOf="@+id/input"
-                    android:layout_weight="1"
-                    android:src="@drawable/baseline_add_24" />
-            </LinearLayout>
+                    android:id="@+id/aggiungiIngrediente"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/baseline_add_24"
+                    android:scaleType="centerInside"
+                    android:background="@drawable/custom_bkg_button"
+                    app:tint="@color/coquelicot"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/listviewl"
+                    app:layout_constraintLeft_toRightOf="@id/input"
+                    app:layout_constraintRight_toRightOf="parent"/>
 
-            <ListView
-                android:id="@+id/listviewl"
+                <ListView
+                    android:id="@+id/listviewl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/input"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <View
+                android:id="@+id/separator2"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="2dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@color/coquelicot"
+                app:layout_constraintTop_toBottomOf="@id/secondolayout"
+                android:layout_marginTop="4dp"/>
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtProcedura"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Procedura"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/smokey_black"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="15dp"
+                app:layout_constraintTop_toBottomOf="@id/secondolayout"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/procedimento"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <EditText
                     android:id="@+id/TextProcedimento"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="12dp"
+                    android:ems="10"
+                    android:hint="aggiungi procedura"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/recyclerViewProcedure"/>
+
+                <ImageView
+                    android:id="@+id/aggiungiProcedura"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/baseline_add_24"
+                    android:scaleType="centerInside"
+                    android:background="@drawable/custom_bkg_button"
+                    app:tint="@color/coquelicot"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/recyclerViewProcedure"
+                    app:layout_constraintLeft_toRightOf="@id/TextProcedimento"
+                    app:layout_constraintRight_toRightOf="parent"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewProcedure"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Add procedure"
-                    android:textSize="16sp" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/TextProcedimento"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <Button
-                    android:id="@+id/btnDone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#FF4510"
-                    android:text="Done"
-                    android:textSize="15sp" />
-            </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewProcedure"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="35dp" />
+
+            <Button
+                android:id="@+id/btnsalva"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/coquelicot"
+                android:text="salva"
+                android:textSize="10dp"/>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:backgroundTint="#FF3333"
+        android:backgroundTint="@color/fern_green"
         android:src="@drawable/baseline_add_24" />
 
 
