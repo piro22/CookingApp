@@ -82,6 +82,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                val idIndex = cursor.getColumnIndex("id")
                 val nomeIndex = cursor.getColumnIndex("nome")
                 val pathIndex = cursor.getColumnIndex("pathFoto")
                 val preparazioneIndex = cursor.getColumnIndex("preparazione")
@@ -95,6 +96,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
                 val etnicitaIndex = cursor.getColumnIndex("etnicita")
 
                 val tempRic: RicetteModel = RicetteModel(
+                    cursor.getInt(idIndex),
                     cursor.getString(nomeIndex),
                     cursor.getString(pathIndex),
                     cursor.getString(preparazioneIndex),
@@ -166,6 +168,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         //Toast.makeText(requireContext(), "LOGGED OUT", Toast.LENGTH_SHORT).show()
 
         val ricetta = RicetteModel(
+            ricetteModel.get(position).id,
             ricetteModel.get(position).nome,
             ricetteModel.get(position).pathFoto,
             ricetteModel.get(position).preparazione,

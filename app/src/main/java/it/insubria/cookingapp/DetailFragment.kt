@@ -1,14 +1,17 @@
 package it.insubria.cookingapp
 
+import android.content.ContentValues
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -33,6 +36,7 @@ class DetailFragment() : Fragment() {
     private lateinit var ricettaViewModel: DataModel
     private var ricetta: RicetteModel? = null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -54,10 +58,15 @@ class DetailFragment() : Fragment() {
 
         ricettaViewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
 
+
         // Recupera i dati dal ViewModel
         ricetta = ricettaViewModel.ricetta
+        val dbHelper = ricettaViewModel.dbHelper
+        val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
 
-        if(ricetta != null){
+
+
+        if (ricetta != null) {
 
             //PER TITOLO CHE SCORRE
             val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
@@ -68,7 +77,7 @@ class DetailFragment() : Fragment() {
             val textDiff: TextView = ret.findViewById(R.id.textDiff)
             val t1 = "Difficoltà:\n${ricetta!!.difficolta}"
             textDiff.text = soloInizioGrassetto("Difficoltà:", t1)
-    //      textDiff.text = "Difficoltà:\n ${ricetta.difficolta}"
+            //      textDiff.text = "Difficoltà:\n ${ricetta.difficolta}"
 
             val textPortata: TextView = ret.findViewById(R.id.textPortata)
             val t2 = "Portata:\n ${ricetta!!.portata}"
@@ -94,11 +103,60 @@ class DetailFragment() : Fragment() {
             val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
             textPreparazione.text = ricetta!!.preparazione
 
+
             val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
-            if(!ricetta!!.pathFoto.equals("default")){
+            if (!ricetta!!.pathFoto.equals("default")) {
                 imgRicetta.setImageURI(ricetta!!.pathFoto.toUri())
             }
+
+            //sarebbe il campo preferito all'interno del db
+            var preferito = ricetta!!.preferito
+
+            if (preferito == 0) {
+                favoriteIcon.setImageResource(R.drawable.baseline_favorite_24)
+            } else {
+                favoriteIcon.setImageResource(R.drawable.grade_24dp_fill1_wght400_grad0_opsz24)
+            }
         }
+
+
+
+
+        favoriteIcon.setOnClickListener {
+
+            val dbw = dbHelper!!.writableDatabase
+
+            //sarebbe il campo preferito all'interno del db
+            //var preferito = ricetta!!.preferito
+
+            if (ricetta!!.preferito == 0) {
+                favoriteIcon.setImageResource(R.drawable.baseline_favorite_24)
+                ricetta!!.preferito = 1
+            } else {
+                favoriteIcon.setImageResource(R.drawable.grade_24dp_fill1_wght400_grad0_opsz24)
+                ricetta!!.preferito = 0
+            }
+
+
+
+            val nuovoValore = ContentValues().apply {
+                put("preferito", ricetta!!.preferito)
+            }
+
+
+            dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
+            dbw.close()
+        }
+
+
+
+
+
+
+
+
+
+
 
         return ret
     }
@@ -139,4 +197,6 @@ class DetailFragment() : Fragment() {
         )
         return spannableString
     }
+
+
 }

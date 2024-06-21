@@ -1,6 +1,7 @@
 package it.insubria.cookingapp
 
-class RicetteModel(nome: String,
+class RicetteModel(id: Int,
+    nome: String,
                     pathFoto: String,
                     preparazione: String,
                     porzioni: Int,
@@ -11,6 +12,7 @@ class RicetteModel(nome: String,
                     dieta: String,
                     etnicita: String,
                     preferito: Int) {
+    val id: Int
     val nome: String
     val pathFoto: String
     val preparazione: String
@@ -21,9 +23,10 @@ class RicetteModel(nome: String,
     val portata: String
     val dieta: String
     val etnicita: String
-    val preferito: Int
+    var preferito: Int
 
     init {
+        this.id= id
         this.nome = nome
         this.pathFoto = pathFoto
         this.preparazione = preparazione
