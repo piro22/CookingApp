@@ -51,10 +51,11 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
         val dbr = dbHelper!!.readableDatabase
 
 
-        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito = 1", null)
+        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito=1", null)
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                val idIndex = cursor.getColumnIndex("id")
                 val nomeIndex = cursor.getColumnIndex("nome")
                 val pathIndex = cursor.getColumnIndex("pathFoto")
                 val preparazioneIndex = cursor.getColumnIndex("preparazione")
@@ -68,6 +69,7 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
                 val etnicitaIndex = cursor.getColumnIndex("etnicita")
 
                 val tempRic: RicetteModel = RicetteModel(
+                    cursor.getInt(idIndex),
                     cursor.getString(nomeIndex),
                     cursor.getString(pathIndex),
                     cursor.getString(preparazioneIndex),
@@ -107,6 +109,9 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             startActivity(intent)
         }
 
+
+
+
         return ret
     }
 
@@ -132,6 +137,7 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
 
     override fun onItemClick(position: Int) {
         val ricetta = RicetteModel(
+            ricetteModel.get(position).id,
             ricetteModel.get(position).nome,
             ricetteModel.get(position).pathFoto,
             ricetteModel.get(position).preparazione,
