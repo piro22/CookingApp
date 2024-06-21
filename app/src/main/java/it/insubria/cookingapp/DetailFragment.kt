@@ -130,13 +130,12 @@ class DetailFragment() : Fragment() {
             //var preferito = ricetta!!.preferito
 
             if (ricetta!!.preferito == 0) {
-                favoriteIcon.setImageResource(R.drawable.baseline_favorite_24)
+                favoriteIcon.setImageResource(R.drawable.grade_24dp_fill1_wght400_grad0_opsz24)
                 ricetta!!.preferito = 1
             } else {
-                favoriteIcon.setImageResource(R.drawable.grade_24dp_fill1_wght400_grad0_opsz24)
+                favoriteIcon.setImageResource(R.drawable.baseline_favorite_24)
                 ricetta!!.preferito = 0
             }
-
 
 
             val nuovoValore = ContentValues().apply {
@@ -144,8 +143,17 @@ class DetailFragment() : Fragment() {
             }
 
 
-            dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
+            val rowsAffected = dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
             dbw.close()
+
+            /*
+            if (rowsAffected > 0) {
+                // Aggiornamento riuscito
+                Log.d("111111111111111111111111111111111111111111111111", "Update riuscito")
+            } else {
+                // Nessuna riga aggiornata, potrebbe esserci un problema con l'id
+                Log.d("111111111111111111111111111111111111111111111111", "Nessuna riga aggiornata")
+            }*/
         }
 
 
