@@ -8,21 +8,19 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
-import android.widget.Toast
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
@@ -102,7 +100,7 @@ class newRecipeActivity : AppCompatActivity() {
         listaPortate.setAdapter(adapterTendina)
 
 
-        val btn_annulla: Button = dialog.findViewById(R.id.annullaBtn)
+        val btn_annulla: ImageView = dialog.findViewById(R.id.annullaBtn)
         btn_annulla.setOnClickListener {
             dialog.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -141,17 +139,8 @@ class newRecipeActivity : AppCompatActivity() {
         val btn_portate: Button = findViewById(R.id.btnAddPortate)
 
 
-        val widthInDp = 250
-        val heightInDp = 250
-        val scale = this.resources.displayMetrics.density
-        val widthInPx = (widthInDp * scale + 0.5f).toInt()
-        val heightInPx = (heightInDp * scale + 0.5f).toInt()
-
         btn_portate.setOnClickListener {
-            dialog.window!!.setLayout(
-                widthInPx,
-                heightInPx
-            )
+            dialog.window!!
             dialog.setCancelable(false)
             dialog.show()
         }
@@ -199,7 +188,7 @@ class newRecipeActivity : AppCompatActivity() {
 //per aggiornare la vista(tendina)
         listaDieta.setAdapter(adapterTendinaD)
 
-        val btn_annullaD: Button = dialogD.findViewById(R.id.annullaBtnD)
+        val btn_annullaD: ImageView = dialogD.findViewById(R.id.annullaBtnD)
         btn_annullaD.setOnClickListener {
             dialogD.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -237,17 +226,8 @@ class newRecipeActivity : AppCompatActivity() {
 //MANCA IL TASTO PER ELIMINARE LA DIETA DALLA TENDINA
         val btn_dieta: Button = findViewById(R.id.btnAddDieta)
 
-        val widthInDpD = 250
-        val heightInDpD = 250
-        val scaleD = this.resources.displayMetrics.density
-        val widthInPxD = (widthInDpD * scaleD + 0.5f).toInt()
-        val heightInPxD = (heightInDpD * scaleD + 0.5f).toInt()
-
         btn_dieta.setOnClickListener {
-            dialogD.window!!.setLayout(
-                widthInPxD,
-                heightInPxD
-            )
+            dialogD.window!!
             dialogD.setCancelable(false)
             dialogD.show()
         }
@@ -296,7 +276,7 @@ class newRecipeActivity : AppCompatActivity() {
         //per aggiornare la vista(tendina)
         listaEtnia.setAdapter(adapterEtnia)
 
-        val btn_annullaE: Button = dialogE.findViewById(R.id.annullaBtnE)
+        val btn_annullaE: ImageView = dialogE.findViewById(R.id.annullaBtnE)
         btn_annullaE.setOnClickListener {
             dialogE.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -335,18 +315,8 @@ class newRecipeActivity : AppCompatActivity() {
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_Etnia: Button = findViewById(R.id.btnAddEtnia)
 
-
-        val widthInDpE = 250
-        val heightInDpE = 250
-        val scaleE = this.resources.displayMetrics.density
-        val widthInPxE = (widthInDpE * scaleE + 0.5f).toInt()
-        val heightInPxE = (heightInDpE * scaleE + 0.5f).toInt()
-
         btn_Etnia.setOnClickListener {
-            dialogE.window!!.setLayout(
-                widthInPxE,
-                heightInPxE
-            )
+            dialogE.window!!
             dialogE.setCancelable(false)
             dialogE.show()
         }
@@ -396,7 +366,7 @@ class newRecipeActivity : AppCompatActivity() {
         //per aggiornare la vista(tendina)
         listaTipo.setAdapter(adapterTipo)
 
-        val btn_annullaT: Button = dialogT.findViewById(R.id.annullaBtnT)
+        val btn_annullaT: ImageView = dialogT.findViewById(R.id.annullaBtnT)
         btn_annullaT.setOnClickListener {
             dialogT.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -436,18 +406,8 @@ class newRecipeActivity : AppCompatActivity() {
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_Tipologia: Button = findViewById(R.id.btnAddTipo)
 
-
-        val widthInDpT = 250
-        val heightInDpT = 250
-        val scaleT = this.resources.displayMetrics.density
-        val widthInPxT = (widthInDpT * scaleT + 0.5f).toInt()
-        val heightInPxT = (heightInDpT * scaleT + 0.5f).toInt()
-
         btn_Tipologia.setOnClickListener {
-            dialogT.window!!.setLayout(
-                widthInPxT,
-                heightInPxT
-            )
+            dialogT.window!!
             dialogT.setCancelable(false)
             dialogT.show()
         }
@@ -632,6 +592,37 @@ class newRecipeActivity : AppCompatActivity() {
 
 
         //----------------------------------------------------------------------------------------------------------------------------
+
+
+        //-----------------------------------------------------------------------------------------------------
+        //SALVARE TUTTO SU DB
+        val dialogError = Dialog(this)
+        dialogError.setContentView(R.layout.dialog_errore)
+        var messaggioErroreModificabile = "Errore"
+
+        val btnok: Button = dialogError.findViewById(R.id.buttonOK)
+        val txtErrore: TextView = dialogError.findViewById(R.id.messaggioErrore)
+        btnok.setOnClickListener {
+            dialogError.dismiss()
+        }
+
+        val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
+        btnSalva.setOnClickListener{
+            val editTitolo: EditText = findViewById(R.id.editTextText)
+            val titoloFinale = editTitolo.text.toString()
+
+            if(titoloFinale.isEmpty()) {
+                messaggioErroreModificabile = "Il nome non può essere vuoto000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //TODO controllare tutti gli altri campi e dare errori
+        }
+
 
     }
 
