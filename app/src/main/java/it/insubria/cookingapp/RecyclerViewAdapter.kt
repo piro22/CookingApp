@@ -15,8 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 class RecyclerViewAdapter(private val context: Context,
                           private val ricettaModel: ArrayList<RicetteModel>,
                           private val recyclerViewInterface: RecyclerViewInterface
-                            ) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
-
+                            ) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>()
+{
+    private var filteredItemList: ArrayList<RicetteModel> = ArrayList(ricettaModel)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.rec_view_row, parent, false)
@@ -24,11 +25,11 @@ class RecyclerViewAdapter(private val context: Context,
     }
 
     override fun onBindViewHolder(holder: RecyclerViewAdapter.MyViewHolder, position: Int) {
-        holder.txtName.text = ricettaModel.get(position).nome
-        holder.difficolta.text = ricettaModel.get(position).difficolta
-        holder.portata.text = ricettaModel.get(position).portata
+        holder.txtName.text = filteredItemList.get(position).nome
+        holder.difficolta.text = filteredItemList.get(position).difficolta
+        holder.portata.text = filteredItemList.get(position).portata
 
-        val path = ricettaModel.get(position).pathFoto
+        val path = filteredItemList.get(position).pathFoto
         if(!path.equals("default")){
             holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
             //Log.d("HO MESSO L'URI", "${path.toUri()}")
@@ -36,7 +37,17 @@ class RecyclerViewAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return ricettaModel.size
+        return filteredItemList.size
+    }
+
+    fun filterNome(query: String) {
+        if (query.isEmpty()) {
+            filteredItemList = ricettaModel // Create a copy to avoid modifying the original
+        } else {
+            val temp = ricettaModel.filter { it.nome.contains(query, ignoreCase = true) }
+            filteredItemList = temp.toCollection(ArrayList())
+        }
+        notifyDataSetChanged()
     }
 
 

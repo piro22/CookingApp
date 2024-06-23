@@ -2,10 +2,14 @@ package it.insubria.cookingapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,32 +50,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
 
         ricetteModel.clear()
-//        var ricetta = RicetteModel(1,
-//            "pasta al pesto",
-//            "content://media/external/images/media/1000000028",
-//            "cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto",
-//            5,
-//            20,
-//            "*",
-//            "Pasta",
-//            "Primo",
-//            "Onnivora",
-//            true)
-//        ricetteModel.add(ricetta)
-//        ricetta = RicetteModel(2, "Tortino al cioccolatoatoato", "default", "non so come si faccia bro, non sono un pasticcere", 5, 100, "***", "Tortino","Dolce", "Onnivora", true)
-//        ricetteModel.add(ricetta)
-//        val ricetta = RicetteModel(3,
-//            "Tiramisù",
-//            "content://media/external/images/media/1000000028",
-//            "Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. ",
-//            5,
-//            35,
-//            "***",
-//            "Dolce",
-//            "Sempre Buono",
-//            "Onnivora",
-//            true)
-//        ricetteModel.add(ricetta)
+
 
         val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
         val dbHelper = dataModel.dbHelper
@@ -134,6 +113,20 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
             startActivity(intent)
         }
 
+
+        //-----------------------------------------------------------------------------------------
+        //PER FILTRI
+        val editText: EditText = ret.findViewById(R.id.txtRicerca)
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filterNome(s.toString())
+                Log.d("FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO ", "${s.toString()}")
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
 
 
 
