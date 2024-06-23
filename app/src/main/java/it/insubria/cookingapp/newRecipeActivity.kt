@@ -1,13 +1,18 @@
 package it.insubria.cookingapp
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.ContentValues
+import android.content.Intent
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
@@ -18,15 +23,21 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.net.URI
 import java.util.Collections
 
 class newRecipeActivity : AppCompatActivity() {
 
+    private val PICK_IMAGE_REQUEST = 1
+    private lateinit var btnImmagine: ImageView
+    private lateinit var imageViewFoto: ImageView
+    private lateinit var uriFoto: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -594,6 +605,20 @@ class newRecipeActivity : AppCompatActivity() {
         //----------------------------------------------------------------------------------------------------------------------------
 
 
+        //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
+
+        btnImmagine = findViewById(R.id.btnfoto)
+        imageViewFoto = findViewById(R.id.imageViewFoto)
+        val pathImg: String = "default"
+        btnImmagine.setOnClickListener{
+            chooseImageFromGallery()
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------
+
+
+
+
         //-----------------------------------------------------------------------------------------------------
         //SALVARE TUTTO SU DB
         val dialogError = Dialog(this)
@@ -768,7 +793,7 @@ class newRecipeActivity : AppCompatActivity() {
                 var ricetta = RicetteModel(
                     -1,
                     titoloFinale,
-                    "default",
+                    uriFoto.toString(),
                     preparazione,
                     numPorzioni,
                     numTempo,
@@ -783,7 +808,7 @@ class newRecipeActivity : AppCompatActivity() {
                 //Log.d("222222222222222222222222222222222222222222", "qui dovrebbe essere dopo")
 
                 //TODO cambiare il path con quello selezionato
-                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', 'default', '$preparazione', 0)")
+                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', '${uriFoto.toString()}', '$preparazione', 0)")
             }
 
             //TODO fare qualcosa per prendere gli ingredienti e le quantità
@@ -792,6 +817,30 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun chooseImageFromGallery() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+            val selectedImageUri: Uri? = data.data
+            selectedImageUri?.let {
+                uriFoto = selectedImageUri
+
+                val layoutParams = imageViewFoto.layoutParams
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                layoutParams.height = 500 // o qualsiasi altra dimensione desiderata
+                imageViewFoto.layoutParams = layoutParams
+
+                imageViewFoto.setImageURI(selectedImageUri)
+            }
+        }else{
+            uriFoto = "default".toUri()
+        }
     }
 
     //funzione per comporre la procedura a partire dai passi inseriti dal'utenteto
