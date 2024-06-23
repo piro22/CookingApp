@@ -18,6 +18,7 @@ class RecyclerViewAdapter(private val context: Context,
                             ) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>()
 {
     private var filteredItemList: ArrayList<RicetteModel> = ArrayList(ricettaModel)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.rec_view_row, parent, false)
@@ -45,6 +46,16 @@ class RecyclerViewAdapter(private val context: Context,
             filteredItemList = ricettaModel // Create a copy to avoid modifying the original
         } else {
             val temp = ricettaModel.filter { it.nome.contains(query, ignoreCase = true) }
+            filteredItemList = temp.toCollection(ArrayList())
+        }
+        notifyDataSetChanged()
+    }
+
+    fun filterPortata(query: String) {
+        if (query.isEmpty()) {
+            filteredItemList = ricettaModel // Create a copy to avoid modifying the original
+        } else {
+            val temp = ricettaModel.filter { it.portata.equals(query) }
             filteredItemList = temp.toCollection(ArrayList())
         }
         notifyDataSetChanged()

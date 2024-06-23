@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +33,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
     private var param2: String? = null
 
     val ricetteModel: ArrayList<RicetteModel> = ArrayList()
+    var arrayListaPortate: MutableList<String> = mutableListOf()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,8 +117,42 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         }
 
 
-        //-----------------------------------------------------------------------------------------
+        //POPOLO TENDINA FILTRO PORTATE---------------------------------------------------------------
+
+        val cursorPort = dbr.rawQuery("SELECT portata FROM portate", null)
+
+        arrayListaPortate.clear()
+
+        if (cursorPort != null && cursorPort.moveToFirst()) {
+            do {
+                val portataIndex = cursorPort.getColumnIndex("portata")
+                if (portataIndex >= 0) {
+                    val p = cursorPort.getString(portataIndex)
+                    arrayListaPortate.add(p)
+                }
+            } while (cursorPort.moveToNext())
+            cursorPort.close()
+        }
+
+        //prendo la tendina
+        val listaPortate: AutoCompleteTextView = ret.findViewById(R.id.filtroPortate)
+
+        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterTendina = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaPortate.toTypedArray()
+        )
+        //per aggiornare la vista(tendina)
+        listaPortate.setAdapter(adapterTendina)
+        //------------------------------------------------------------------------------------------------------------------------------
+
+
+
+        //------------------------------------------------------------------------------------------------------------------------------
         //PER FILTRI
+
+        //filtro nome
         val editText: EditText = ret.findViewById(R.id.txtRicerca)
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -129,6 +166,16 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         })
 
 
+        //filtro portata
+        listaPortate.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            if (selectedItem.equals("- - -")) {
+                adapter.filterPortata("")
+            } else {
+                adapter.filterPortata(selectedItem)
+            }
+        }
+        //-------------------------------------------------------------------------------------------------------------------------------
 
         return ret
     }
