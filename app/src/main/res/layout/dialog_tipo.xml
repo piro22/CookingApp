@@ -15,6 +15,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:hint="nuova tipologia"
+        android:textAlignment="center"
         android:textSize="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,7 +37,7 @@
             android:backgroundTint="@color/coquelicot"
             android:text="salva"
             android:textColor="@color/smokey_black"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/messaggio"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/annullaBtnT"
             app:layout_constraintTop_toTopOf="parent" />
@@ -53,11 +54,24 @@
             android:scaleType="centerInside"
             android:src="@drawable/baseline_delete_24"
             android:textColor="@color/smokey_black"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/messaggio"
             app:layout_constraintLeft_toRightOf="@id/saveBtnT"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/vermilion" />
+
+        <TextView
+            android:id="@+id/messaggio"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="8sp"
+            android:textAlignment="center"
+            android:text="Successivamente in impostazioni puoi eliminare le tipologie inserite"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/saveBtnT"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
