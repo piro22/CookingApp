@@ -1,8 +1,13 @@
 package it.insubria.cookingapp
 
-import android.app.Activity
+import AutoComplete_adapter
 import android.app.Dialog
 import android.content.ContentValues
+import android.content.Context
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -29,6 +34,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.textfield.TextInputLayout
 import java.net.URI
 import java.util.Collections
 
@@ -55,8 +61,11 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
-        //DATABASE
 
+
+
+
+        //DATABASE
 //----------------------------------------------------------------------------------------------------------------------------
 
         //setto variabili  per database
@@ -64,6 +73,137 @@ class newRecipeActivity : AppCompatActivity() {
         val dbr = dbHelper.readableDatabase
         val dbw = dbHelper.writableDatabase
 //----------------------------------------------------------------------------------------------------------------------------
+
+
+        //----------------PER POPOLARE LE TENDINE
+        fun populateAutoCompleteTextView(autoCompleteTextView: AutoCompleteTextView, tableName: String, columnName: String, context: Context, database: SQLiteDatabase): MutableList<String> {
+            val cursor = database.rawQuery("SELECT $columnName FROM $tableName", null)
+
+            val dataList = mutableListOf<String>()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val columnIndex = cursor.getColumnIndex(columnName)
+                    if (columnIndex >= 0) {
+                        val value = cursor.getString(columnIndex)
+                        dataList.add(value)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+
+            val adapter = AutoComplete_adapter(
+                context,
+                R.layout.autocomplete_adapter_row,
+                dataList,
+                database,
+                tableName,
+                columnName
+            )
+            autoCompleteTextView.setAdapter(adapter)
+
+
+            return dataList
+        }
+
+
+
+        //--------------------PER AGGIUNGERE NUOVO ELEMENTO ALLA TENDINA
+        /*fun addNewEntry(
+            context: Context,
+            editText: EditText,
+            autoCompleteTextView: AutoCompleteTextView,
+            dataList: MutableList<String>,
+            tableName: String,
+            columnName: String,
+            db: SQLiteDatabase
+        ) {
+            val newValue = editText.text.toString()
+
+            // Controlla se il nuovo valore esiste già nella lista
+            if (!dataList.contains(newValue)) {
+                val contentValues = ContentValues().apply {
+                    put(columnName, newValue)
+                }
+                // Aggiungi il nuovo valore al database
+                db.insert(tableName, null, contentValues)
+
+                // Aggiorna l'array e notifica all'adapter
+                dataList.add(newValue)
+                val adapter = autoCompleteTextView.adapter as AutoComplete_adapter
+                adapter.notifyDataSetChanged()
+            } else {
+                Log.d("MainActivity", "$columnName già presente")
+            }
+        }*/
+        fun updateAutoCompleteTextView(
+            context: Context,
+        autoCompleteTextView: AutoCompleteTextView,
+        dataList: MutableList<String>,
+        tableName: String,
+        columnName: String,
+        database: SQLiteDatabase
+        ) {
+            val adapter = AutoComplete_adapter(
+                context,
+                R.layout.autocomplete_adapter_row,
+                dataList,
+                database,
+                tableName,
+                columnName
+            )
+            autoCompleteTextView.setAdapter(adapter)
+        }
+
+        fun addNewEntry(
+            context: Context,
+            editText: EditText,
+            autoCompleteTextView: AutoCompleteTextView,
+            dataList: MutableList<String>,
+            tableName: String,
+            columnName: String,
+            db: SQLiteDatabase
+        )
+        {
+            /*
+            val newEntry = editText.text.toString()
+
+            // Controlla se la nuova etnia esiste già nella lista
+            if (!dataList.contains(newEntry)) {
+                val newValue = ContentValues().apply {
+                    put(columnName, newEntry)
+                }
+                // Aggiungi il nuovo valore al database
+                db.insert(tableName, null, newValue)
+
+                // Aggiorna l'array delle etnie e notifica all'adapter
+                updateAutoCompleteTextView(context, autoCompleteTextView, dataList, tableName, columnName, db)
+
+                dataList.add(newEntry)
+
+            } else {
+                Log.d("MainActivity", "già presente")
+            }*/
+
+
+                val newEntry = editText.text.toString()
+
+                if (!dataList.contains(newEntry)) {
+                    val newValue = ContentValues().apply {
+                        put(columnName, newEntry)
+                    }
+                    db.insert(tableName, null, newValue)
+                    dataList.add(newEntry)
+                    updateAutoCompleteTextView(context, autoCompleteTextView, dataList, tableName, columnName, db)
+                } else {
+                    Log.d("MainActivity", "Etnia già presente")
+                }
+
+
+        }
+
+
+
 
 
         // Gestione pop_up per portate + CONNESSIONE CON DB
@@ -74,41 +214,9 @@ class newRecipeActivity : AppCompatActivity() {
 
         //creo una lista dove aggiungo ogni volta una portata
         var arrayListaPortate: MutableList<String> = mutableListOf()
-
-
-        //serve per popolare la tendina
-        fun populatePortateList() {
-            val cursor = dbr.rawQuery("SELECT portata FROM portate", null)
-
-            arrayListaPortate.clear()
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val portataIndex = cursor.getColumnIndex("portata")
-                    if (portataIndex >= 0) {
-                        val p = cursor.getString(portataIndex)
-                        arrayListaPortate.add(p)
-                    }
-                } while (cursor.moveToNext())
-                cursor.close()
-            }
-        }
-
-        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
-        populatePortateList()
-
-
-        //prendo la tendina
         val listaPortate: AutoCompleteTextView = findViewById(R.id.tendina)
 
-        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
-        val adapterTendina = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayListaPortate.toTypedArray()
-        )
-        //per aggiornare la vista(tendina)
-        listaPortate.setAdapter(adapterTendina)
+        arrayListaPortate= populateAutoCompleteTextView(listaPortate, "portate", "portata", this, dbr)
 
 
         val btn_annulla: ImageView = dialog.findViewById(R.id.annullaBtn)
@@ -118,33 +226,20 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
         val btn_salva: Button = dialog.findViewById(R.id.saveBtn)
+
         btn_salva.setOnClickListener {
-            val nuovaPortata = (dialog.findViewById<EditText>(R.id.aggiungi)).text.toString()
-
-            // Controlla se la nuova portata esiste già nella lista
-            if (!arrayListaPortate.contains(nuovaPortata)) {
-                val nuovoValore = ContentValues().apply {
-                    put("portata", nuovaPortata)
-                }
-                //aggiungo il nuovoValore all'interno del db
-                dbw.insert("portate", null, nuovoValore)
-                //aggiungo all'array la nuovaPortata
-                arrayListaPortate.add(nuovaPortata)
-
-                // Aggiorna l'adapter dell'AutoCompleteTextView
-                val updatedAdapter = ArrayAdapter(
-                    this,
-                    android.R.layout.simple_dropdown_item_1line,
-                    arrayListaPortate.toTypedArray()
-                )
-                //per aggiornare la vista(tendina)
-                listaPortate.setAdapter(updatedAdapter)
-            } else {
-                Log.d("MainActivity2", "Portata già presente")
-            }
-
+            addNewEntry(
+                context = this,
+                editText = dialog.findViewById(R.id.aggiungi),
+                autoCompleteTextView = listaPortate,
+                dataList = arrayListaPortate,
+                tableName = "portate",
+                columnName = "portata",
+                db = dbw
+            )
             dialog.dismiss()
         }
+
 
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_portate: Button = findViewById(R.id.btnAddPortate)
@@ -166,23 +261,24 @@ class newRecipeActivity : AppCompatActivity() {
 //creo una lista dove aggiungo ogni volta una portata
         var arrayListaDieta: MutableList<String> = mutableListOf()
 
-        //serve per popolare la tendina
-        fun populateDietaList() {
-            val cursor = dbr.rawQuery("SELECT dieta FROM dieta", null)
 
-            arrayListaDieta.clear() // Correctly clear the dieta list
+        val listaDieta: AutoCompleteTextView = findViewById(R.id.tendinaDieta)
+        arrayListaDieta = populateAutoCompleteTextView(listaDieta, "dieta", "dieta", this, dbr)
 
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val dietaIndex = cursor.getColumnIndex("dieta")
-                    if (dietaIndex >= 0) {
-                        val d = cursor.getString(dietaIndex)
-                        arrayListaDieta.add(d)
-                    }
-                } while (cursor.moveToNext())
-                cursor.close()
-            }
+        val btn_salvaD: Button = dialogD.findViewById(R.id.saveBtnD)
+        btn_salvaD.setOnClickListener {
+            addNewEntry(
+                context = this,
+                editText = dialogD.findViewById(R.id.aggiungiD),
+                autoCompleteTextView = listaDieta,
+                dataList = arrayListaDieta,
+                tableName = "etnicita",
+                columnName = "etnicita",
+                db = dbw
+            )
+            dialogD.dismiss()
         }
+
 
 // Popola arrayListaDieta con i dati esistenti nel database all'avvio
         populateDietaList()
@@ -205,34 +301,7 @@ class newRecipeActivity : AppCompatActivity() {
             Log.d("MainActivity2", "Dialogo chiuso")
         }
 
-        val btn_salvaD: Button = dialogD.findViewById(R.id.saveBtnD) // Correct reference to dialogD
-        btn_salvaD.setOnClickListener {
-            val nuovaDieta = (dialogD.findViewById<EditText>(R.id.aggiungiD)).text.toString()
 
-            // Controlla se la nuova dieta esiste già nella lista
-            if (!arrayListaDieta.contains(nuovaDieta)) {
-                val nuovoValore = ContentValues().apply {
-                    put("dieta", nuovaDieta)
-                }
-                //aggiungo il nuovoValore all'interno del db
-                dbw.insert("dieta", null, nuovoValore)
-                //aggiungo all'array la nuovaDieta
-                arrayListaDieta.add(nuovaDieta)
-
-                // Aggiorna l'adapter dell'AutoCompleteTextView
-                val updatedAdapterD = ArrayAdapter(
-                    this,
-                    android.R.layout.simple_dropdown_item_1line,
-                    arrayListaDieta.toTypedArray()
-                )
-                //per aggiornare la vista(tendina)
-                listaDieta.setAdapter(updatedAdapterD)
-            } else {
-                Log.d("MainActivity2", "Dieta già presente")
-            }
-
-            dialogD.dismiss()
-        }
 
 //MANCA IL TASTO PER ELIMINARE LA DIETA DALLA TENDINA
         val btn_dieta: Button = findViewById(R.id.btnAddDieta)
@@ -255,72 +324,39 @@ class newRecipeActivity : AppCompatActivity() {
         //creo una lista dove aggiungo ogni volta una portata
         var arrayListaEtnia: MutableList<String> = mutableListOf()
 
-        //serve per popolare la tendina
-        fun populateEtniaList() {
-            val cursor = dbr.rawQuery("SELECT etnicita FROM etnicita", null)
 
-            arrayListaEtnia.clear()
 
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val EtniaIndex = cursor.getColumnIndex("etnicita")
-                    if (EtniaIndex >= 0) {
-                        val p = cursor.getString(EtniaIndex)
-                        arrayListaEtnia.add(p)
-                    }
-                } while (cursor.moveToNext())
-                cursor.close()
-            }
+
+// All'avvio dell'attività
+        val listaEtnia: AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
+        arrayListaEtnia = populateAutoCompleteTextView(listaEtnia, "etnicita", "etnicita", this, dbr)
+
+
+
+// Pulsante di salvataggio
+        val btn_salvaE: Button = dialogE.findViewById(R.id.saveBtnE)
+
+        btn_salvaE.setOnClickListener {
+            addNewEntry(
+                context = this,
+                editText = dialogE.findViewById(R.id.aggiungiE),
+                autoCompleteTextView = listaEtnia,
+                dataList = arrayListaEtnia,
+                tableName = "etnicita",
+                columnName = "etnicita",
+                db = dbw
+            )
+            dialogE.dismiss()
         }
 
-        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
-        populateEtniaList()
+// Pulsante di annullamento
+        val btn_annullaE: Button = dialogE.findViewById(R.id.annullaBtnE)
 
-        val listaEtnia: AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
-
-        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
-        val adapterEtnia = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayListaEtnia.toTypedArray()
-        )
-        //per aggiornare la vista(tendina)
-        listaEtnia.setAdapter(adapterEtnia)
-
-        val btn_annullaE: ImageView = dialogE.findViewById(R.id.annullaBtnE)
         btn_annullaE.setOnClickListener {
             dialogE.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
         }
 
-        val btn_salvaE: Button = dialogE.findViewById(R.id.saveBtnE) // Correct reference to dialogD
-        btn_salvaE.setOnClickListener {
-            val nuovaEtnia = (dialogE.findViewById<EditText>(R.id.aggiungiE)).text.toString()
-
-            // Controlla se la nuova dieta esiste già nella lista
-            if (!arrayListaEtnia.contains(nuovaEtnia)) {
-                val nuovoValore = ContentValues().apply {
-                    put("etnicita", nuovaEtnia)
-                }
-                //aggiungo il nuovoValore all'interno del db
-                dbw.insert("etnicita", null, nuovoValore)
-                //aggiungo all'array la nuovaDieta
-                arrayListaEtnia.add(nuovaEtnia)
-
-                // Aggiorna l'adapter dell'AutoCompleteTextView
-                val updatedAdapterE = ArrayAdapter(
-                    this,
-                    android.R.layout.simple_dropdown_item_1line,
-                    arrayListaEtnia.toTypedArray()
-                )
-                //per aggiornare la vista(tendina)
-                listaEtnia.setAdapter(updatedAdapterE)
-            } else {
-                Log.d("MainActivity2", "Etnia già presente")
-            }
-
-            dialogE.dismiss()
-        }
 
 
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
@@ -345,37 +381,10 @@ class newRecipeActivity : AppCompatActivity() {
         //creo una lista dove aggiungo ogni volta una portata
         var arrayListaTipo: MutableList<String> = mutableListOf()
 
-        //serve per popolare la tendina
-        fun populateTipoList() {
-            val cursor = dbr.rawQuery("SELECT tipologia FROM tipologia", null)
-
-            arrayListaTipo.clear()
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val tipoIndex = cursor.getColumnIndex("tipologia")
-                    if (tipoIndex >= 0) {
-                        val p = cursor.getString(tipoIndex)
-                        arrayListaTipo.add(p)
-                    }
-                } while (cursor.moveToNext())
-                cursor.close()
-            }
-        }
-
-        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
-        populateTipoList()
 
         val listaTipo: AutoCompleteTextView = findViewById(R.id.tendinaTipo)
+        arrayListaTipo=populateAutoCompleteTextView(listaTipo, "tipologia", "tipologia", this, dbr )
 
-        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
-        val adapterTipo = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayListaTipo.toTypedArray()
-        )
-        //per aggiornare la vista(tendina)
-        listaTipo.setAdapter(adapterTipo)
 
         val btn_annullaT: ImageView = dialogT.findViewById(R.id.annullaBtnT)
         btn_annullaT.setOnClickListener {
@@ -386,30 +395,15 @@ class newRecipeActivity : AppCompatActivity() {
 
         val btn_salvaT: Button = dialogT.findViewById(R.id.saveBtnT) // Correct reference to dialogD
         btn_salvaT.setOnClickListener {
-            val nuovaTipologia = (dialogT.findViewById<EditText>(R.id.aggiungiT)).text.toString()
-
-            // Controlla se la nuova dieta esiste già nella lista
-            if (!arrayListaTipo.contains(nuovaTipologia)) {
-                val nuovoValore = ContentValues().apply {
-                    put("tipologia", nuovaTipologia)
-                }
-                //aggiungo il nuovoValore all'interno del db
-                dbw.insert("tipologia", null, nuovoValore)
-                //aggiungo all'array la nuovaDieta
-                arrayListaTipo.add(nuovaTipologia)
-
-                // Aggiorna l'adapter dell'AutoCompleteTextView
-                val updatedAdapterT = ArrayAdapter(
-                    this,
-                    android.R.layout.simple_dropdown_item_1line,
-                    arrayListaTipo.toTypedArray()
-                )
-                //per aggiornare la vista(tendina)
-                listaTipo.setAdapter(updatedAdapterT)
-            } else {
-                Log.d("MainActivity2", "Tipologia già presente")
-            }
-
+            addNewEntry(
+                context = this,
+                editText = dialogT.findViewById(R.id.aggiungiT),
+                autoCompleteTextView = listaTipo,
+                dataList = arrayListaTipo,
+                tableName = "tipologia",
+                columnName = "tipologia",
+                db = dbw
+            )
             dialogT.dismiss()
         }
 
@@ -431,28 +425,12 @@ class newRecipeActivity : AppCompatActivity() {
 //----------------------------------------------------------------------------------------------------------------------------
         //creo una lista dove aggiungo ogni volta una portata
         var arrayListaDifficolta: MutableList<String> = mutableListOf()
-        fun populateDifficoltaList() {
-            val cursor = dbr.rawQuery("SELECT difficolta FROM difficolta", null)
 
-            arrayListaDifficolta.clear()
-
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val difficoltaIndex = cursor.getColumnIndex("difficolta")
-                    if (difficoltaIndex >= 0) {
-                        val p = cursor.getString(difficoltaIndex)
-                        arrayListaDifficolta.add(p)
-                    }
-                } while (cursor.moveToNext())
-                cursor.close()
-            }
-        }
 
         // Popola arrayListaPortate con i dati esistenti nel database all'avvio
-        populateDifficoltaList()
-
-
         val listaDiff: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+
+        arrayListaDifficolta=populateAutoCompleteTextView(listaDiff, "difficolta", "difficolta", this, dbr )
 
 
         //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
@@ -557,14 +535,7 @@ class newRecipeActivity : AppCompatActivity() {
 
 
         listViewIngredients.adapter = adapt
-        /*
-                input.setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        val testo = input.text.toString().trim()
-                        inserisciInLista(testo)
-                    }
-                    true
-        */
+
 
 
         bottoneIngrediente.setOnClickListener {
@@ -601,8 +572,84 @@ class newRecipeActivity : AppCompatActivity() {
 
         //per popolare gli t5
 
+        //PER QUANDO VIENE CLICCATO IL CAMPO MODIFICA SU DETAIL FRAGMENT
+//----------------------------------------------------------------------------------------------------------------------------
+        val intent = intent
+        val idRicetta = intent.getIntExtra("id_ricetta", -1)
+
+
+// Popola i campi con i dati ricevuti
+        val cursor: Cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
+
+        if (cursor.moveToFirst()) {
+            val nome = cursor.getString(cursor.getColumnIndexOrThrow("nome"))
+            val porzioni = cursor.getInt(cursor.getColumnIndexOrThrow("porzioni"))
+            val difficolta = cursor.getString(cursor.getColumnIndexOrThrow("difficolta"))
+            val tipologia = cursor.getString(cursor.getColumnIndexOrThrow("tipologia"))
+            val portata = cursor.getString(cursor.getColumnIndexOrThrow("portata"))
+            val dieta = cursor.getString(cursor.getColumnIndexOrThrow("dieta"))
+            val etnicita = cursor.getString(cursor.getColumnIndexOrThrow("etnicita"))
+
+            val nome_ricetta = findViewById<EditText>(R.id.editTextText)
+            val difficoltaView = findViewById<AutoCompleteTextView>(R.id.tendinaDifficolta)
+            val tipologiaView = findViewById<AutoCompleteTextView>(R.id.tendinaTipo)
+            val portataView = findViewById<AutoCompleteTextView>(R.id.tendina)
+            val dietaView = findViewById<AutoCompleteTextView>(R.id.tendinaDieta)
+            val etnicitaView = findViewById<AutoCompleteTextView>(R.id.tendinaEtnia)
+            val num_porzioni = findViewById<EditText>(R.id.editPorzioni)
+
+            nome_ricetta.setText(nome)
+            difficoltaView.setText(difficolta)
+            tipologiaView.setText(tipologia)
+            portataView.setText(portata)
+            dietaView.setText(dieta)
+            etnicitaView.setText(etnicita)
+            num_porzioni.setText(porzioni.toString())
+
+            // Richiama la funzione di popolamento per aggiornare l'adapter
+            populateAutoCompleteTextView(etnicitaView, "etnicita", "etnicita", this, dbr)
+            updateAutoCompleteTextView(this, etnicitaView, arrayListaEtnia, "etnicita", "etnicita", dbr)
+
+            populateAutoCompleteTextView(dietaView, "dieta", "dieta", this, dbr)
+            populateAutoCompleteTextView(tipologiaView, "tipologia", "tipologia", this, dbr)
+            populateAutoCompleteTextView(portataView, "portate", "portata", this, dbr)
+            populateAutoCompleteTextView(difficoltaView, "difficolta", "difficolta", this, dbr)
+        }
+        cursor.close()
+
+
+        //popolo gli ingredienti
+        val cur: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
+
+        val ingredientsList = mutableListOf<String>()
+
+        if (cur.moveToFirst()) {
+            do {
+                val ingrediente = cur.getString(cur.getColumnIndexOrThrow("ingrediente"))
+                val quantita = cur.getInt(cur.getColumnIndexOrThrow("quantita"))
+                val unitaDiMisura = cur.getString(cur.getColumnIndexOrThrow("unita_di_misura"))
+
+                // Create a string representation of the ingredient
+                val ingredientString = "$quantita $unitaDiMisura di $ingrediente"
+                ingredientsList.add(ingredientString)
+
+                // Logging all'interno del ciclo
+                Log.d("Ingredienti", ingredientString)
+
+            } while (cur.moveToNext())
+
+            // Creazione e impostazione dell'adapter dopo il ciclo
+            val adapter = ListView_adapter(this, ingredientsList)
+            val listViewIngredients = findViewById<ListView>(R.id.listviewl)
+            listViewIngredients.adapter = adapter
+        }
+
+        cur.close()
+
+
 
         //----------------------------------------------------------------------------------------------------------------------------
+
 
 
         //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
