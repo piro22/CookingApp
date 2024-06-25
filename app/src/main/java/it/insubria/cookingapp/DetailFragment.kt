@@ -160,19 +160,6 @@ class DetailFragment() : Fragment() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------------------------------------
         //per modificare: gli passo id_ricetta
         btnModifica.setOnClickListener{

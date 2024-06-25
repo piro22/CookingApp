@@ -525,6 +525,8 @@ class newRecipeActivity : AppCompatActivity() {
             val dieta = cursor.getString(cursor.getColumnIndexOrThrow("dieta"))
             val etnicita = cursor.getString(cursor.getColumnIndexOrThrow("etnicita"))
             val tempo = cursor.getInt(cursor.getColumnIndexOrThrow("tempo_di_preparazione"))
+            val preparazione = cursor.getString(cursor.getColumnIndexOrThrow("preparazione"))
+            val pathFoto = cursor.getString(cursor.getColumnIndexOrThrow("pathFoto"))
 
             val nome_ricetta = findViewById<EditText>(R.id.editTextText)
             val difficoltaView = findViewById<AutoCompleteTextView>(R.id.tendinaDifficolta)
@@ -534,6 +536,7 @@ class newRecipeActivity : AppCompatActivity() {
             val etnicitaView = findViewById<AutoCompleteTextView>(R.id.tendinaEtnia)
             val num_porzioni = findViewById<EditText>(R.id.editPorzioni)
             val num_tempo= findViewById<EditText>(R.id.editTempo)
+            val preparazione_testo = findViewById<RecyclerView>(R.id.recyclerViewProcedure)
 
             nome_ricetta.setText(nome)
             difficoltaView.setText(difficolta)
@@ -544,10 +547,30 @@ class newRecipeActivity : AppCompatActivity() {
             num_porzioni.setText(porzioni.toString())
             num_tempo.setText(tempo.toString())
 
+
+            //per passare i dati in maniera corretta all'adapter una volta recuperati dal db
+            val segments = preparazione.split("[[passo]]")
+
+            val listaProcedure = mutableListOf<String>()
+
+            for (segment in segments) {
+                listaProcedure.add(segment.trim())
+            }
+
+
+
+
+            val adapterProcedimento  = RecyclerView_ListaProcedimento(listaProcedure)
+            preparazione_testo.adapter = adapterProcedimento
+
+
+
+
+
+
             // Richiama la funzione di popolamento per aggiornare l'adapter
             populateAutoCompleteTextView(etnicitaView, "etnicita", "etnicita", this, dbr)
             //updateAutoCompleteTextView(this, etnicitaView, arrayListaEtnia, "etnicita", "etnicita", dbr)
-
             populateAutoCompleteTextView(dietaView, "dieta", "dieta", this, dbr)
             populateAutoCompleteTextView(tipologiaView, "tipologia", "tipologia", this, dbr)
             populateAutoCompleteTextView(portataView, "portate", "portata", this, dbr)
@@ -583,6 +606,9 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
         cur.close()
+
+
+
 
 
 

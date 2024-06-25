@@ -12,7 +12,7 @@ import java.util.Collections
 
 //adapter una lista di elementi di tipo String
 //listener: Un'interfaccia per gestire i clic sull'icona di cancellazione
-class RecyclerView_ListaProcedimento(private val listaProcedimenti: ArrayList<String>) :
+class RecyclerView_ListaProcedimento(private val listaProcedimenti: MutableList<String>) :
     RecyclerView.Adapter<RecyclerView_ListaProcedimento.ViewHolder>() {
 
 
