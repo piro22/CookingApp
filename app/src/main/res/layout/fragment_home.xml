@@ -37,7 +37,7 @@
                 android:hint="Filtro">
 
                 <AutoCompleteTextView
-                    android:id="@+id/autoCompletePortate"
+                    android:id="@+id/filtroPortate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="45dp"

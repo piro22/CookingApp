@@ -6,34 +6,44 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.app.Activity
+import android.app.Dialog
+import android.content.Intent
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.EditorInfo
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
-import android.widget.Toast
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.TextInputLayout
+import java.net.URI
 import java.util.Collections
 
 class newRecipeActivity : AppCompatActivity() {
 
+    private val PICK_IMAGE_REQUEST = 1
+    private lateinit var btnImmagine: ImageView
+    private lateinit var imageViewFoto: ImageView
+    private lateinit var uriFoto: Uri
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -209,7 +219,7 @@ class newRecipeActivity : AppCompatActivity() {
         arrayListaPortate= populateAutoCompleteTextView(listaPortate, "portate", "portata", this, dbr)
 
 
-        val btn_annulla: Button = dialog.findViewById(R.id.annullaBtn)
+        val btn_annulla: ImageView = dialog.findViewById(R.id.annullaBtn)
         btn_annulla.setOnClickListener {
             dialog.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -234,17 +244,9 @@ class newRecipeActivity : AppCompatActivity() {
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_portate: Button = findViewById(R.id.btnAddPortate)
 
-        val widthInDp = 250
-        val heightInDp = 250
-        val scale = this.resources.displayMetrics.density
-        val widthInPx = (widthInDp * scale + 0.5f).toInt()
-        val heightInPx = (heightInDp * scale + 0.5f).toInt()
 
         btn_portate.setOnClickListener {
-            dialog.window!!.setLayout(
-                widthInPx,
-                heightInPx
-            )
+            dialog.window!!
             dialog.setCancelable(false)
             dialog.show()
         }
@@ -277,7 +279,23 @@ class newRecipeActivity : AppCompatActivity() {
             dialogD.dismiss()
         }
 
-        val btn_annullaD: Button = dialogD.findViewById(R.id.annullaBtnD)
+
+// Popola arrayListaDieta con i dati esistenti nel database all'avvio
+        populateDietaList()
+
+        val listaDieta: AutoCompleteTextView =
+            findViewById(R.id.tendinaDieta) // Correct ID for dieta dropdown
+
+//creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterTendinaD = ArrayAdapter(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaDieta.toTypedArray()
+        )
+//per aggiornare la vista(tendina)
+        listaDieta.setAdapter(adapterTendinaD)
+
+        val btn_annullaD: ImageView = dialogD.findViewById(R.id.annullaBtnD)
         btn_annullaD.setOnClickListener {
             dialogD.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -288,17 +306,8 @@ class newRecipeActivity : AppCompatActivity() {
 //MANCA IL TASTO PER ELIMINARE LA DIETA DALLA TENDINA
         val btn_dieta: Button = findViewById(R.id.btnAddDieta)
 
-        val widthInDpD = 250
-        val heightInDpD = 250
-        val scaleD = this.resources.displayMetrics.density
-        val widthInPxD = (widthInDpD * scaleD + 0.5f).toInt()
-        val heightInPxD = (heightInDpD * scaleD + 0.5f).toInt()
-
         btn_dieta.setOnClickListener {
-            dialogD.window!!.setLayout(
-                widthInPxD,
-                heightInPxD
-            )
+            dialogD.window!!
             dialogD.setCancelable(false)
             dialogD.show()
         }
@@ -323,6 +332,7 @@ class newRecipeActivity : AppCompatActivity() {
         arrayListaEtnia = populateAutoCompleteTextView(listaEtnia, "etnicita", "etnicita", this, dbr)
 
 
+
 // Pulsante di salvataggio
         val btn_salvaE: Button = dialogE.findViewById(R.id.saveBtnE)
 
@@ -341,6 +351,7 @@ class newRecipeActivity : AppCompatActivity() {
 
 // Pulsante di annullamento
         val btn_annullaE: Button = dialogE.findViewById(R.id.annullaBtnE)
+
         btn_annullaE.setOnClickListener {
             dialogE.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -351,18 +362,8 @@ class newRecipeActivity : AppCompatActivity() {
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_Etnia: Button = findViewById(R.id.btnAddEtnia)
 
-
-        val widthInDpE = 250
-        val heightInDpE = 250
-        val scaleE = this.resources.displayMetrics.density
-        val widthInPxE = (widthInDpE * scaleE + 0.5f).toInt()
-        val heightInPxE = (heightInDpE * scaleE + 0.5f).toInt()
-
         btn_Etnia.setOnClickListener {
-            dialogE.window!!.setLayout(
-                widthInPxE,
-                heightInPxE
-            )
+            dialogE.window!!
             dialogE.setCancelable(false)
             dialogE.show()
         }
@@ -385,7 +386,7 @@ class newRecipeActivity : AppCompatActivity() {
         arrayListaTipo=populateAutoCompleteTextView(listaTipo, "tipologia", "tipologia", this, dbr )
 
 
-        val btn_annullaT: Button = dialogT.findViewById(R.id.annullaBtnT)
+        val btn_annullaT: ImageView = dialogT.findViewById(R.id.annullaBtnT)
         btn_annullaT.setOnClickListener {
             dialogT.dismiss()
             Log.d("MainActivity2", "Dialogo chiuso")
@@ -410,18 +411,8 @@ class newRecipeActivity : AppCompatActivity() {
         //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_Tipologia: Button = findViewById(R.id.btnAddTipo)
 
-
-        val widthInDpT = 250
-        val heightInDpT = 250
-        val scaleT = this.resources.displayMetrics.density
-        val widthInPxT = (widthInDpT * scaleT + 0.5f).toInt()
-        val heightInPxT = (heightInDpT * scaleT + 0.5f).toInt()
-
         btn_Tipologia.setOnClickListener {
-            dialogT.window!!.setLayout(
-                widthInPxT,
-                heightInPxT
-            )
+            dialogT.window!!
             dialogT.setCancelable(false)
             dialogT.show()
         }
@@ -661,8 +652,254 @@ class newRecipeActivity : AppCompatActivity() {
 
 
 
+        //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
+
+        btnImmagine = findViewById(R.id.btnfoto)
+        imageViewFoto = findViewById(R.id.imageViewFoto)
+        val pathImg: String = "default"
+        btnImmagine.setOnClickListener{
+            chooseImageFromGallery()
+        }
+
+        //-------------------------------------------------------------------------------------------------------------------
 
 
+
+
+        //-----------------------------------------------------------------------------------------------------
+        //SALVARE TUTTO SU DB
+        val dialogError = Dialog(this)
+        dialogError.setContentView(R.layout.dialog_errore)
+        var messaggioErroreModificabile = "Errore"
+
+        val btnok: Button = dialogError.findViewById(R.id.buttonOK)
+        val txtErrore: TextView = dialogError.findViewById(R.id.messaggioErrore)
+        btnok.setOnClickListener {
+            dialogError.dismiss()
+        }
+
+
+        //BOTTONE PER SALVARE TUTTI I DATI, PRIMA SI FANNO I CANTROLLI
+        val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
+        btnSalva.setOnClickListener{
+            //se questa variabile diventa false allora si blocca il procedimento
+            var esito: Boolean = true
+
+
+            //CONTROLLO SUL TITOLO
+            val editTitolo: EditText = findViewById(R.id.editTextText)
+            var titoloFinale = editTitolo.text.toString()
+            if(titoloFinale.trim().isEmpty()) {
+                esito = false
+
+                messaggioErroreModificabile = "Il nome non può essere vuoto"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA PORTATA
+            val portata: AutoCompleteTextView = findViewById(R.id.tendina)
+            var txtPortata = portata.text.toString()
+            if(txtPortata.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una portata"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA TIPOLOGIA
+            val tipologia : AutoCompleteTextView = findViewById(R.id.tendinaTipo)
+            var txtTipologia = tipologia.text.toString()
+            if(txtTipologia.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una tipologia"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA DIETA
+            val dieta : AutoCompleteTextView = findViewById(R.id.tendinaDieta)
+            var txtDieta = dieta.text.toString()
+            if(txtDieta.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una dieta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULL'ETNIA
+            val etnia : AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
+            var txtEtnia = etnia.text.toString()
+            if(txtEtnia.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere un'etnia"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA DIFFICOLTA
+            val difficolta : AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+            var txtDifficolta = difficolta.text.toString()
+            if(txtDifficolta.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Scegliere una difficoltà"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SUL NUMERO DI PORZIONI
+            val porzioni : EditText = findViewById(R.id.editPorzioni)
+            var txtPorzioni = porzioni.text.toString()
+            var numPorzioni: Int = 0
+            if(txtPorzioni.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Bisogna inserire un numero di porzioni per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                numPorzioni = txtPorzioni.toInt()
+            }
+
+            //CONTROLLO SUL TEMPO
+            val tempo : EditText = findViewById(R.id.editTempo)
+            var txtTempo = tempo.text.toString()
+            var numTempo: Int = 0
+            if(txtTempo.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Bisogna inserire un tempo di preparazione totale per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                numTempo = txtTempo.toInt()
+            }
+
+
+            //CONTROLLO SUGLI INGREDIENTI
+            if(ArrayListaIngredienti.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Inserire minimo un ingrediente per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }
+
+            //CONTROLLO SULLA PREPARAZIONE
+            var preparazione: String = ""
+            if(listaProcedimenti.isEmpty()){
+                esito = false
+
+                messaggioErroreModificabile = "Inserire una procedura per questa ricetta"
+                txtErrore.text = messaggioErroreModificabile
+
+                dialogError.window!!
+                dialogError.setCancelable(false)
+                dialogError.show()
+            }else{
+                preparazione = componiProcedura(listaProcedimenti)
+            }
+
+
+            //TODO controllare il path della foto, se è null mettere 'default'
+
+            //se tutto va bene creo la ricetta e la carico sul DB
+            if(esito) {
+                var ricetta = RicetteModel(
+                    -1,
+                    titoloFinale,
+                    uriFoto.toString(),
+                    preparazione,
+                    numPorzioni,
+                    numTempo,
+                    txtDifficolta,
+                    txtTipologia,
+                    txtPortata,
+                    txtDieta,
+                    txtEtnia,
+                    0
+                )
+
+                //Log.d("222222222222222222222222222222222222222222", "qui dovrebbe essere dopo")
+
+                //TODO cambiare il path con quello selezionato
+                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', '${uriFoto.toString()}', '$preparazione', 0)")
+            }
+
+            //TODO fare qualcosa per prendere gli ingredienti e le quantità
+            // poi inserirli uno alla volta con anche l'ID della ricetta
+
+        }
+
+
+    }
+
+    private fun chooseImageFromGallery() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+            val selectedImageUri: Uri? = data.data
+            selectedImageUri?.let {
+                uriFoto = selectedImageUri
+
+                val layoutParams = imageViewFoto.layoutParams
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+                layoutParams.height = 500 // o qualsiasi altra dimensione desiderata
+                imageViewFoto.layoutParams = layoutParams
+
+                imageViewFoto.setImageURI(selectedImageUri)
+            }
+        }else{
+            uriFoto = "default".toUri()
+        }
+    }
+
+    //funzione per comporre la procedura a partire dai passi inseriti dal'utenteto
+    private fun componiProcedura(listaProcedimenti: ArrayList<String>): String {
+        var ret = ""
+
+        for(i in listaProcedimenti){
+            ret = ret + "[[Passo]]$i"
+            //Log.d("11111111111111111111111111111111111111111111111111", "$ret")
+        }
+
+        return ret
     }
 
 
