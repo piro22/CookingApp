@@ -2,6 +2,7 @@ package it.insubria.cookingapp
 
 import android.content.ContentValues
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -131,15 +132,52 @@ class DetailFragment() : Fragment() {
 
         }
 
+        //--------------------------- PER LEGGERE E MOSTRARE GLI INGREDIENTI DELLA RICETTA
+        //PRENDENDOLI DAL DB
+        val dbr = dbHelper!!.readableDatabase
+
+        val cursor: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(ricetta?.id.toString()))
+
+        val listaIngredienti = mutableListOf<String> ()
+
+        if (cursor.moveToFirst()) {
+            do {
+                val ingrediente = cursor.getString(cursor.getColumnIndexOrThrow("ingrediente"))
+                val quantita = cursor.getFloat(cursor.getColumnIndexOrThrow("quantita"))
+                val unita_di_misura = cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+
+                val str_tot = "$ingrediente $quantita $unita_di_misura\n"
+                listaIngredienti.add(str_tot)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+
+        //MOSTRO GLI INGREDIENTI ALL'UTENTE
+        val textView: TextView = ret.findViewById(R.id.listaIngredienti)
+        textView.text = listaIngredienti.joinToString(separator = "")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+        //per modificare: gli passo id_ricetta
         btnModifica.setOnClickListener{
             val intent = Intent(requireContext(), newRecipeActivity::class.java )
-
-
             intent.putExtra("id_ricetta",ricetta!!.id )
-
-
-
-
             startActivity(intent)
         }
 
@@ -147,9 +185,9 @@ class DetailFragment() : Fragment() {
 
 
 
-
+//------------------------------------------------------------------------------------------------
+        //
         favoriteIcon.setOnClickListener {
-
             val dbw = dbHelper!!.writableDatabase
 
             //sarebbe il campo preferito all'interno del db
@@ -174,15 +212,6 @@ class DetailFragment() : Fragment() {
 
 
         }
-
-
-
-
-
-
-
-
-
 
 
         return ret

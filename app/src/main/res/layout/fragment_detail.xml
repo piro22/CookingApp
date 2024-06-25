@@ -145,7 +145,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="15dp"
-                android:text="Riso: 500g \nSugo di pomodoro incredibilmente gustoso e rosso aaa: 200g \nRiso: 500g \nSugo di pomodoro: 200g \nRiso: 500g \nSugo di pomodoro: 200g"
+                android:hint="qua ci dovrebbero essere gli ingredienti"
                 android:textColor="@color/smokey_black"
                 android:textSize="18sp"
                 app:layout_constraintLeft_toLeftOf="parent"
