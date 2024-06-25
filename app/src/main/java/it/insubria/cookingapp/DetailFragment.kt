@@ -57,7 +57,6 @@ class DetailFragment() : Fragment() {
     ): View? {
 
 
-
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_detail, container, false)
 
@@ -70,7 +69,7 @@ class DetailFragment() : Fragment() {
         //perche devo fare ret. e non subiro findIdviewby
 
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
-        val btnModifica : Button = ret.findViewById(R.id.buttonModifica)
+        val btnModifica: Button = ret.findViewById(R.id.buttonModifica)
 
 
 
@@ -131,14 +130,10 @@ class DetailFragment() : Fragment() {
 
         }
 
-        btnModifica.setOnClickListener{
-            val intent = Intent(requireContext(), newRecipeActivity::class.java )
+        btnModifica.setOnClickListener {
+            val intent = Intent(requireContext(), newRecipeActivity::class.java)
 
-
-            intent.putExtra("id_ricetta",ricetta!!.id )
-
-
-
+            intent.putExtra("id_ricetta", ricetta!!.id)
 
             startActivity(intent)
         }
@@ -169,7 +164,8 @@ class DetailFragment() : Fragment() {
             }
 
 
-            val rowsAffected = dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
+            val rowsAffected =
+                dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
             dbw.close()
 
 
@@ -223,6 +219,149 @@ class DetailFragment() : Fragment() {
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE // Modalità di applicazione dello span
         )
         return spannableString
+    }
+
+    private fun cambiaPeso() {
+        var lista: MutableList<Float> = mutableListOf()
+        var listaU: MutableList<String> = mutableListOf()
+
+        var imperiali: List<String> = listOf("lb", "Oz")
+        var metrico: List<String> = listOf("g", "h", "Kg", "kg")
+
+        lista.add(120.0f)
+        lista.add(5.0f)
+        lista.add(3.0f)
+        lista.add(12.0f)
+        lista.add(1.56f)
+
+        listaU.add("g")
+        listaU.add("Oz")
+        listaU.add("lb")
+        listaU.add("h")
+        listaU.add("Kg")
+
+        if (ricettaViewModel.peso.equals("imperiale")) {
+            for (i in 0 until lista.size) {
+                // se l'unita di misura non è contenuta nella lista delle unita imperiali
+                // va modificata
+                if (!imperiali.contains(listaU[i])) {
+
+                    print("Trasformo ${lista[i]} ${listaU[i]} in imperiale")
+
+                    if (listaU[i].equals("g")) {
+
+                        var tmp = lista[i]
+
+                        //se supera il kilo allora lo converto in lb
+                        //altrimenti in Oz
+                        if (tmp > 1000.0f) {
+                            lista[i] = tmp / 453.59f
+                            listaU[i] = "lb"
+                        } else {
+                            lista[i] = tmp / 28.35f
+                            listaU[i] = "Oz"
+                        }
+
+                    } else if (listaU[i].equals("h")) {
+
+                        var tmp = (lista[i] * 100)
+
+                        //se supera il kilo allora lo converto in lb
+                        //altrimenti in Oz
+                        if (tmp > 1000.0f) {
+                            lista[i] = tmp / 453.59f
+                            listaU[i] = "lb"
+                        } else {
+                            lista[i] = tmp / 28.35f
+                            listaU[i] = "Oz"
+                        }
+
+                    } else if (listaU[i].equals("Kg") || listaU[i].equals("kg")) {
+
+                        var tmp = (lista[i] * 1000)
+
+                        //se supera il kilo allora lo converto in lb
+                        //altrimenti in Oz
+                        if (tmp > 1000.0f) {
+                            lista[i] = tmp / 453.59f
+                            listaU[i] = "lb"
+                        } else {
+                            lista[i] = tmp / 28.35f
+                            listaU[i] = "Oz"
+                        }
+                    }
+
+
+                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+
+                }
+            }
+        } else if (ricettaViewModel.peso.equals("metrico")) {
+            for (i in 0 until lista.size) {
+                if (!metrico.contains(listaU[i])) {
+
+                    print("Trasformo ${lista[i]} ${listaU[i]} in metrico")
+
+                    if (listaU[i].equals("Oz")) {
+
+                        var tmp = lista[i] * 28.35f
+
+
+                        if (tmp > 1000.0f) {
+                            lista[i] = tmp / 1000.0f
+                            listaU[i] = "Kg"
+                        } else if(tmp > 100.0f){
+                            lista[i] = tmp / 100.0f
+                            listaU[i] = "h"
+                        } else {
+                            lista[i] = tmp
+                            listaU[i] = "g"
+                        }
+
+
+                    } else if (listaU[i].equals("lb")) {
+
+                        var tmp = lista[i] * 453.59f
+
+                        if (tmp > 1000.0f) {
+                            lista[i] = tmp / 1000.0f
+                            listaU[i] = "Kg"
+                        } else if(tmp > 100.0f){
+                            lista[i] = tmp / 100.0f
+                            listaU[i] = "h"
+                        } else {
+                            lista[i] = tmp
+                            listaU[i] = "g"
+                        }
+
+                    }
+
+                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                }
+            }
+        }
+    }
+
+
+
+    private fun cambiaVolume() {
+        var lista: MutableList<Float> = mutableListOf()
+        var listaU: MutableList<String> = mutableListOf()
+
+        var imperiali: List<String> = listOf("tsp", "tbsp", "cup", "pt", "qt", "gal")
+        var metrico: List<String> = listOf("L", "mL", "cL", "dl")
+
+        lista.add(120.0f)
+        lista.add(5.0f)
+        lista.add(3.0f)
+        lista.add(12.0f)
+        lista.add(1.56f)
+
+        listaU.add("cl")
+        listaU.add("tsp")
+        listaU.add("cup")
+        listaU.add("qt")
+        listaU.add("L")
     }
 
 

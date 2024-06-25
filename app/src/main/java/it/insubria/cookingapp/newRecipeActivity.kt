@@ -7,7 +7,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.app.Activity
-import android.app.Dialog
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -280,20 +279,6 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
-// Popola arrayListaDieta con i dati esistenti nel database all'avvio
-        populateDietaList()
-
-        val listaDieta: AutoCompleteTextView =
-            findViewById(R.id.tendinaDieta) // Correct ID for dieta dropdown
-
-//creo un adapter per passare i valori dell'array delle portate all'interno della tendina
-        val adapterTendinaD = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayListaDieta.toTypedArray()
-        )
-//per aggiornare la vista(tendina)
-        listaDieta.setAdapter(adapterTendinaD)
 
         val btn_annullaD: ImageView = dialogD.findViewById(R.id.annullaBtnD)
         btn_annullaD.setOnClickListener {
@@ -350,7 +335,7 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 // Pulsante di annullamento
-        val btn_annullaE: Button = dialogE.findViewById(R.id.annullaBtnE)
+        val btn_annullaE: ImageView = dialogE.findViewById(R.id.annullaBtnE)
 
         btn_annullaE.setOnClickListener {
             dialogE.dismiss()
