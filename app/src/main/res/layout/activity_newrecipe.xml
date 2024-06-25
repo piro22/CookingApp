@@ -272,6 +272,18 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_marginLeft="10dp"
                     />
+
+
+
+                <TextView
+                    android:id="@+id/txtTempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="100dp"
+                    android:text="TEMPO"
+                    app:layout_constraintLeft_toRightOf="@id/editPorzioni"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View

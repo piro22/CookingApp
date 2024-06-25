@@ -1,6 +1,7 @@
 package it.insubria.cookingapp
 
 import android.content.ContentValues
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -12,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -53,6 +55,9 @@ class DetailFragment() : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
+
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_detail, container, false)
 
@@ -62,7 +67,12 @@ class DetailFragment() : Fragment() {
         // Recupera i dati dal ViewModel
         ricetta = ricettaViewModel.ricetta
         val dbHelper = ricettaViewModel.dbHelper
+        //perche devo fare ret. e non subiro findIdviewby
+
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
+        val btnModifica : Button = ret.findViewById(R.id.buttonModifica)
+
+
 
 
 
@@ -117,7 +127,23 @@ class DetailFragment() : Fragment() {
             } else {
                 favoriteIcon.setImageResource(R.drawable.grade_24dp_fill1_wght400_grad0_opsz24)
             }
+
+
         }
+
+        btnModifica.setOnClickListener{
+            val intent = Intent(requireContext(), newRecipeActivity::class.java )
+
+
+            intent.putExtra("id_ricetta",ricetta!!.id )
+
+
+
+
+            startActivity(intent)
+        }
+
+
 
 
 
@@ -146,14 +172,7 @@ class DetailFragment() : Fragment() {
             val rowsAffected = dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
             dbw.close()
 
-            /*
-            if (rowsAffected > 0) {
-                // Aggiornamento riuscito
-                Log.d("111111111111111111111111111111111111111111111111", "Update riuscito")
-            } else {
-                // Nessuna riga aggiornata, potrebbe esserci un problema con l'id
-                Log.d("111111111111111111111111111111111111111111111111", "Nessuna riga aggiornata")
-            }*/
+
         }
 
 
