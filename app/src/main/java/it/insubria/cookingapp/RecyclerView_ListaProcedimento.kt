@@ -41,12 +41,6 @@ class RecyclerView_ListaProcedimento(private val listaProcedimenti: ArrayList<St
 
 
 
-
-
-
-      
-
-
     }
 
 

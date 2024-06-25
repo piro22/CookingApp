@@ -1,5 +1,6 @@
 package it.insubria.cookingapp
 
+import AutoComplete_adapter
 import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
@@ -81,20 +82,24 @@ class newRecipeActivity : AppCompatActivity() {
                 cursor.close()
             }
 
-            val adapter = ArrayAdapter(
+            val adapter = AutoComplete_adapter(
                 context,
-                android.R.layout.simple_dropdown_item_1line,
-                dataList
+                R.layout.autocomplete_adapter_row,
+                dataList,
+                database,
+                tableName,
+                columnName
             )
-
             autoCompleteTextView.setAdapter(adapter)
+
+
             return dataList
         }
 
 
 
         //--------------------PER AGGIUNGERE NUOVO ELEMENTO ALLA TENDINA
-        fun addNewEntry(
+        /*fun addNewEntry(
             context: Context,
             editText: EditText,
             autoCompleteTextView: AutoCompleteTextView,
@@ -115,16 +120,79 @@ class newRecipeActivity : AppCompatActivity() {
 
                 // Aggiorna l'array e notifica all'adapter
                 dataList.add(newValue)
-                val updatedAdapter = ArrayAdapter(
-                    context,
-                    android.R.layout.simple_dropdown_item_1line,
-                    dataList
-                )
-                autoCompleteTextView.setAdapter(updatedAdapter)
+                val adapter = autoCompleteTextView.adapter as AutoComplete_adapter
+                adapter.notifyDataSetChanged()
             } else {
                 Log.d("MainActivity", "$columnName già presente")
             }
+        }*/
+        fun updateAutoCompleteTextView(
+            context: Context,
+        autoCompleteTextView: AutoCompleteTextView,
+        dataList: MutableList<String>,
+        tableName: String,
+        columnName: String,
+        database: SQLiteDatabase
+        ) {
+            val adapter = AutoComplete_adapter(
+                context,
+                R.layout.autocomplete_adapter_row,
+                dataList,
+                database,
+                tableName,
+                columnName
+            )
+            autoCompleteTextView.setAdapter(adapter)
         }
+
+        fun addNewEntry(
+            context: Context,
+            editText: EditText,
+            autoCompleteTextView: AutoCompleteTextView,
+            dataList: MutableList<String>,
+            tableName: String,
+            columnName: String,
+            db: SQLiteDatabase
+        )
+        {
+            /*
+            val newEntry = editText.text.toString()
+
+            // Controlla se la nuova etnia esiste già nella lista
+            if (!dataList.contains(newEntry)) {
+                val newValue = ContentValues().apply {
+                    put(columnName, newEntry)
+                }
+                // Aggiungi il nuovo valore al database
+                db.insert(tableName, null, newValue)
+
+                // Aggiorna l'array delle etnie e notifica all'adapter
+                updateAutoCompleteTextView(context, autoCompleteTextView, dataList, tableName, columnName, db)
+
+                dataList.add(newEntry)
+
+            } else {
+                Log.d("MainActivity", "già presente")
+            }*/
+
+
+                val newEntry = editText.text.toString()
+
+                if (!dataList.contains(newEntry)) {
+                    val newValue = ContentValues().apply {
+                        put(columnName, newEntry)
+                    }
+                    db.insert(tableName, null, newValue)
+                    dataList.add(newEntry)
+                    updateAutoCompleteTextView(context, autoCompleteTextView, dataList, tableName, columnName, db)
+                } else {
+                    Log.d("MainActivity", "Etnia già presente")
+                }
+
+
+        }
+
+
 
 
 
@@ -549,6 +617,8 @@ class newRecipeActivity : AppCompatActivity() {
 
             // Richiama la funzione di popolamento per aggiornare l'adapter
             populateAutoCompleteTextView(etnicitaView, "etnicita", "etnicita", this, dbr)
+            updateAutoCompleteTextView(this, etnicitaView, arrayListaEtnia, "etnicita", "etnicita", dbr)
+
             populateAutoCompleteTextView(dietaView, "dieta", "dieta", this, dbr)
             populateAutoCompleteTextView(tipologiaView, "tipologia", "tipologia", this, dbr)
             populateAutoCompleteTextView(portataView, "portate", "portata", this, dbr)
