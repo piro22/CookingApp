@@ -25,6 +25,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -110,8 +111,7 @@ class newRecipeActivity : AppCompatActivity() {
 
         //--------------------PER AGGIUNGERE NUOVO ELEMENTO ALLA TENDINA
 
-        fun updateAutoCompleteTextView(
-            context: Context,
+        fun updateAutoCompleteTextView(context: Context,
         autoCompleteTextView: AutoCompleteTextView,
         dataList: MutableList<String>,
         tableName: String,
@@ -139,22 +139,26 @@ class newRecipeActivity : AppCompatActivity() {
             db: SQLiteDatabase
         )
         {
-
-
                 val newEntry = editText.text.toString()
 
-                if (!dataList.contains(newEntry)) {
+            if (newEntry.isEmpty()) {
+                Toast.makeText(context, "Inserisci un valore valido", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+
+            if (!dataList.contains(newEntry)) {
                     val newValue = ContentValues().apply {
                         put(columnName, newEntry)
                     }
                     db.insert(tableName, null, newValue)
                     dataList.add(newEntry)
                     updateAutoCompleteTextView(context, autoCompleteTextView, dataList, tableName, columnName, db)
-                } else {
-                    Log.d("MainActivity", "Etnia già presente")
-                }
+                } else{
+                Toast.makeText(context, "Elemento già presente", Toast.LENGTH_SHORT).show()
+            }
 
-
+            editText.text.clear()
         }
 
 
@@ -195,8 +199,6 @@ class newRecipeActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-
-        //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_portate: Button = findViewById(R.id.btnAddPortate)
 
 
@@ -360,25 +362,42 @@ class newRecipeActivity : AppCompatActivity() {
 
         //DIFFICOLTA + CONNESSIONE DB
 //----------------------------------------------------------------------------------------------------------------------------
-        //creo una lista dove aggiungo ogni volta una portata
-        var arrayListaDifficolta: MutableList<String> = mutableListOf()
+
+        val tendinaDifficolta: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+        fun populateDifficoltaList(difficoltaView: AutoCompleteTextView) {
+
+            val arrayListaDifficolta: MutableList<String> = mutableListOf()
+            val cursor = dbr.rawQuery("SELECT difficolta FROM difficolta", null)
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val difficoltaIndex = cursor.getColumnIndex("difficolta")
+                    if (difficoltaIndex >= 0) {
+                        val p = cursor.getString(difficoltaIndex)
+                        arrayListaDifficolta.add(p)
+                    }
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+
+            // Creo un adapter per passare i valori dell'array delle difficoltà all'interno della tendina
+            val adapterDiff = ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                arrayListaDifficolta
+            )
+
+            // Imposto l'adapter per l'AutoCompleteTextView
+            difficoltaView.setAdapter(adapterDiff)
+        }
 
 
-        // Popola arrayListaPortate con i dati esistenti nel database all'avvio
-        val listaDiff: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
-
-        arrayListaDifficolta=populateAutoCompleteTextView(listaDiff, "difficolta", "difficolta", this, dbr )
+            // Popolo la lista di difficoltà all'avvio dell'attività
+            populateDifficoltaList(tendinaDifficolta)
 
 
-        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
-        val adapterDiff = ArrayAdapter(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayListaDifficolta.toTypedArray()
-        )
-        //per aggiornare la vista(tendina)
-        listaDiff.setAdapter(adapterDiff)
 //----------------------------------------------------------------------------------------------------------------------------
+
 
 
         //AGGIUNGERE PROCEDURE
@@ -539,7 +558,6 @@ class newRecipeActivity : AppCompatActivity() {
             val preparazione_testo = findViewById<RecyclerView>(R.id.recyclerViewProcedure)
 
             nome_ricetta.setText(nome)
-            difficoltaView.setText(difficolta)
             tipologiaView.setText(tipologia)
             portataView.setText(portata)
             dietaView.setText(dieta)
@@ -558,23 +576,17 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
 
-
-
             val adapterProcedimento  = RecyclerView_ListaProcedimento(listaProcedure)
             preparazione_testo.adapter = adapterProcedimento
 
 
 
-
-
-
             // Richiama la funzione di popolamento per aggiornare l'adapter
             populateAutoCompleteTextView(etnicitaView, "etnicita", "etnicita", this, dbr)
-            //updateAutoCompleteTextView(this, etnicitaView, arrayListaEtnia, "etnicita", "etnicita", dbr)
             populateAutoCompleteTextView(dietaView, "dieta", "dieta", this, dbr)
             populateAutoCompleteTextView(tipologiaView, "tipologia", "tipologia", this, dbr)
             populateAutoCompleteTextView(portataView, "portate", "portata", this, dbr)
-            populateAutoCompleteTextView(difficoltaView, "difficolta", "difficolta", this, dbr)
+            populateDifficoltaList(difficoltaView)
         }
         cursor.close()
 
