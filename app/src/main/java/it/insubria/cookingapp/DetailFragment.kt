@@ -60,7 +60,6 @@ class DetailFragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-
         // Inflate the layout for this fragment
         val ret = inflater.inflate(R.layout.fragment_detail, container, false)
 
@@ -74,9 +73,7 @@ class DetailFragment() : Fragment() {
 
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
         val btnModifica: Button = ret.findViewById(R.id.buttonModifica)
-
-
-
+        var txtIngredienti = ret.findViewById<TextView>(R.id.listaIngredienti)
 
 
         if (ricetta != null) {
@@ -133,7 +130,33 @@ class DetailFragment() : Fragment() {
             }
 
 
+            //prendo tutti gli ingredienti associati alla ricetta
+            val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+            val dbH = dataModel.dbHelper
+            val dbr = dbH!!.readableDatabase
+            val idRicetta = dataModel.ricetta!!.id
+
+            val cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
+
+            if (cursor.moveToFirst()) {
+                do {
+
+                    val ingrediente = cursor.getString(cursor.getColumnIndexOrThrow("ingrediente"))
+                    val quantita = cursor.getInt(cursor.getColumnIndexOrThrow("quantita"))
+                    val unitaDiMisura = cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+
+                    ingredientiNome.add(ingrediente)
+                    ingredientiQuantita.add(quantita.toFloat())
+                    ingredientiUnita.add(unitaDiMisura)
+
+                    } while (cursor.moveToNext())
+            }
+            cursor.close()
+
+            //ora compongo il testo per gli ingredienti e lo assegno alla TextView
+            txtIngredienti.text = componiTestoIngredienti()
         }
+
 
         btnModifica.setOnClickListener {
             val intent = Intent(requireContext(), newRecipeActivity::class.java)
@@ -183,6 +206,7 @@ class DetailFragment() : Fragment() {
             if(!ricettaViewModel.peso.equals("default")){
                 cambiaVolume()
             }
+            txtIngredienti.text = componiTestoIngredienti()
         }
         //-----------------------------------------------------------------------------------------------
 
@@ -216,15 +240,21 @@ class DetailFragment() : Fragment() {
 
                     }
                     porzioniTemp = newPorz
-
+                    txtIngredienti.text = componiTestoIngredienti()
                 }
             }
         }
 
 
+        return ret
+    }
 
-
-
+    private fun componiTestoIngredienti(): String {
+        var ret = ""
+        for (i in 0 until ingredientiNome.size){
+            ret = ret + ingredientiNome[i] + " " + ingredientiQuantita[i] + " " +
+                    ingredientiUnita[i] + "\n"
+        }
 
         return ret
     }
