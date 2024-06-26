@@ -30,7 +30,6 @@ class ShoppingListAdapter(
 
         // Set up the delete icon click listener
         deleteIcon.setOnClickListener {
-            Toast.makeText(context, "Elimina ${items[position]}", Toast.LENGTH_SHORT).show()
             items.removeAt(position)
             notifyDataSetChanged()
         }

@@ -5,10 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Collections
+
 
 //adapter una lista di elementi di tipo String
 //listener: Un'interfaccia per gestire i clic sull'icona di cancellazione
@@ -22,7 +20,6 @@ class RecyclerView_ListaProcedimento(private val listaProcedimenti: MutableList<
     inner class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.row)
         val deleteIcon: ImageView = view.findViewById(R.id.deleteIcon)
-        val calendarIcon: ImageView = view.findViewById(R.id.calendarIcon)
         val contatore: TextView = view.findViewById(R.id.counterTextView)
 
         fun aumentaContatore(procedimento: String, posizione: Int) {

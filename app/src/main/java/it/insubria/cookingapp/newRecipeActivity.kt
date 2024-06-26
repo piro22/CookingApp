@@ -1,12 +1,10 @@
 package it.insubria.cookingapp
-
 import AutoComplete_adapter
-
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import androidx.core.net.toUri
 import android.database.sqlite.SQLiteDatabase
-import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.PorterDuff
@@ -35,7 +33,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputLayout
 import java.net.URI
 import java.util.Collections
 
@@ -172,7 +169,7 @@ class newRecipeActivity : AppCompatActivity() {
         dialog.setContentView(R.layout.dialog_portate)
 
         //creo una lista dove aggiungo ogni volta una portata
-        var arrayListaPortate: MutableList<String> = mutableListOf()
+        val arrayListaPortate: MutableList<String>
         val listaPortate: AutoCompleteTextView = findViewById(R.id.tendina)
 
         arrayListaPortate= populateAutoCompleteTextView(listaPortate, "portate", "portata", this, dbr)
@@ -216,7 +213,7 @@ class newRecipeActivity : AppCompatActivity() {
         dialogD.setContentView(R.layout.dialog_dieta)
 
 //creo una lista dove aggiungo ogni volta una portata
-        var arrayListaDieta: MutableList<String> = mutableListOf()
+        val arrayListaDieta: MutableList<String>
 
         val listaDieta: AutoCompleteTextView = findViewById(R.id.tendinaDieta)
         arrayListaDieta = populateAutoCompleteTextView(listaDieta, "dieta", "dieta", this, dbr)
@@ -262,7 +259,7 @@ class newRecipeActivity : AppCompatActivity() {
 
 
         //creo una lista dove aggiungo ogni volta una portata
-        var arrayListaEtnia: MutableList<String> = mutableListOf()
+        val arrayListaEtnia: MutableList<String>
 
 
 
@@ -318,7 +315,7 @@ class newRecipeActivity : AppCompatActivity() {
         dialogT.setContentView(R.layout.dialog_tipo)
 
         //creo una lista dove aggiungo ogni volta una portata
-        var arrayListaTipo: MutableList<String> = mutableListOf()
+        val arrayListaTipo: MutableList<String>
 
 
         val listaTipo: AutoCompleteTextView = findViewById(R.id.tendinaTipo)
@@ -455,8 +452,8 @@ class newRecipeActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                var fromPosizione: Int = viewHolder.adapterPosition
-                var toPosizione: Int = target.adapterPosition
+                val fromPosizione: Int = viewHolder.adapterPosition
+                val toPosizione: Int = target.adapterPosition
 
 
                 Collections.swap(listaProcedimenti, fromPosizione, toPosizione)
@@ -511,7 +508,7 @@ class newRecipeActivity : AppCompatActivity() {
                 // Notify the adapter of data change
                 adapt.notifyDataSetChanged()
 
-                setListViewHeightBasedOnItems(listViewIngredients, adapt);
+                setListViewHeightBasedOnItems(listViewIngredients, adapt)
 
                 // Clear the input field
                 input.text.clear()
@@ -538,7 +535,7 @@ class newRecipeActivity : AppCompatActivity() {
         if (cursor.moveToFirst()) {
             val nome = cursor.getString(cursor.getColumnIndexOrThrow("nome"))
             val porzioni = cursor.getInt(cursor.getColumnIndexOrThrow("porzioni"))
-            val difficolta = cursor.getString(cursor.getColumnIndexOrThrow("difficolta"))
+            //val difficolta = cursor.getString(cursor.getColumnIndexOrThrow("difficolta"))
             val tipologia = cursor.getString(cursor.getColumnIndexOrThrow("tipologia"))
             val portata = cursor.getString(cursor.getColumnIndexOrThrow("portata"))
             val dieta = cursor.getString(cursor.getColumnIndexOrThrow("dieta"))
@@ -556,6 +553,7 @@ class newRecipeActivity : AppCompatActivity() {
             val num_porzioni = findViewById<EditText>(R.id.editPorzioni)
             val num_tempo= findViewById<EditText>(R.id.editTempo)
             val preparazione_testo = findViewById<RecyclerView>(R.id.recyclerViewProcedure)
+            val foto= findViewById<ImageView>(R.id.imageViewFoto)
 
             nome_ricetta.setText(nome)
             tipologiaView.setText(tipologia)
@@ -564,6 +562,12 @@ class newRecipeActivity : AppCompatActivity() {
             etnicitaView.setText(etnicita)
             num_porzioni.setText(porzioni.toString())
             num_tempo.setText(tempo.toString())
+
+            if(pathFoto=="default"){
+                foto.setImageResource(R.drawable.logo)
+            }else{
+            foto.setImageURI(pathFoto.toUri())}
+
 
 
             //per passare i dati in maniera corretta all'adapter una volta recuperati dal db
@@ -632,7 +636,7 @@ class newRecipeActivity : AppCompatActivity() {
 
         btnImmagine = findViewById(R.id.btnfoto)
         imageViewFoto = findViewById(R.id.imageViewFoto)
-        val pathImg: String = "default"
+        val pathImg= "default"
         btnImmagine.setOnClickListener{
             chooseImageFromGallery()
         }
@@ -659,12 +663,12 @@ class newRecipeActivity : AppCompatActivity() {
         val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
         btnSalva.setOnClickListener{
             //se questa variabile diventa false allora si blocca il procedimento
-            var esito: Boolean = true
+            var esito= true
 
 
             //CONTROLLO SUL TITOLO
             val editTitolo: EditText = findViewById(R.id.editTextText)
-            var titoloFinale = editTitolo.text.toString()
+            val titoloFinale = editTitolo.text.toString()
             if(titoloFinale.trim().isEmpty()) {
                 esito = false
 
@@ -678,7 +682,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SULLA PORTATA
             val portata: AutoCompleteTextView = findViewById(R.id.tendina)
-            var txtPortata = portata.text.toString()
+            val txtPortata = portata.text.toString()
             if(txtPortata.isEmpty()){
                 esito = false
 
@@ -692,7 +696,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SULLA TIPOLOGIA
             val tipologia : AutoCompleteTextView = findViewById(R.id.tendinaTipo)
-            var txtTipologia = tipologia.text.toString()
+            val txtTipologia = tipologia.text.toString()
             if(txtTipologia.isEmpty()){
                 esito = false
 
@@ -706,7 +710,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SULLA DIETA
             val dieta : AutoCompleteTextView = findViewById(R.id.tendinaDieta)
-            var txtDieta = dieta.text.toString()
+            val txtDieta = dieta.text.toString()
             if(txtDieta.isEmpty()){
                 esito = false
 
@@ -720,7 +724,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SULL'ETNIA
             val etnia : AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
-            var txtEtnia = etnia.text.toString()
+            val txtEtnia = etnia.text.toString()
             if(txtEtnia.isEmpty()){
                 esito = false
 
@@ -734,7 +738,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SULLA DIFFICOLTA
             val difficolta : AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
-            var txtDifficolta = difficolta.text.toString()
+            val txtDifficolta = difficolta.text.toString()
             if(txtDifficolta.isEmpty()){
                 esito = false
 
@@ -748,8 +752,8 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SUL NUMERO DI PORZIONI
             val porzioni : EditText = findViewById(R.id.editPorzioni)
-            var txtPorzioni = porzioni.text.toString()
-            var numPorzioni: Int = 0
+            val txtPorzioni = porzioni.text.toString()
+            var numPorzioni = 0
             if(txtPorzioni.isEmpty()){
                 esito = false
 
@@ -765,8 +769,8 @@ class newRecipeActivity : AppCompatActivity() {
 
             //CONTROLLO SUL TEMPO
             val tempo : EditText = findViewById(R.id.editTempo)
-            var txtTempo = tempo.text.toString()
-            var numTempo: Int = 0
+            val txtTempo = tempo.text.toString()
+            var numTempo = 0
             if(txtTempo.isEmpty()){
                 esito = false
 
@@ -794,7 +798,7 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA PREPARAZIONE
-            var preparazione: String = ""
+            var preparazione= ""
             if(listaProcedimenti.isEmpty()){
                 esito = false
 
@@ -813,7 +817,7 @@ class newRecipeActivity : AppCompatActivity() {
 
             //se tutto va bene creo la ricetta e la carico sul DB
             if(esito) {
-                var ricetta = RicetteModel(
+                RicetteModel(
                     -1,
                     titoloFinale,
                     uriFoto.toString(),
@@ -849,7 +853,7 @@ class newRecipeActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
             val selectedImageUri: Uri? = data.data
             selectedImageUri?.let {
                 uriFoto = selectedImageUri
@@ -882,7 +886,7 @@ class newRecipeActivity : AppCompatActivity() {
     //FUNZIONE CHE CAMBIA LA DIMENSIONE DELLA LIST VIEW IN BASE AL NUMERO DI ELEMENTI
     private fun setListViewHeightBasedOnItems(listView: ListView, adapter: ListView_adapter) {
         if (adapter == null) {
-            return;
+            return
         }
 
         var totalHeight = 0

@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import it.insubria.cookingapp.R
 
 class AutoComplete_adapter(
@@ -26,21 +25,25 @@ class AutoComplete_adapter(
 
         val deleteButton = view.findViewById<ImageButton>(R.id.delete_button)
 
+
         if (item == "- - -") {
-            deleteButton.visibility = View.GONE  // Nascondi il pulsante
+            deleteButton.visibility = View.GONE  // per nascondere il pulsante perche - - - usato come default
         } else {
-            deleteButton.visibility = View.VISIBLE  // Mostra il pulsante
+            deleteButton.visibility = View.VISIBLE
             deleteButton.setOnClickListener {
             val itemToRemove = getItem(position)
             if (itemToRemove != null) {
                 remove(itemToRemove)
                 deleteItemFromDatabase(itemToRemove)
                 notifyDataSetChanged()
+
             }
-        }}
+
+        }
 
 
 
+        }
 
 
         return view
