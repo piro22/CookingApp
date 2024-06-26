@@ -310,7 +310,7 @@ class DetailFragment() : Fragment() {
                         if (tmp > 1000.0f) {
                             lista[i] = tmp / 1000.0f
                             listaU[i] = "Kg"
-                        } else if(tmp > 100.0f){
+                        } else if (tmp > 100.0f) {
                             lista[i] = tmp / 100.0f
                             listaU[i] = "h"
                         } else {
@@ -326,7 +326,7 @@ class DetailFragment() : Fragment() {
                         if (tmp > 1000.0f) {
                             lista[i] = tmp / 1000.0f
                             listaU[i] = "Kg"
-                        } else if(tmp > 100.0f){
+                        } else if (tmp > 100.0f) {
                             lista[i] = tmp / 100.0f
                             listaU[i] = "h"
                         } else {
@@ -342,26 +342,123 @@ class DetailFragment() : Fragment() {
         }
     }
 
-
-
+    var lista: MutableList<Float> = mutableListOf()
+    var listaU: MutableList<String> = mutableListOf()
     private fun cambiaVolume() {
-        var lista: MutableList<Float> = mutableListOf()
-        var listaU: MutableList<String> = mutableListOf()
+
 
         var imperiali: List<String> = listOf("tsp", "tbsp", "cup", "pt", "qt", "gal")
-        var metrico: List<String> = listOf("L", "mL", "cL", "dl")
+        var metrico: List<String> = listOf("L", "mL", "cL", "dL")
 
         lista.add(120.0f)
         lista.add(5.0f)
         lista.add(3.0f)
         lista.add(12.0f)
         lista.add(1.56f)
+        lista.add(120.0f)
+        lista.add(5.0f)
+        lista.add(3.0f)
+        lista.add(12.0f)
+        lista.add(1.56f)
 
-        listaU.add("cl")
+        listaU.add("cL")
         listaU.add("tsp")
         listaU.add("cup")
         listaU.add("qt")
         listaU.add("L")
+        listaU.add("tbsp")
+        listaU.add("pt")
+        listaU.add("gal")
+        listaU.add("mL")
+        listaU.add("dL")
+
+
+        if (ricettaViewModel.volume.equals("imperiale")) {
+            for (i in 0 until lista.size) {
+                // se l'unita di misura non è contenuta nella lista delle unita imperiali
+                // va modificata
+                if (!imperiali.contains(listaU[i])) {
+                    print("Trasformo ${lista[i]} ${listaU[i]} in imperiale")
+
+                    var tmp = lista[i]
+
+                    when (listaU[i]) {
+                        "L" -> volMetrToImp(tmp*1000.0f, i)
+                        "dL" -> volMetrToImp(tmp*100.0f, i)
+                        "cL" -> volMetrToImp(tmp*10.0f, i)
+                        "mL" -> volMetrToImp(tmp, i)
+                    }
+
+                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                }
+            }
+        } else if (ricettaViewModel.volume.equals("metrico")) {
+            for (i in 0 until lista.size) {
+                // se l'unita di misura non è contenuta nella lista delle unita metriche
+                // va modificata
+                if (!metrico.contains(listaU[i])) {
+                    print("Trasformo ${lista[i]} ${listaU[i]} in metrico")
+
+                    val tmp = lista[i]
+
+                    when (listaU[i]) {
+                        "gal" -> volImpToMetr(tmp*760.0f, i)
+                        "qt" -> volImpToMetr(tmp*190.0f, i)
+                        "pt" -> volImpToMetr(tmp*94.0f, i)
+                        "cup" -> volImpToMetr(tmp*48.0f, i)
+                        "tbsp" -> volImpToMetr(tmp*3.0f, i)
+                        "tsp" -> volImpToMetr(tmp, i)
+                    }
+
+                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                }
+            }
+        }
+
+    }
+
+    private fun volMetrToImp(millilitri: Float, i: Int){
+        when {
+            millilitri >= 3800.0f -> {
+                lista[i] = millilitri / 3800.0f
+                listaU[i] = "gal"
+            }
+            millilitri >= 950.0f -> {
+                lista[i] = millilitri / 950.0f
+                listaU[i] = "qt"
+            }
+            millilitri >= 470.0f -> {
+                lista[i] = millilitri / 470.0f
+                listaU[i] = "pt"
+            }
+            millilitri >= 240.0f -> {
+                lista[i] = millilitri / 240.0f
+                listaU[i] = "cup"
+            }
+            millilitri >= 15.0f -> {
+                lista[i] = millilitri / 15.0f
+                listaU[i] = "tbsp"
+            }
+            else -> {
+                lista[i] = millilitri / 5.0f
+                listaU[i] = "tsp"
+            }
+        }
+    }
+
+    private fun volImpToMetr(tsp: Float, i: Int) {
+        val ml = tsp * 5.0f
+
+        when {
+            ml >= 1500.0f -> {
+                lista[i] = ml / 1000.0f
+                listaU[i] = "L"
+            }
+            else -> {
+                lista[i] = ml
+                listaU[i] = "mL"
+            }
+        }
     }
 
 
