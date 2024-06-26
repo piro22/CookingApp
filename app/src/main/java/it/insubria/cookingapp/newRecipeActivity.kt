@@ -42,7 +42,7 @@ class newRecipeActivity : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1
     private lateinit var btnImmagine: ImageView
     private lateinit var imageViewFoto: ImageView
-    private lateinit var uriFoto: Uri
+    private var uriFoto: String = "default"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -861,7 +861,7 @@ class newRecipeActivity : AppCompatActivity() {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {
             val selectedImageUri: Uri? = data.data
             selectedImageUri?.let {
-                uriFoto = selectedImageUri
+                uriFoto = selectedImageUri.toString()
 
                 val layoutParams = imageViewFoto.layoutParams
                 layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -871,7 +871,7 @@ class newRecipeActivity : AppCompatActivity() {
                 imageViewFoto.setImageURI(selectedImageUri)
             }
         }else{
-            uriFoto = "default".toUri()
+            uriFoto = "default"
         }
     }
 
