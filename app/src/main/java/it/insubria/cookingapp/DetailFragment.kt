@@ -35,9 +35,13 @@ class DetailFragment() : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
     private lateinit var ricettaViewModel: DataModel
     private var ricetta: RicetteModel? = null
-
+    private var ingredientiNome: MutableList<String> = mutableListOf("pippo", "franco", "topolino")
+    private var ingredientiQuantita: MutableList<Float> = mutableListOf(23.0f, 10.5f, 2.8f)
+    private var ingredientiUnita: MutableList<String> = mutableListOf("cL", "h", "cup")
+    private var porzioniTemp: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +112,7 @@ class DetailFragment() : Fragment() {
 
             val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
             editPorzioni.setText(ricetta!!.porzioni.toString())
+            porzioniTemp = ricetta!!.porzioni
 
             val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
             textPreparazione.text = ricetta!!.preparazione
@@ -167,14 +172,54 @@ class DetailFragment() : Fragment() {
             val rowsAffected =
                 dbw.update("ricetta", nuovoValore, "id=?", arrayOf(ricetta!!.id.toString()))
             dbw.close()
-
-
         }
 
 
+        //METODO PER CAMBIARE LE UNITA' DI MISURA IN CIO' CHE HA SELEZIONATO L'UTENTE
+        if(!ingredientiQuantita.isEmpty() || !ingredientiNome.isEmpty() || !ingredientiUnita.isEmpty()){
+            if(!ricettaViewModel.peso.equals("default")){
+                cambiaPeso()
+            }
+            if(!ricettaViewModel.peso.equals("default")){
+                cambiaVolume()
+            }
+        }
+        //-----------------------------------------------------------------------------------------------
 
 
+        //METODO PER CAMBIARE LE PROPORZIONI
+        val buttonPorzioni: Button = ret.findViewById(R.id.buttonPorzioni)
+        val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
 
+        buttonPorzioni.setOnClickListener {
+            val porz = editPorzioni.text.toString()
+            //controllo che ci sia scritto qualcosa e che ricetta esista
+            if(!porz.isEmpty()){
+
+                Log.d("CAMBIO PORZIONI","---------Da ${porzioniTemp} a $porz---------\n")
+
+                var newPorz = porz.toInt()
+
+                //controllo che quello inserito e quello che ho in ricetta siano diversi
+                if(newPorz != porzioniTemp){
+                    //qui faccio le proporzioni e cambio tutte le quantità
+
+                    for(i in 0 until ingredientiQuantita.size){
+
+                        Log.d("CAMBIO PORZIONI","cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n")
+
+                        if(!ingredientiUnita[i].equals("qb")){
+                            ingredientiQuantita[i] = (ingredientiQuantita[i]/porzioniTemp) * newPorz
+                        }
+
+                        Log.d("CAMBIO PORZIONI","cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n")
+
+                    }
+                    porzioniTemp = newPorz
+
+                }
+            }
+        }
 
 
 
@@ -222,186 +267,145 @@ class DetailFragment() : Fragment() {
     }
 
     private fun cambiaPeso() {
-        var lista: MutableList<Float> = mutableListOf()
-        var listaU: MutableList<String> = mutableListOf()
-
         var imperiali: List<String> = listOf("lb", "Oz")
         var metrico: List<String> = listOf("g", "h", "Kg", "kg")
 
-        lista.add(120.0f)
-        lista.add(5.0f)
-        lista.add(3.0f)
-        lista.add(12.0f)
-        lista.add(1.56f)
-
-        listaU.add("g")
-        listaU.add("Oz")
-        listaU.add("lb")
-        listaU.add("h")
-        listaU.add("Kg")
-
         if (ricettaViewModel.peso.equals("imperiale")) {
-            for (i in 0 until lista.size) {
+            for (i in 0 until ingredientiQuantita.size) {
                 // se l'unita di misura non è contenuta nella lista delle unita imperiali
                 // va modificata
-                if (!imperiali.contains(listaU[i])) {
+                if (!imperiali.contains(ingredientiUnita[i])) {
 
-                    print("Trasformo ${lista[i]} ${listaU[i]} in imperiale")
+                    print("Trasformo ${ingredientiQuantita[i]} ${ingredientiUnita[i]} in imperiale")
 
-                    if (listaU[i].equals("g")) {
+                    if (ingredientiUnita[i].equals("g")) {
 
-                        var tmp = lista[i]
+                        var tmp = ingredientiQuantita[i]
 
                         //se supera il kilo allora lo converto in lb
                         //altrimenti in Oz
                         if (tmp > 1000.0f) {
-                            lista[i] = tmp / 453.59f
-                            listaU[i] = "lb"
+                            ingredientiQuantita[i] = tmp / 453.59f
+                            ingredientiUnita[i] = "lb"
                         } else {
-                            lista[i] = tmp / 28.35f
-                            listaU[i] = "Oz"
+                            ingredientiQuantita[i] = tmp / 28.35f
+                            ingredientiUnita[i] = "Oz"
                         }
 
-                    } else if (listaU[i].equals("h")) {
+                    } else if (ingredientiUnita[i].equals("h")) {
 
-                        var tmp = (lista[i] * 100)
+                        var tmp = (ingredientiQuantita[i] * 100)
 
                         //se supera il kilo allora lo converto in lb
                         //altrimenti in Oz
                         if (tmp > 1000.0f) {
-                            lista[i] = tmp / 453.59f
-                            listaU[i] = "lb"
+                            ingredientiQuantita[i] = tmp / 453.59f
+                            ingredientiUnita[i] = "lb"
                         } else {
-                            lista[i] = tmp / 28.35f
-                            listaU[i] = "Oz"
+                            ingredientiQuantita[i] = tmp / 28.35f
+                            ingredientiUnita[i] = "Oz"
                         }
 
-                    } else if (listaU[i].equals("Kg") || listaU[i].equals("kg")) {
+                    } else if (ingredientiUnita[i].equals("Kg")) {
 
-                        var tmp = (lista[i] * 1000)
+                        var tmp = (ingredientiQuantita[i] * 1000)
 
                         //se supera il kilo allora lo converto in lb
                         //altrimenti in Oz
                         if (tmp > 1000.0f) {
-                            lista[i] = tmp / 453.59f
-                            listaU[i] = "lb"
+                            ingredientiQuantita[i] = tmp / 453.59f
+                            ingredientiUnita[i] = "lb"
                         } else {
-                            lista[i] = tmp / 28.35f
-                            listaU[i] = "Oz"
+                            ingredientiQuantita[i] = tmp / 28.35f
+                            ingredientiUnita[i] = "Oz"
                         }
                     }
 
 
-                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                    print("--- Trasformato ${ingredientiQuantita[i]} ${ingredientiUnita[i]} \n")
 
                 }
             }
         } else if (ricettaViewModel.peso.equals("metrico")) {
-            for (i in 0 until lista.size) {
-                if (!metrico.contains(listaU[i])) {
+            for (i in 0 until ingredientiQuantita.size) {
+                if (!metrico.contains(ingredientiUnita[i])) {
 
-                    print("Trasformo ${lista[i]} ${listaU[i]} in metrico")
+                    print("Trasformo ${ingredientiQuantita[i]} ${ingredientiUnita[i]} in metrico")
 
-                    if (listaU[i].equals("Oz")) {
+                    if (ingredientiUnita[i].equals("Oz")) {
 
-                        var tmp = lista[i] * 28.35f
+                        var tmp = ingredientiQuantita[i] * 28.35f
 
 
                         if (tmp > 1000.0f) {
-                            lista[i] = tmp / 1000.0f
-                            listaU[i] = "Kg"
+                            ingredientiQuantita[i] = tmp / 1000.0f
+                            ingredientiUnita[i] = "Kg"
                         } else if (tmp > 100.0f) {
-                            lista[i] = tmp / 100.0f
-                            listaU[i] = "h"
+                            ingredientiQuantita[i] = tmp / 100.0f
+                            ingredientiUnita[i] = "h"
                         } else {
-                            lista[i] = tmp
-                            listaU[i] = "g"
+                            ingredientiQuantita[i] = tmp
+                            ingredientiUnita[i] = "g"
                         }
 
 
-                    } else if (listaU[i].equals("lb")) {
+                    } else if (ingredientiUnita[i].equals("lb")) {
 
-                        var tmp = lista[i] * 453.59f
+                        var tmp = ingredientiQuantita[i] * 453.59f
 
                         if (tmp > 1000.0f) {
-                            lista[i] = tmp / 1000.0f
-                            listaU[i] = "Kg"
+                            ingredientiQuantita[i] = tmp / 1000.0f
+                            ingredientiUnita[i] = "Kg"
                         } else if (tmp > 100.0f) {
-                            lista[i] = tmp / 100.0f
-                            listaU[i] = "h"
+                            ingredientiQuantita[i] = tmp / 100.0f
+                            ingredientiUnita[i] = "h"
                         } else {
-                            lista[i] = tmp
-                            listaU[i] = "g"
+                            ingredientiQuantita[i] = tmp
+                            ingredientiUnita[i] = "g"
                         }
 
                     }
 
-                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                    print("--- Trasformato ${ingredientiQuantita[i]} ${ingredientiUnita[i]} \n")
                 }
             }
         }
     }
 
-    var lista: MutableList<Float> = mutableListOf()
-    var listaU: MutableList<String> = mutableListOf()
+
     private fun cambiaVolume() {
-
-
         var imperiali: List<String> = listOf("tsp", "tbsp", "cup", "pt", "qt", "gal")
         var metrico: List<String> = listOf("L", "mL", "cL", "dL")
 
-        lista.add(120.0f)
-        lista.add(5.0f)
-        lista.add(3.0f)
-        lista.add(12.0f)
-        lista.add(1.56f)
-        lista.add(120.0f)
-        lista.add(5.0f)
-        lista.add(3.0f)
-        lista.add(12.0f)
-        lista.add(1.56f)
-
-        listaU.add("cL")
-        listaU.add("tsp")
-        listaU.add("cup")
-        listaU.add("qt")
-        listaU.add("L")
-        listaU.add("tbsp")
-        listaU.add("pt")
-        listaU.add("gal")
-        listaU.add("mL")
-        listaU.add("dL")
-
-
         if (ricettaViewModel.volume.equals("imperiale")) {
-            for (i in 0 until lista.size) {
-                // se l'unita di misura non è contenuta nella lista delle unita imperiali
+            for (i in 0 until ingredientiQuantita.size) {
+                // se l'unita di distro non è contenuta nella lista delle unita imperiali
                 // va modificata
-                if (!imperiali.contains(listaU[i])) {
-                    print("Trasformo ${lista[i]} ${listaU[i]} in imperiale")
+                if (!imperiali.contains(ingredientiUnita[i])) {
+                    print("Trasformo ${ingredientiQuantita[i]} ${ingredientiUnita[i]} in imperiale")
 
-                    var tmp = lista[i]
+                    var tmp = ingredientiQuantita[i]
 
-                    when (listaU[i]) {
+                    when (ingredientiUnita[i]) {
                         "L" -> volMetrToImp(tmp*1000.0f, i)
                         "dL" -> volMetrToImp(tmp*100.0f, i)
                         "cL" -> volMetrToImp(tmp*10.0f, i)
                         "mL" -> volMetrToImp(tmp, i)
                     }
 
-                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                    print("--- Trasformato ${ingredientiQuantita[i]} ${ingredientiUnita[i]} \n")
                 }
             }
         } else if (ricettaViewModel.volume.equals("metrico")) {
-            for (i in 0 until lista.size) {
+            for (i in 0 until ingredientiQuantita.size) {
                 // se l'unita di misura non è contenuta nella lista delle unita metriche
                 // va modificata
-                if (!metrico.contains(listaU[i])) {
-                    print("Trasformo ${lista[i]} ${listaU[i]} in metrico")
+                if (!metrico.contains(ingredientiUnita[i])) {
+                    print("Trasformo ${ingredientiQuantita[i]} ${ingredientiUnita[i]} in metrico")
 
-                    val tmp = lista[i]
+                    val tmp = ingredientiQuantita[i]
 
-                    when (listaU[i]) {
+                    when (ingredientiUnita[i]) {
                         "gal" -> volImpToMetr(tmp*760.0f, i)
                         "qt" -> volImpToMetr(tmp*190.0f, i)
                         "pt" -> volImpToMetr(tmp*94.0f, i)
@@ -410,7 +414,7 @@ class DetailFragment() : Fragment() {
                         "tsp" -> volImpToMetr(tmp, i)
                     }
 
-                    print("--- Trasformato ${lista[i]} ${listaU[i]} \n")
+                    print("--- Trasformato ${ingredientiQuantita[i]} ${ingredientiUnita[i]} \n")
                 }
             }
         }
@@ -420,28 +424,28 @@ class DetailFragment() : Fragment() {
     private fun volMetrToImp(millilitri: Float, i: Int){
         when {
             millilitri >= 3800.0f -> {
-                lista[i] = millilitri / 3800.0f
-                listaU[i] = "gal"
+                ingredientiQuantita[i] = millilitri / 3800.0f
+                ingredientiUnita[i] = "gal"
             }
             millilitri >= 950.0f -> {
-                lista[i] = millilitri / 950.0f
-                listaU[i] = "qt"
+                ingredientiQuantita[i] = millilitri / 950.0f
+                ingredientiUnita[i] = "qt"
             }
             millilitri >= 470.0f -> {
-                lista[i] = millilitri / 470.0f
-                listaU[i] = "pt"
+                ingredientiQuantita[i] = millilitri / 470.0f
+                ingredientiUnita[i] = "pt"
             }
             millilitri >= 240.0f -> {
-                lista[i] = millilitri / 240.0f
-                listaU[i] = "cup"
+                ingredientiQuantita[i] = millilitri / 240.0f
+                ingredientiUnita[i] = "cup"
             }
             millilitri >= 15.0f -> {
-                lista[i] = millilitri / 15.0f
-                listaU[i] = "tbsp"
+                ingredientiQuantita[i] = millilitri / 15.0f
+                ingredientiUnita[i] = "tbsp"
             }
             else -> {
-                lista[i] = millilitri / 5.0f
-                listaU[i] = "tsp"
+                ingredientiQuantita[i] = millilitri / 5.0f
+                ingredientiUnita[i] = "tsp"
             }
         }
     }
@@ -451,12 +455,12 @@ class DetailFragment() : Fragment() {
 
         when {
             ml >= 1500.0f -> {
-                lista[i] = ml / 1000.0f
-                listaU[i] = "L"
+                ingredientiQuantita[i] = ml / 1000.0f
+                ingredientiUnita[i] = "L"
             }
             else -> {
-                lista[i] = ml
-                listaU[i] = "mL"
+                ingredientiQuantita[i] = ml
+                ingredientiUnita[i] = "mL"
             }
         }
     }
