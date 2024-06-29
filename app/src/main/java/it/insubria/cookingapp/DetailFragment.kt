@@ -112,7 +112,7 @@ class DetailFragment() : Fragment() {
             porzioniTemp = ricetta!!.porzioni
 
             val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
-            textPreparazione.text = ricetta!!.preparazione
+            textPreparazione.text = parsePreparazione(ricetta!!.preparazione)
 
 
             val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
@@ -246,6 +246,20 @@ class DetailFragment() : Fragment() {
         }
 
 
+        return ret
+    }
+
+    private fun parsePreparazione(preparazione: String): String {
+        var ret = ""
+
+        val arraySplit = preparazione.split("[[Passo]]")
+
+        for(i in 1 until arraySplit.size){
+            if(i != arraySplit.size-1)
+                ret = ret + "Passo ${i - 1}: \n" + arraySplit[i] + "\n\n"
+            else
+                ret = ret + "Passo ${i - 1}: \n" + arraySplit[i]
+        }
         return ret
     }
 

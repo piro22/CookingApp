@@ -1,7 +1,9 @@
 package it.insubria.cookingapp
 
+import AutoComplete_adapter
 import android.content.ContentValues
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +43,8 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
         val dbr = dbHelper.readableDatabase
         val dbw = dbHelper.writableDatabase
 
+
+        //POPOLO LA TENDINA
 
 
 
