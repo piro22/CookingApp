@@ -1,5 +1,6 @@
 package it.insubria.cookingapp
 import AutoComplete_adapter
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -528,6 +529,13 @@ class newRecipeActivity : AppCompatActivity() {
         val intent = intent
         val idRicetta = intent.getIntExtra("id_ricetta", -1)
 
+        //valore che serve per capire quae azione far svolgere al bottone salvaTutto
+        var provieneDaIntent : Boolean = false
+
+        if(idRicetta != -1){
+            provieneDaIntent = true
+        }
+
 
 // Popola i campi con i dati ricevuti
         val cursor: Cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
@@ -623,11 +631,6 @@ class newRecipeActivity : AppCompatActivity() {
 
         cur.close()
 
-
-
-
-
-
         //----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -662,7 +665,84 @@ class newRecipeActivity : AppCompatActivity() {
         //BOTTONE PER SALVARE TUTTI I DATI, PRIMA SI FANNO I CANTROLLI
         val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
         btnSalva.setOnClickListener{
-            //se questa variabile diventa false allora si blocca il procedimento
+            if (provieneDaIntent==true) {
+                Log.d("899500483726839029897", "paolaAAAAAAAAAAAAAAAAAAAAA")
+
+                val editTitolo: EditText = findViewById(R.id.editTextText)
+                val titoloFinale = editTitolo.text.toString()
+
+                val portata: AutoCompleteTextView = findViewById(R.id.tendina)
+                val txtPortata = portata.text.toString()
+
+                val tipologia: AutoCompleteTextView = findViewById(R.id.tendinaTipo)
+                val txtTipologia = tipologia.text.toString()
+
+                val dieta: AutoCompleteTextView = findViewById(R.id.tendinaDieta)
+                val txtDieta = dieta.text.toString()
+
+                val etnia: AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
+                val txtEtnia = etnia.text.toString()
+
+                val difficolta: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
+                val txtDifficolta = difficolta.text.toString()
+
+                val porzioni: EditText = findViewById(R.id.editPorzioni)
+                val txtPorzioni = porzioni.text.toString().toInt()
+
+                val tempo: EditText = findViewById(R.id.editTempo)
+                val txtTempo = tempo.text.toString().toInt()
+
+                // Aggiorna il pathFoto in base alla tua logica
+                val pathFoto= "default" // Sostituisci con la tua logica per il path dell'immagine
+
+                // Esegui l'update nel database
+                val updateQuery = """
+                UPDATE ricetta 
+                SET nome = '$titoloFinale', 
+                porzioni = $txtPorzioni, 
+                tempo_di_preparazione = $txtTempo, 
+                difficolta = '$txtDifficolta', 
+                tipologia = '$txtTipologia', 
+                portata = '$txtPortata', 
+                dieta = '$txtDieta', 
+                etnicita = '$txtEtnia', 
+                pathFoto = '$pathFoto'
+            WHERE id = $idRicetta
+        """
+
+                dbw.execSQL(updateQuery)
+
+                // Mostra un messaggio di successo o esegui altre azioni necessarie dopo l'update
+                Toast.makeText(this, "Dati salvati con successo", Toast.LENGTH_SHORT).show()
+
+
+                val resultIntent = Intent()
+                resultIntent.putExtra("id_ricetta", idRicetta)
+                resultIntent.putExtra("nome", titoloFinale)
+                resultIntent.putExtra("porzioni", txtPorzioni)
+                resultIntent.putExtra("tempo_di_preparazione", txtTempo)
+                resultIntent.putExtra("difficolta", txtDifficolta)
+                resultIntent.putExtra("tipologia", txtTipologia)
+                resultIntent.putExtra("portata", txtPortata)
+                resultIntent.putExtra("dieta", txtDieta)
+                resultIntent.putExtra("etnicita", txtEtnia)
+                resultIntent.putExtra("pathFoto", pathFoto)
+
+
+                // Imposta il risultato da restituire all'attività chiamante
+                setResult(Activity.RESULT_OK, resultIntent)
+                // Chiudi l'attività
+                finish()
+            }
+
+
+
+
+
+            else{
+                Log.d("222222222222222222222222222222222222222222", "$provieneDaIntent")
+
+                //se questa variabile diventa false allora si blocca il procedimento
             var esito= true
 
 
@@ -836,7 +916,7 @@ class newRecipeActivity : AppCompatActivity() {
 
                 //TODO cambiare il path con quello selezionato
                 dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', '${uriFoto.toString()}', '$preparazione', 0)")
-            }
+            }}
 
             //TODO fare qualcosa per prendere gli ingredienti e le quantità
             // poi inserirli uno alla volta con anche l'ID della ricetta
