@@ -152,7 +152,7 @@ class Database_SQL(context: Context) :
 
         //TABELLE PER INGREDIENTI
         db.execSQL("INSERT INTO ingrediente VALUES ('Farina'), ('Cioccolato'), ('uova'), ('acqua'), ('latte')")
-        db.execSQL("INSERT INTO unita_di_misura VALUES ('- - -'), ('L'), ('cl'), ('ml'), ('Kg'), ('g'), ('tsp'), ('tbsp'), ('oz'), ('lb'), ('qb')")
+        db.execSQL("INSERT INTO unita_di_misura VALUES ('- - -'), ('L'), ('dL'), ('cL'), ('mL'), ('Kg'), ('h'), ('g'), ('tsp'), ('tbsp'), ('cup'), ('pt'), ('qt'), ('gal'), ('Oz'), ('lb'), ('qb')")
 
         //INSERISCO TRE RICETTE
         db.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('pasta al pesto', 5, 20, '*', 'pasta', 'primo', 'onnivora', 'italiano', 'content://media/external/images/media/1000000028', 'cuocio la pasta e dopo 10/12 minuti la scolo, la metto in pentola e ci metto il pesto', 1)")

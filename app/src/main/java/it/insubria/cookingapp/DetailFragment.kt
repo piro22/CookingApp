@@ -312,7 +312,7 @@ class DetailFragment() : Fragment() {
 
     private fun cambiaPeso() {
         var imperiali: List<String> = listOf("lb", "Oz")
-        var metrico: List<String> = listOf("g", "h", "Kg", "kg")
+        var metrico: List<String> = listOf("g", "h", "Kg")
 
         if (ricettaViewModel.peso.equals("imperiale")) {
             for (i in 0 until ingredientiQuantita.size) {
