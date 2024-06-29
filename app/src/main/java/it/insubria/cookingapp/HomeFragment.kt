@@ -82,7 +82,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 adapter.filterNome(s.toString())
-                Log.d("FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO ", "${s.toString()}")
+                //Log.d("FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO ", "${s.toString()}")
             }
 
             override fun afterTextChanged(s: Editable?) {}

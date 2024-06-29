@@ -18,6 +18,7 @@ import com.google.android.material.textfield.TextInputLayout
 // Extends the ArrayAdapter class and inherits the getView method
 class ListView_adapter(context: Context, private val items: MutableList<String>) :
     ArrayAdapter<String>(context, R.layout.row_ingredienti, items) {
+    private var arrayListaUnita: MutableList<String> = mutableListOf()
 
     // Passes parameters: position, view, and viewGroup
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -28,7 +29,7 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
 
         val quantita: EditText = view.findViewById(R.id.tendina)
         val ingrediente: TextView = view.findViewById(R.id.ingrediente)
-
+        val unit: AutoCompleteTextView = view.findViewById(R.id.tendinaUnita)
         val shoppingIcon: ImageView = view.findViewById(R.id.calendarIcon)
         val deleteIcon: ImageView = view.findViewById(R.id.deleteIcon)
 
@@ -45,7 +46,31 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
 
 
         //POPOLO LA TENDINA
+        val cursorPort = dbr.rawQuery("SELECT unita FROM unita_di_misura", null)
 
+        arrayListaUnita.clear()
+
+        if (cursorPort != null && cursorPort.moveToFirst()) {
+            do {
+                val unitaIndex = cursorPort.getColumnIndex("unita")
+                if (unitaIndex >= 0) {
+                    val u = cursorPort.getString(unitaIndex)
+                    arrayListaUnita.add(u)
+                }
+            } while (cursorPort.moveToNext())
+            cursorPort.close()
+        }
+
+
+        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
+        val adapterTendina = ArrayAdapter(
+            context,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayListaUnita.toTypedArray()
+        )
+        //per aggiornare la vista(tendina)
+        unit.setAdapter(adapterTendina)
+        //------------------------------------------------------------------------------------------------
 
 
         val i = ingrediente.text.toString()
