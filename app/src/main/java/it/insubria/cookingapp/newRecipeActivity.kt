@@ -61,6 +61,15 @@ class newRecipeActivity : AppCompatActivity() {
 
 
 
+        //inizializzazione variabili
+        val editTitolo: EditText = findViewById(R.id.editTextText)
+        val porzioni: EditText = findViewById(R.id.editPorzioni)
+        val tempo : EditText = findViewById(R.id.editTempo)
+        btnImmagine = findViewById(R.id.btnfoto)
+        //a che serve que?
+        imageViewFoto = findViewById(R.id.imageViewFoto)
+
+
 
 
 
@@ -345,7 +354,6 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
-        //MANCA IL TASTO PER ELIMINARE LA PORTATA DALLA TENDINA
         val btn_Tipologia: Button = findViewById(R.id.btnAddTipo)
 
         btn_Tipologia.setOnClickListener {
@@ -530,54 +538,42 @@ class newRecipeActivity : AppCompatActivity() {
         val idRicetta = intent.getIntExtra("id_ricetta", -1)
 
         //valore che serve per capire quae azione far svolgere al bottone salvaTutto
-        var provieneDaIntent : Boolean = false
+        //var provieneDaIntent : Boolean = false DA ELIMINARE
 
         if(idRicetta != -1){
-            provieneDaIntent = true
-        }
 
 
 // Popola i campi con i dati ricevuti
         val cursor: Cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
 
+            //PERCHEORTHROW SENZA DA ERRORI
         if (cursor.moveToFirst()) {
-            val nome = cursor.getString(cursor.getColumnIndexOrThrow("nome"))
-            val porzioni = cursor.getInt(cursor.getColumnIndexOrThrow("porzioni"))
-            //val difficolta = cursor.getString(cursor.getColumnIndexOrThrow("difficolta"))
+            val nomeRicetta = cursor.getString(cursor.getColumnIndexOrThrow("nome"))
+            val porzioniRicetta = cursor.getInt(cursor.getColumnIndexOrThrow("porzioni"))
+            val difficolta = cursor.getString(cursor.getColumnIndexOrThrow("difficolta"))
             val tipologia = cursor.getString(cursor.getColumnIndexOrThrow("tipologia"))
             val portata = cursor.getString(cursor.getColumnIndexOrThrow("portata"))
             val dieta = cursor.getString(cursor.getColumnIndexOrThrow("dieta"))
             val etnicita = cursor.getString(cursor.getColumnIndexOrThrow("etnicita"))
-            val tempo = cursor.getInt(cursor.getColumnIndexOrThrow("tempo_di_preparazione"))
+            val tempoPrep = cursor.getInt(cursor.getColumnIndexOrThrow("tempo_di_preparazione"))
             val preparazione = cursor.getString(cursor.getColumnIndexOrThrow("preparazione"))
             val pathFoto = cursor.getString(cursor.getColumnIndexOrThrow("pathFoto"))
 
-            val nome_ricetta = findViewById<EditText>(R.id.editTextText)
-            val difficoltaView = findViewById<AutoCompleteTextView>(R.id.tendinaDifficolta)
-            val tipologiaView = findViewById<AutoCompleteTextView>(R.id.tendinaTipo)
-            val portataView = findViewById<AutoCompleteTextView>(R.id.tendina)
-            val dietaView = findViewById<AutoCompleteTextView>(R.id.tendinaDieta)
-            val etnicitaView = findViewById<AutoCompleteTextView>(R.id.tendinaEtnia)
-            val num_porzioni = findViewById<EditText>(R.id.editPorzioni)
-            val num_tempo= findViewById<EditText>(R.id.editTempo)
-            val preparazione_testo = findViewById<RecyclerView>(R.id.recyclerViewProcedure)
-            val foto= findViewById<ImageView>(R.id.imageViewFoto)
-
-            nome_ricetta.setText(nome)
-            tipologiaView.setText(tipologia)
-            portataView.setText(portata)
-            dietaView.setText(dieta)
-            etnicitaView.setText(etnicita)
-            num_porzioni.setText(porzioni.toString())
-            num_tempo.setText(tempo.toString())
-
-            if(pathFoto=="default"){
-                foto.setImageResource(R.drawable.logo)
-            }else{
-            foto.setImageURI(pathFoto.toUri())}
+            listaTipo.setText(tipologia)
+            listaPortate.setText(portata)
+            listaDieta.setText(dieta)
+            listaEtnia.setText(etnicita)
+            tendinaDifficolta.setText(difficolta)
+            tempo.setText(tempoPrep.toString())
+            editTitolo.setText(nomeRicetta)
+            porzioni.setText(porzioniRicetta.toString())
 
 
 
+            if(pathFoto!="default"){
+                btnImmagine.setImageURI(pathFoto.toUri())}
+
+/*
             //per passare i dati in maniera corretta all'adapter una volta recuperati dal db
             val segments = preparazione.split("[[passo]]")
 
@@ -587,24 +583,13 @@ class newRecipeActivity : AppCompatActivity() {
                 listaProcedure.add(segment.trim())
             }
 
+            recyclerViewProcedimento.adapter = adapterProcedimento*/
 
-            val adapterProcedimento  = RecyclerView_ListaProcedimento(listaProcedure)
-            preparazione_testo.adapter = adapterProcedimento
-
-
-
-            // Richiama la funzione di popolamento per aggiornare l'adapter
-            populateAutoCompleteTextView(etnicitaView, "etnicita", "etnicita", this, dbr)
-            populateAutoCompleteTextView(dietaView, "dieta", "dieta", this, dbr)
-            populateAutoCompleteTextView(tipologiaView, "tipologia", "tipologia", this, dbr)
-            populateAutoCompleteTextView(portataView, "portate", "portata", this, dbr)
-            populateDifficoltaList(difficoltaView)
         }
         cursor.close()
 
-
         //popolo gli ingredienti
-        val cur: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
+        /*val cur: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
 
         val ingredientsList = mutableListOf<String>()
 
@@ -629,125 +614,40 @@ class newRecipeActivity : AppCompatActivity() {
             listViewIngredients.adapter = adapter
         }
 
-        cur.close()
+        cur.close()*/}
 
         //----------------------------------------------------------------------------------------------------------------------------
 
 
 
         //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
-
-        btnImmagine = findViewById(R.id.btnfoto)
-        imageViewFoto = findViewById(R.id.imageViewFoto)
         val pathImg= "default"
         btnImmagine.setOnClickListener{
             chooseImageFromGallery()
         }
 
+
         //-------------------------------------------------------------------------------------------------------------------
 
 
+        fun salvataggio(): RicetteModel?{
+            val dialogError = Dialog(this)
+            dialogError.setContentView(R.layout.dialog_errore)
+            var messaggioErroreModificabile = "Errore"
 
-
-        //-----------------------------------------------------------------------------------------------------
-        //SALVARE TUTTO SU DB
-        val dialogError = Dialog(this)
-        dialogError.setContentView(R.layout.dialog_errore)
-        var messaggioErroreModificabile = "Errore"
-
-        val btnok: Button = dialogError.findViewById(R.id.buttonOK)
-        val txtErrore: TextView = dialogError.findViewById(R.id.messaggioErrore)
-        btnok.setOnClickListener {
-            dialogError.dismiss()
-        }
-
-
-        //BOTTONE PER SALVARE TUTTI I DATI, PRIMA SI FANNO I CANTROLLI
-        val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
-        btnSalva.setOnClickListener{
-            if (provieneDaIntent==true) {
-                Log.d("899500483726839029897", "paolaAAAAAAAAAAAAAAAAAAAAA")
-
-                val editTitolo: EditText = findViewById(R.id.editTextText)
-                val titoloFinale = editTitolo.text.toString()
-
-                val portata: AutoCompleteTextView = findViewById(R.id.tendina)
-                val txtPortata = portata.text.toString()
-
-                val tipologia: AutoCompleteTextView = findViewById(R.id.tendinaTipo)
-                val txtTipologia = tipologia.text.toString()
-
-                val dieta: AutoCompleteTextView = findViewById(R.id.tendinaDieta)
-                val txtDieta = dieta.text.toString()
-
-                val etnia: AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
-                val txtEtnia = etnia.text.toString()
-
-                val difficolta: AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
-                val txtDifficolta = difficolta.text.toString()
-
-                val porzioni: EditText = findViewById(R.id.editPorzioni)
-                val txtPorzioni = porzioni.text.toString().toInt()
-
-                val tempo: EditText = findViewById(R.id.editTempo)
-                val txtTempo = tempo.text.toString().toInt()
-
-                // Aggiorna il pathFoto in base alla tua logica
-                val pathFoto= "default" // Sostituisci con la tua logica per il path dell'immagine
-
-                // Esegui l'update nel database
-                val updateQuery = """
-                UPDATE ricetta 
-                SET nome = '$titoloFinale', 
-                porzioni = $txtPorzioni, 
-                tempo_di_preparazione = $txtTempo, 
-                difficolta = '$txtDifficolta', 
-                tipologia = '$txtTipologia', 
-                portata = '$txtPortata', 
-                dieta = '$txtDieta', 
-                etnicita = '$txtEtnia', 
-                pathFoto = '$pathFoto'
-            WHERE id = $idRicetta
-        """
-
-                dbw.execSQL(updateQuery)
-
-                // Mostra un messaggio di successo o esegui altre azioni necessarie dopo l'update
-                Toast.makeText(this, "Dati salvati con successo", Toast.LENGTH_SHORT).show()
-
-
-                val resultIntent = Intent()
-                resultIntent.putExtra("id_ricetta", idRicetta)
-                resultIntent.putExtra("nome", titoloFinale)
-                resultIntent.putExtra("porzioni", txtPorzioni)
-                resultIntent.putExtra("tempo_di_preparazione", txtTempo)
-                resultIntent.putExtra("difficolta", txtDifficolta)
-                resultIntent.putExtra("tipologia", txtTipologia)
-                resultIntent.putExtra("portata", txtPortata)
-                resultIntent.putExtra("dieta", txtDieta)
-                resultIntent.putExtra("etnicita", txtEtnia)
-                resultIntent.putExtra("pathFoto", pathFoto)
-
-
-                // Imposta il risultato da restituire all'attività chiamante
-                setResult(Activity.RESULT_OK, resultIntent)
-                // Chiudi l'attività
-                finish()
+            val btnok: Button = dialogError.findViewById(R.id.buttonOK)
+            val txtErrore: TextView = dialogError.findViewById(R.id.messaggioErrore)
+            btnok.setOnClickListener {
+                dialogError.dismiss()
             }
 
-
-
-
-
-            else{
-                Log.d("222222222222222222222222222222222222222222", "$provieneDaIntent")
-
-                //se questa variabile diventa false allora si blocca il procedimento
+            var ricettaDaSalvare : RicetteModel? = null
+            //se questa variabile diventa false allora si blocca il procedimento
             var esito= true
 
 
             //CONTROLLO SUL TITOLO
-            val editTitolo: EditText = findViewById(R.id.editTextText)
+
             val titoloFinale = editTitolo.text.toString()
             if(titoloFinale.trim().isEmpty()) {
                 esito = false
@@ -761,8 +661,7 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA PORTATA
-            val portata: AutoCompleteTextView = findViewById(R.id.tendina)
-            val txtPortata = portata.text.toString()
+            val txtPortata = listaPortate.text.toString()
             if(txtPortata.isEmpty()){
                 esito = false
 
@@ -775,8 +674,8 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA TIPOLOGIA
-            val tipologia : AutoCompleteTextView = findViewById(R.id.tendinaTipo)
-            val txtTipologia = tipologia.text.toString()
+
+            val txtTipologia = listaTipo.text.toString()
             if(txtTipologia.isEmpty()){
                 esito = false
 
@@ -789,8 +688,7 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA DIETA
-            val dieta : AutoCompleteTextView = findViewById(R.id.tendinaDieta)
-            val txtDieta = dieta.text.toString()
+            val txtDieta = listaDieta.text.toString()
             if(txtDieta.isEmpty()){
                 esito = false
 
@@ -803,8 +701,8 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULL'ETNIA
-            val etnia : AutoCompleteTextView = findViewById(R.id.tendinaEtnia)
-            val txtEtnia = etnia.text.toString()
+
+            val txtEtnia = listaEtnia.text.toString()
             if(txtEtnia.isEmpty()){
                 esito = false
 
@@ -817,8 +715,8 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA DIFFICOLTA
-            val difficolta : AutoCompleteTextView = findViewById(R.id.tendinaDifficolta)
-            val txtDifficolta = difficolta.text.toString()
+
+            val txtDifficolta = tendinaDifficolta.text.toString()
             if(txtDifficolta.isEmpty()){
                 esito = false
 
@@ -831,7 +729,6 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SUL NUMERO DI PORZIONI
-            val porzioni : EditText = findViewById(R.id.editPorzioni)
             val txtPorzioni = porzioni.text.toString()
             var numPorzioni = 0
             if(txtPorzioni.isEmpty()){
@@ -848,7 +745,6 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SUL TEMPO
-            val tempo : EditText = findViewById(R.id.editTempo)
             val txtTempo = tempo.text.toString()
             var numTempo = 0
             if(txtTempo.isEmpty()){
@@ -892,13 +788,9 @@ class newRecipeActivity : AppCompatActivity() {
                 preparazione = componiProcedura(listaProcedimenti)
             }
 
-
-            //TODO controllare il path della foto, se è null mettere 'default'
-
-            //se tutto va bene creo la ricetta e la carico sul DB
             if(esito) {
-                RicetteModel(
-                    -1,
+                ricettaDaSalvare = RicetteModel(
+                   -1,
                     titoloFinale,
                     uriFoto.toString(),
                     preparazione,
@@ -912,19 +804,83 @@ class newRecipeActivity : AppCompatActivity() {
                     0
                 )
 
-                //Log.d("222222222222222222222222222222222222222222", "qui dovrebbe essere dopo")
+
+            }
+        return ricettaDaSalvare
+        }
+
+
+        //-----------------------------------------------------------------------------------------------------
+
+        val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
+        btnSalva.setOnClickListener{
+            if(idRicetta != -1){
+
+                val ricetta =salvataggio()
+                Log.d("22222222222222222222222333333333333333333", "modifica")
+                Log.d("22222222222222222222222244444444444444", "${ricetta?.nome}")
+
+
+                // per salvare sul database
+                val updateQuery = """
+                UPDATE ricetta 
+                SET nome = '${ricetta?.nome}', 
+                porzioni = '${ricetta?.porzioni}', 
+                tempo_di_preparazione ='${ricetta?.tempo}', 
+                difficolta = '${ricetta?.difficolta}', 
+                tipologia = '${ricetta?.tipologia}', 
+                portata = '${ricetta?.portata}', 
+                dieta = '${ricetta?.dieta}', 
+                etnicita = '${ricetta?.etnicita}', 
+                pathFoto = '${ricetta?.pathFoto}',
+                preparazione = '${ricetta?.preparazione}'
+            WHERE id = '${idRicetta}'
+        """
+                dbw.execSQL(updateQuery)
+
+                // Mostra un messaggio di successo o esegui altre azioni necessarie dopo l'update
+                Toast.makeText(this, "Dati salvati con successo", Toast.LENGTH_SHORT).show()
+
+
+
+                //per passare i valori a DETAILFRAGMENT
+                val resultIntent = Intent()
+                resultIntent.putExtra("id_ricetta", idRicetta)
+                Log.d("666666666666666666666", "$idRicetta")
+                resultIntent.putExtra("nome", ricetta?.nome)
+                resultIntent.putExtra("porzioni", ricetta?.porzioni)
+                resultIntent.putExtra("tempo_di_preparazione", ricetta?.tempo)
+                resultIntent.putExtra("difficolta", ricetta?.difficolta)
+                resultIntent.putExtra("tipologia", ricetta?.tipologia)
+                resultIntent.putExtra("portata", ricetta?.portata)
+                resultIntent.putExtra("dieta", ricetta?.dieta)
+                resultIntent.putExtra("etnicita", ricetta?.etnicita)
+                resultIntent.putExtra("pathFoto", ricetta?.pathFoto)
+                resultIntent.putExtra("preparazione", ricetta?.preparazione)
+
+
+                setResult(Activity.RESULT_OK, resultIntent)
+                finish()
+            } else{
+
+                val ricetta =salvataggio()
+
+                Log.d("384898728738328789238983", "${ricetta?.nome}")
+
+
+            //TODO controllare il path della foto, se è null mettere 'default'
 
                 //TODO cambiare il path con quello selezionato
-                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ('$titoloFinale', $numPorzioni, $numTempo, '$txtDifficolta', '$txtTipologia', '$txtPortata', '$txtDieta', '$txtEtnia', '${uriFoto.toString()}', '$preparazione', 0)")
-            }}
+                dbw.execSQL("INSERT INTO ricetta(nome , porzioni ,tempo_di_preparazione, difficolta, tipologia, portata, dieta, etnicita, pathFoto, preparazione, preferito) VALUES ( '${ricetta?.nome}', '${ricetta?.porzioni}', '${ricetta?.tempo}', '${ricetta?.difficolta}', '${ricetta?.tipologia}', '${ricetta?.portata}', '${ricetta?.dieta}', '${ricetta?.etnicita}', '${ricetta?.pathFoto}', '${ricetta?.preparazione}', 0)")
+            }}}
 
             //TODO fare qualcosa per prendere gli ingredienti e le quantità
             // poi inserirli uno alla volta con anche l'ID della ricetta
 
-        }
 
 
-    }
+
+
 
     private fun chooseImageFromGallery() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
