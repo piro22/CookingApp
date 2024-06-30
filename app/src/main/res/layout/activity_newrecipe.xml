@@ -430,14 +430,14 @@
                     android:id="@+id/TextProcedimento"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
+                    android:layout_marginLeft="16dp"
                     android:ems="10"
                     android:hint="aggiungi procedura"
                     android:imeOptions="actionDone"
                     android:singleLine="true"
+                    app:layout_constraintBottom_toTopOf="@id/recyclerViewProcedure"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/recyclerViewProcedure"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/aggiungiProcedura"

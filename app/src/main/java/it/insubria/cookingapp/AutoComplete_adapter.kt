@@ -11,7 +11,7 @@ import it.insubria.cookingapp.R
 class AutoComplete_adapter(
     context: Context,
     private val resource: Int,
-    private val items: List<String>,
+    private val items: MutableList<String>,
     private val database: SQLiteDatabase,
     private val tableName: String,
     private val columnName: String
@@ -24,14 +24,27 @@ class AutoComplete_adapter(
         textView.text = item
 
         val deleteButton = view.findViewById<ImageButton>(R.id.delete_button)
-        deleteButton.setOnClickListener {
+
+
+        if (item == "- - -") {
+            deleteButton.visibility = View.GONE  // per nascondere il pulsante perche - - - usato come default
+        } else {
+            deleteButton.visibility = View.VISIBLE
+            deleteButton.setOnClickListener {
             val itemToRemove = getItem(position)
             if (itemToRemove != null) {
                 remove(itemToRemove)
-                notifyDataSetChanged()
                 deleteItemFromDatabase(itemToRemove)
+                notifyDataSetChanged()
+
             }
+
         }
+
+
+
+        }
+
 
         return view
     }

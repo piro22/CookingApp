@@ -1,7 +1,9 @@
 package it.insubria.cookingapp
 
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -12,11 +14,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ListView
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 
@@ -72,56 +76,59 @@ class DetailFragment() : Fragment() {
         //perche devo fare ret. e non subiro findIdviewby
 
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
-        val btnModifica: Button = ret.findViewById(R.id.buttonModifica)
+        val btnModifica : Button = ret.findViewById(R.id.buttonModifica)
+        val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
+        val textDiff: TextView = ret.findViewById(R.id.textDiff)
+        val textPortata: TextView = ret.findViewById(R.id.textPortata)
+        val textTipologia: TextView = ret.findViewById(R.id.textTipologia)
+        val textDieta: TextView = ret.findViewById(R.id.textDieta)
+        val txtTempo: TextView = ret.findViewById(R.id.txtTempo)
+        val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
+        val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
+        val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
+
+
         var txtIngredienti = ret.findViewById<TextView>(R.id.listaIngredienti)
 
 
         if (ricetta != null) {
 
             //PER TITOLO CHE SCORRE
-            val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
             textTitolo.text = ricetta!!.nome
             textTitolo.isSelected = true
 
             //INSERISCO TUTTI I VALORI nelle view
-            val textDiff: TextView = ret.findViewById(R.id.textDiff)
             val t1 = "Difficoltà:\n${ricetta!!.difficolta}"
             textDiff.text = soloInizioGrassetto("Difficoltà:", t1)
             //      textDiff.text = "Difficoltà:\n ${ricetta.difficolta}"
 
-            val textPortata: TextView = ret.findViewById(R.id.textPortata)
             val t2 = "Portata:\n ${ricetta!!.portata}"
             textPortata.text = soloInizioGrassetto("Poratata:", t2)
             //textPortata.text = "Portata:\n ${ricetta.portata}"
 
-            val textTipologia: TextView = ret.findViewById(R.id.textTipologia)
             val t3 = "Tipologia:\n ${ricetta!!.tipologia}"
             textTipologia.text = soloInizioGrassetto("Tipologia:", t3)
             //textTipologia.text = "Tipologia:\n ${ricetta.tipologia}"
 
-            val textDieta: TextView = ret.findViewById(R.id.textDieta)
             val t4 = "Dieta:\n ${ricetta!!.dieta}"
             textDieta.text = soloInizioGrassetto("Dieta:", t4)
             //textDieta.text = "Dieta:\n ${ricetta.dieta}"
 
-            val txtTempo: TextView = ret.findViewById(R.id.txtTempo)
             txtTempo.text = "Tempo preparazione: ${ricetta!!.tempo} min"
 
-            val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
             editPorzioni.setText(ricetta!!.porzioni.toString())
             porzioniTemp = ricetta!!.porzioni
 
-            val textPreparazione: TextView = ret.findViewById(R.id.textPreparazione)
+
             textPreparazione.text = parsePreparazione(ricetta!!.preparazione)
 
 
-            val imgRicetta: ImageView = ret.findViewById(R.id.imgRicetta)
             if (!ricetta!!.pathFoto.equals("default")) {
                 imgRicetta.setImageURI(ricetta!!.pathFoto.toUri())
             }
 
             //sarebbe il campo preferito all'interno del db
-            var preferito = ricetta!!.preferito
+            val preferito = ricetta!!.preferito
 
             if (preferito == 0) {
                 favoriteIcon.setImageResource(R.drawable.baseline_favorite_24)
@@ -138,6 +145,9 @@ class DetailFragment() : Fragment() {
 
             val cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
 
+
+        //--------------------------- PER LEGGERE E MOSTRARE GLI INGREDIENTI DELLA RICETTA
+        //PRENDENDOLI DAL DB
             if (cursor.moveToFirst()) {
                 do {
 
@@ -157,23 +167,115 @@ class DetailFragment() : Fragment() {
             txtIngredienti.text = componiTestoIngredienti()
         }
 
+        val listaIngredienti = mutableListOf<String> ()
+
 
         btnModifica.setOnClickListener {
             val intent = Intent(requireContext(), newRecipeActivity::class.java)
 
-            intent.putExtra("id_ricetta", ricetta!!.id)
+                intent.putExtra("id_ricetta", ricetta!!.id)
 
-            startActivity(intent)
+                val str_tot = "$ingrediente $quantita $unita_di_misura\n"
+                listaIngredienti.add(str_tot)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+            return listaIngredienti
+        }
+
+
+        val listaIngredienti = leggiIngredienti()
+
+        //MOSTRO GLI INGREDIENTI ALL'UTENTE
+        val textView: TextView = ret.findViewById(R.id.listaIngredienti)
+        textView.text = listaIngredienti.joinToString(separator = "")
+
+
+
+
+//-----------------------------------------------------------------------------------------------------
+        //quello che mi restituisce
+        lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            // Gestione del risultato
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                val idRicetta = data?.getIntExtra("id_ricetta", -1)
+                if (idRicetta != null && idRicetta != -1) {
+                    Log.d("777777777777777777777777777777777777", "$idRicetta")
+                    // Query per recuperare gli ingredienti usando idRicetta
+                    val cur: Cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
+
+                    //val ingredientsList = mutableListOf<String>()
+
+                    if (cur.moveToFirst()) {
+                        val nome = cur.getString(cur.getColumnIndexOrThrow("nome"))
+                        val porzioni = cur.getInt(cur.getColumnIndexOrThrow("porzioni"))
+                        val difficolta = cur.getString(cur.getColumnIndexOrThrow("difficolta"))
+                        val tipologia = cur.getString(cur.getColumnIndexOrThrow("tipologia"))
+                        val portata = cur.getString(cur.getColumnIndexOrThrow("portata"))
+                        val dieta = cur.getString(cur.getColumnIndexOrThrow("dieta"))
+                        val tempo = cur.getInt(cur.getColumnIndexOrThrow("tempo_di_preparazione"))
+                        val preparazione = cur.getString(cur.getColumnIndexOrThrow("preparazione"))
+                        val pathFoto = cur.getString(cur.getColumnIndexOrThrow("pathFoto"))
+
+                        textTitolo.text = nome
+                        textDiff.text = difficolta
+                        textPortata.text = portata
+                        textTipologia.text = tipologia
+                        textDieta.text = dieta
+                        txtTempo.text = tempo.toString()
+                        editPorzioni.setText(porzioni.toString())
+                        textPreparazione.text = preparazione
+
+                        if (pathFoto != "default") {
+                            imgRicetta.setImageURI(pathFoto.toUri())
+                        } else {
+                             // Sostituisci con la tua immagine di default
+                        }
+
+
+
+                        val ingredienti = leggiIngredienti()
+                        val textView: TextView = ret.findViewById(R.id.listaIngredienti)
+                        textView.text = ingredienti.joinToString(separator = "")
+
+                        cur.close()
+
+                    }
+
+
+
+
+            }}
+
+
+
+
+
+
+
+        }
+
+
+        btnModifica.setOnClickListener{
+            val intent = Intent(requireContext(), newRecipeActivity::class.java )
+            intent.putExtra("id_ricetta",ricetta!!.id )
+            activityResultLauncher.launch(intent)
         }
 
 
 
 
 
-
+//------------------------------------------------------------------------------------------------
+        //
         favoriteIcon.setOnClickListener {
-
-            val dbw = dbHelper!!.writableDatabase
+            val dbw = dbHelper.writableDatabase
 
             //sarebbe il campo preferito all'interno del db
             //var preferito = ricetta!!.preferito
