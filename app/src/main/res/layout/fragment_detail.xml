@@ -29,7 +29,7 @@
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:paddingLeft="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:text="TORTINO AL CIOCCOLATO"
@@ -37,7 +37,7 @@
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/layoutInfo"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/favoriteIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 android:singleLine="true"
                 android:ellipsize="marquee"
@@ -48,14 +48,23 @@
                 android:freezesText="true"
                 />
 
+            <ImageView
+                android:id="@+id/favoriteIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginStart="7dp"
+                android:src="@drawable/baseline_favorite_24"
+                app:tint = "@color/coquelicot"
+                app:layout_constraintBottom_toTopOf="@id/layoutInfo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <Button
                 android:id="@+id/buttonModifica"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="modifica"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 app:layout_constraintBottom_toTopOf="@id/layoutInfo"
@@ -67,9 +76,11 @@
 
             <LinearLayout
                 android:id="@+id/layoutInfo"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:padding="3dp"
+                android:gravity="center_horizontal"
                 app:layout_constraintTop_toBottomOf="@id/buttonModifica"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -80,9 +91,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Difficoltà: *****"
-                    android:background="@drawable/custom_bkg_textview"
+                    android:background="@drawable/custom_bkg_button"
                     android:textColor="@color/smokey_black"
                     android:layout_marginBottom="10dp"
+                    android:padding="8dp"
+                    android:gravity="center"
                     />
 
                 <TextView
@@ -90,10 +103,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Portata: Primo"
-                    android:background="@drawable/custom_bkg_textview"
+                    android:background="@drawable/custom_bkg_button"
                     android:textColor="@color/smokey_black"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="5dp"
+                    android:padding="8dp"
+                    android:gravity="center"
                     />
 
                 <TextView
@@ -101,10 +116,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tipo: Pasta"
-                    android:background="@drawable/custom_bkg_textview"
+                    android:background="@drawable/custom_bkg_button"
                     android:textColor="@color/smokey_black"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="5dp"
+                    android:padding="8dp"
+                    android:gravity="center"
                     />
 
                 <TextView
@@ -112,10 +129,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Dieta: Vegana"
-                    android:background="@drawable/custom_bkg_textview"
+                    android:background="@drawable/custom_bkg_button"
                     android:textColor="@color/smokey_black"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="5dp"
+                    android:padding="8dp"
+                    android:gravity="center"
                     />
 
             </LinearLayout>
@@ -202,15 +221,6 @@
                 android:layout_marginRight="10dp"
                 />
 
-            <ImageView
-                android:id="@+id/favoriteIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="50sp"
-                android:src="@drawable/baseline_favorite_24"
-                app:layout_constraintBottom_toTopOf="@+id/listaIngredienti"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/txtIngredienti"
-                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

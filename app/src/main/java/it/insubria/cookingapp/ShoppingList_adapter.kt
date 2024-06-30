@@ -11,7 +11,8 @@ import android.widget.Toast
 
 class ShoppingListAdapter(
     context: Context,
-    private val items: MutableList<String>
+    private val items: MutableList<String>,
+    private val quant: MutableList<Int>
 ) : ArrayAdapter<String>(context, R.layout.row_shopping_list, items) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -26,11 +27,13 @@ class ShoppingListAdapter(
 
         // Set the text for the ingredient and quantity (assuming items contains both)
         ingrediente.text = items[position]
-        // quantita.text = items[position] // Assuming you have separate data for quantity
+
+        quantita.text = quant[position].toString() // Assuming you have separate data for quantity
 
         // Set up the delete icon click listener
         deleteIcon.setOnClickListener {
             items.removeAt(position)
+            quant.removeAt(position)
             notifyDataSetChanged()
         }
 

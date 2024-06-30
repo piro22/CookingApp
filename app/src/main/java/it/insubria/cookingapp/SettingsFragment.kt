@@ -65,6 +65,8 @@ class SettingsFragment : Fragment() {
 
             //Log.d("CAMBIO SISTEMA VOLUMEEEEEEE", "${ricettaViewModel.volume}")
         }
+        //-------------------------------------------------------------------------------------------
+
 
         //per impostare le unita di misura per il PESO
         var radioGroupPeso: RadioGroup = ret.findViewById(R.id.radioGroupPeso)
@@ -86,6 +88,27 @@ class SettingsFragment : Fragment() {
 
             //Log.d("CAMBIO SISTEMA PESOOOOOOOOOO", "${ricettaViewModel.peso}")
         }
+        //-------------------------------------------------------------------------------------------
+
+
+        //IMPOSTO QUALE BOTTONE SELEZIONARE IN BASE A DATAMODEL
+        val viewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        when (viewModel.peso) {
+            "metrico" -> radioButton1Peso.isChecked = true
+            "imperiale" -> radioButton2Peso.isChecked = true
+            else -> {
+                radioButton0Peso.isChecked = true
+            }
+        }
+
+        when (viewModel.volume) {
+            "metrico" -> radioButton1Volume.isChecked = true
+            "imperiale" -> radioButton2Volume.isChecked = true
+            else -> {
+                radioButton0Volume.isChecked = true
+            }
+        }
+        //-------------------------------------------------------------------------------------------
 
 
         //per inserire nella ListView gli elementi della categoria selezionata
@@ -110,7 +133,6 @@ class SettingsFragment : Fragment() {
 
             //Log.d("CAMBIO SISTEMA PESOOOOOOOOOO", "${ricettaViewModel.peso}")
         }
-
 
 
         return ret

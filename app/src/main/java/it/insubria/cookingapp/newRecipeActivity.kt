@@ -301,6 +301,9 @@ class newRecipeActivity : AppCompatActivity() {
             dialogE.dismiss()
         }
 
+
+// Pulsante di annullamento
+
         val btn_annullaE: ImageView = dialogE.findViewById(R.id.annullaBtnE)
 
         btn_annullaE.setOnClickListener {
@@ -933,7 +936,7 @@ class newRecipeActivity : AppCompatActivity() {
 
                 imageViewFoto.setImageURI(selectedImageUri)
             }
-        } else {
+        }else{
             uriFoto = "default"
         }
     }
