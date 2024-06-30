@@ -43,6 +43,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dataModel = ViewModelProvider(this).get(DataModel::class.java)
         dataModel.dbHelper = Database_SQL(this)
 
+        //TODO DA ELIMINARE POI
+        val dbw = dataModel.dbHelper!!.writableDatabase
+        dbw.execSQL("DELETE FROM unita_di_misura")
+        dbw.execSQL("INSERT INTO unita_di_misura VALUES ('- - -'), ('L'), ('dL'), ('cL'), ('mL'), ('Kg'), ('h'), ('g'), ('tsp'), ('tbsp'), ('cup'), ('pt'), ('qt'), ('gal'), ('Oz'), ('lb'), ('qb')")
+        //-----------------------------
 
         //SETUP DRAWER
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)

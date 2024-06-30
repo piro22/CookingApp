@@ -76,7 +76,7 @@ class DetailFragment() : Fragment() {
         //perche devo fare ret. e non subiro findIdviewby
 
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
-        val btnModifica : Button = ret.findViewById(R.id.buttonModifica)
+        val btnModifica: Button = ret.findViewById(R.id.buttonModifica)
         val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
         val textDiff: TextView = ret.findViewById(R.id.textDiff)
         val textPortata: TextView = ret.findViewById(R.id.textPortata)
@@ -90,6 +90,8 @@ class DetailFragment() : Fragment() {
 
         var txtIngredienti = ret.findViewById<TextView>(R.id.listaIngredienti)
 
+        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        val dbH = dataModel.dbHelper
 
         if (ricetta != null) {
 
@@ -138,28 +140,30 @@ class DetailFragment() : Fragment() {
 
 
             //prendo tutti gli ingredienti associati alla ricetta
-            val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
-            val dbH = dataModel.dbHelper
             val dbr = dbH!!.readableDatabase
             val idRicetta = dataModel.ricetta!!.id
 
-            val cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
+            val cursor = dbr.rawQuery(
+                "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
+                arrayOf(idRicetta.toString())
+            )
 
 
-        //--------------------------- PER LEGGERE E MOSTRARE GLI INGREDIENTI DELLA RICETTA
-        //PRENDENDOLI DAL DB
+            //--------------------------- PER LEGGERE E MOSTRARE GLI INGREDIENTI DELLA RICETTA
+            //PRENDENDOLI DAL DB
             if (cursor.moveToFirst()) {
                 do {
 
                     val ingrediente = cursor.getString(cursor.getColumnIndexOrThrow("ingrediente"))
                     val quantita = cursor.getInt(cursor.getColumnIndexOrThrow("quantita"))
-                    val unitaDiMisura = cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+                    val unitaDiMisura =
+                        cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
 
                     ingredientiNome.add(ingrediente)
                     ingredientiQuantita.add(quantita.toFloat())
                     ingredientiUnita.add(unitaDiMisura)
 
-                    } while (cursor.moveToNext())
+                } while (cursor.moveToNext())
             }
             cursor.close()
 
@@ -167,33 +171,7 @@ class DetailFragment() : Fragment() {
             txtIngredienti.text = componiTestoIngredienti()
         }
 
-        val listaIngredienti = mutableListOf<String> ()
-
-
-        btnModifica.setOnClickListener {
-            val intent = Intent(requireContext(), newRecipeActivity::class.java)
-
-                intent.putExtra("id_ricetta", ricetta!!.id)
-
-                val str_tot = "$ingrediente $quantita $unita_di_misura\n"
-                listaIngredienti.add(str_tot)
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-
-            return listaIngredienti
-        }
-
-
-        val listaIngredienti = leggiIngredienti()
-
-        //MOSTRO GLI INGREDIENTI ALL'UTENTE
-        val textView: TextView = ret.findViewById(R.id.listaIngredienti)
-        textView.text = listaIngredienti.joinToString(separator = "")
-
-
-
-
+        val dbr = dbH!!.readableDatabase
 //-----------------------------------------------------------------------------------------------------
         //quello che mi restituisce
         lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
@@ -208,7 +186,11 @@ class DetailFragment() : Fragment() {
                 if (idRicetta != null && idRicetta != -1) {
                     Log.d("777777777777777777777777777777777777", "$idRicetta")
                     // Query per recuperare gli ingredienti usando idRicetta
-                    val cur: Cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
+
+                    val cur: Cursor = dbr.rawQuery(
+                        "SELECT * FROM ricetta WHERE id = ?",
+                        arrayOf(idRicetta.toString())
+                    )
 
                     //val ingredientsList = mutableListOf<String>()
 
@@ -230,52 +212,39 @@ class DetailFragment() : Fragment() {
                         textDieta.text = dieta
                         txtTempo.text = tempo.toString()
                         editPorzioni.setText(porzioni.toString())
-                        textPreparazione.text = preparazione
+                        textPreparazione.text = parsePreparazione(preparazione)
 
                         if (pathFoto != "default") {
                             imgRicetta.setImageURI(pathFoto.toUri())
                         } else {
-                             // Sostituisci con la tua immagine di default
+                            //TODO Sostituisci con la tua immagine di default
                         }
 
 
-
-                        val ingredienti = leggiIngredienti()
-                        val textView: TextView = ret.findViewById(R.id.listaIngredienti)
-                        textView.text = ingredienti.joinToString(separator = "")
+                        val ingredienti = 0//TODO jack sistema
+                        //TODO prendere ingredienti da DB e mostrarli
 
                         cur.close()
 
                     }
-
-
-
-
-            }}
-
-
-
-
-
+                }
+            }
 
 
         }
 
 
-        btnModifica.setOnClickListener{
-            val intent = Intent(requireContext(), newRecipeActivity::class.java )
-            intent.putExtra("id_ricetta",ricetta!!.id )
+        btnModifica.setOnClickListener {
+            val intent = Intent(requireContext(), newRecipeActivity::class.java)
+            intent.putExtra("id_ricetta", ricetta!!.id)
             activityResultLauncher.launch(intent)
         }
-
-
-
 
 
 //------------------------------------------------------------------------------------------------
         //
         favoriteIcon.setOnClickListener {
-            val dbw = dbHelper.writableDatabase
+            val dbw = dbHelper!!.writableDatabase
 
             //sarebbe il campo preferito all'interno del db
             //var preferito = ricetta!!.preferito
@@ -301,11 +270,11 @@ class DetailFragment() : Fragment() {
 
 
         //METODO PER CAMBIARE LE UNITA' DI MISURA IN CIO' CHE HA SELEZIONATO L'UTENTE
-        if(!ingredientiQuantita.isEmpty() || !ingredientiNome.isEmpty() || !ingredientiUnita.isEmpty()){
-            if(!ricettaViewModel.peso.equals("default")){
+        if (!ingredientiQuantita.isEmpty() || !ingredientiNome.isEmpty() || !ingredientiUnita.isEmpty()) {
+            if (!ricettaViewModel.peso.equals("default")) {
                 cambiaPeso()
             }
-            if(!ricettaViewModel.peso.equals("default")){
+            if (!ricettaViewModel.peso.equals("default")) {
                 cambiaVolume()
             }
             txtIngredienti.text = componiTestoIngredienti()
@@ -315,30 +284,36 @@ class DetailFragment() : Fragment() {
 
         //METODO PER CAMBIARE LE PROPORZIONI
         val buttonPorzioni: Button = ret.findViewById(R.id.buttonPorzioni)
-        val editPorzioni: EditText = ret.findViewById(R.id.editPorzioni)
 
         buttonPorzioni.setOnClickListener {
             val porz = editPorzioni.text.toString()
             //controllo che ci sia scritto qualcosa e che ricetta esista
-            if(!porz.isEmpty()){
+            if (!porz.isEmpty()) {
 
-                Log.d("CAMBIO PORZIONI","---------Da ${porzioniTemp} a $porz---------\n")
+                Log.d("CAMBIO PORZIONI", "---------Da ${porzioniTemp} a $porz---------\n")
 
                 var newPorz = porz.toInt()
 
                 //controllo che quello inserito e quello che ho in ricetta siano diversi
-                if(newPorz != porzioniTemp){
+                if (newPorz != porzioniTemp) {
                     //qui faccio le proporzioni e cambio tutte le quantità
 
-                    for(i in 0 until ingredientiQuantita.size){
+                    for (i in 0 until ingredientiQuantita.size) {
 
-                        Log.d("CAMBIO PORZIONI","cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n")
+                        Log.d(
+                            "CAMBIO PORZIONI",
+                            "cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n"
+                        )
 
-                        if(!ingredientiUnita[i].equals("qb")){
-                            ingredientiQuantita[i] = (ingredientiQuantita[i]/porzioniTemp) * newPorz
+                        if (!ingredientiUnita[i].equals("qb")) {
+                            ingredientiQuantita[i] =
+                                (ingredientiQuantita[i] / porzioniTemp) * newPorz
                         }
 
-                        Log.d("CAMBIO PORZIONI","cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n")
+                        Log.d(
+                            "CAMBIO PORZIONI",
+                            "cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n"
+                        )
 
                     }
                     porzioniTemp = newPorz
@@ -356,8 +331,8 @@ class DetailFragment() : Fragment() {
 
         val arraySplit = preparazione.split("[[Passo]]")
 
-        for(i in 1 until arraySplit.size){
-            if(i != arraySplit.size-1)
+        for (i in 1 until arraySplit.size) {
+            if (i != arraySplit.size - 1)
                 ret = ret + "Passo ${i - 1}: \n" + arraySplit[i] + "\n\n"
             else
                 ret = ret + "Passo ${i - 1}: \n" + arraySplit[i]
@@ -367,7 +342,7 @@ class DetailFragment() : Fragment() {
 
     private fun componiTestoIngredienti(): String {
         var ret = ""
-        for (i in 0 until ingredientiNome.size){
+        for (i in 0 until ingredientiNome.size) {
             ret = ret + ingredientiNome[i] + " " + ingredientiQuantita[i] + " " +
                     ingredientiUnita[i] + "\n"
         }
@@ -533,9 +508,9 @@ class DetailFragment() : Fragment() {
                     var tmp = ingredientiQuantita[i]
 
                     when (ingredientiUnita[i]) {
-                        "L" -> volMetrToImp(tmp*1000.0f, i)
-                        "dL" -> volMetrToImp(tmp*100.0f, i)
-                        "cL" -> volMetrToImp(tmp*10.0f, i)
+                        "L" -> volMetrToImp(tmp * 1000.0f, i)
+                        "dL" -> volMetrToImp(tmp * 100.0f, i)
+                        "cL" -> volMetrToImp(tmp * 10.0f, i)
                         "mL" -> volMetrToImp(tmp, i)
                     }
 
@@ -552,11 +527,11 @@ class DetailFragment() : Fragment() {
                     val tmp = ingredientiQuantita[i]
 
                     when (ingredientiUnita[i]) {
-                        "gal" -> volImpToMetr(tmp*760.0f, i)
-                        "qt" -> volImpToMetr(tmp*190.0f, i)
-                        "pt" -> volImpToMetr(tmp*94.0f, i)
-                        "cup" -> volImpToMetr(tmp*48.0f, i)
-                        "tbsp" -> volImpToMetr(tmp*3.0f, i)
+                        "gal" -> volImpToMetr(tmp * 760.0f, i)
+                        "qt" -> volImpToMetr(tmp * 190.0f, i)
+                        "pt" -> volImpToMetr(tmp * 94.0f, i)
+                        "cup" -> volImpToMetr(tmp * 48.0f, i)
+                        "tbsp" -> volImpToMetr(tmp * 3.0f, i)
                         "tsp" -> volImpToMetr(tmp, i)
                     }
 
@@ -567,28 +542,33 @@ class DetailFragment() : Fragment() {
 
     }
 
-    private fun volMetrToImp(millilitri: Float, i: Int){
+    private fun volMetrToImp(millilitri: Float, i: Int) {
         when {
             millilitri >= 3800.0f -> {
                 ingredientiQuantita[i] = millilitri / 3800.0f
                 ingredientiUnita[i] = "gal"
             }
+
             millilitri >= 950.0f -> {
                 ingredientiQuantita[i] = millilitri / 950.0f
                 ingredientiUnita[i] = "qt"
             }
+
             millilitri >= 470.0f -> {
                 ingredientiQuantita[i] = millilitri / 470.0f
                 ingredientiUnita[i] = "pt"
             }
+
             millilitri >= 240.0f -> {
                 ingredientiQuantita[i] = millilitri / 240.0f
                 ingredientiUnita[i] = "cup"
             }
+
             millilitri >= 15.0f -> {
                 ingredientiQuantita[i] = millilitri / 15.0f
                 ingredientiUnita[i] = "tbsp"
             }
+
             else -> {
                 ingredientiQuantita[i] = millilitri / 5.0f
                 ingredientiUnita[i] = "tsp"
@@ -604,6 +584,7 @@ class DetailFragment() : Fragment() {
                 ingredientiQuantita[i] = ml / 1000.0f
                 ingredientiUnita[i] = "L"
             }
+
             else -> {
                 ingredientiQuantita[i] = ml
                 ingredientiUnita[i] = "mL"
