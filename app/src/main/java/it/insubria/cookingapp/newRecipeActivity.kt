@@ -644,9 +644,10 @@ class newRecipeActivity : AppCompatActivity() {
             if (cursorIng.moveToFirst()) {
                 do {
 
-                    val ingrediente = cursorIng.getString(cursor.getColumnIndexOrThrow("ingrediente"))
-                    val quantita = cursorIng.getInt(cursor.getColumnIndexOrThrow("quantita"))
-                    val unitaDiMisura = cursorIng.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+                    val unitaDiMisura = cursorIng.getString(cursorIng.getColumnIndexOrThrow("unita_di_misura"))
+                    val ingrediente = cursorIng.getString(cursorIng.getColumnIndexOrThrow("ingrediente"))
+                    val quantita = cursorIng.getInt(cursorIng.getColumnIndexOrThrow("quantita"))
+
 
                     ingredientiNome.add(ingrediente)
                     ingredientiQuantita.add(quantita.toFloat())
