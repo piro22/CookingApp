@@ -99,10 +99,10 @@ class DetailFragment() : Fragment() {
         val dbH = dataModel.dbHelper
         //prendo tutti gli ingredienti associati alla ricetta
         val dbr = dbH!!.readableDatabase
-        val idRecipe = dataModel.ricetta!!.id
+
 
         if (ricetta != null) {
-
+            val idRecipe = ricetta!!.id
 
             //PER TITOLO CHE SCORRE
             textTitolo.text = ricetta!!.nome
@@ -203,6 +203,7 @@ class DetailFragment() : Fragment() {
                             //TODO Sostituisci con la tua immagine di default
                         }
 
+                        val idRecipe = ricetta!!.id
 
                         leggiIngredienti(dbr, idRecipe, ingredientiNome, ingredientiQuantita, ingredientiUnita)
                         txtIngredienti.text = componiTestoIngredienti()
