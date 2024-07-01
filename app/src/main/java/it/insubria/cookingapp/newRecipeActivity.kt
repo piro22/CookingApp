@@ -2,13 +2,12 @@ package it.insubria.cookingapp
 
 import AutoComplete_adapter
 import android.app.Activity
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
-import androidx.core.net.toUri
-import android.database.sqlite.SQLiteDatabase
-import android.app.Dialog
 import android.content.Intent
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
@@ -35,8 +34,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.net.URI
 import java.util.Collections
+
 
 class newRecipeActivity : AppCompatActivity() {
 
@@ -64,7 +63,7 @@ class newRecipeActivity : AppCompatActivity() {
         //inizializzazione variabili
         val editTitolo: EditText = findViewById(R.id.editTextText)
         val porzioni: EditText = findViewById(R.id.editPorzioni)
-        val tempo: EditText = findViewById(R.id.editTempo)
+        val tempo: TextView = findViewById(R.id.editTempo)
         btnImmagine = findViewById(R.id.btnfoto)
         //a che serve que?
         imageViewFoto = findViewById(R.id.imageViewFoto)
@@ -512,7 +511,6 @@ class newRecipeActivity : AppCompatActivity() {
 
         val bottoneIngrediente: ImageView = findViewById(R.id.aggiungiIngrediente)
 
-
         listViewIngredients.adapter = adapt
 
 
@@ -567,8 +565,10 @@ class newRecipeActivity : AppCompatActivity() {
         //valore che serve per capire quae azione far svolgere al bottone salvaTutto
         //var provieneDaIntent : Boolean = false DA ELIMINARE
 
-        if (idRicetta != -1) {
 
+
+
+        if (idRicetta != -1) {
 
 // Popola i campi con i dati ricevuti
             val cursor: Cursor =
@@ -596,54 +596,50 @@ class newRecipeActivity : AppCompatActivity() {
                 editTitolo.setText(nomeRicetta)
                 porzioni.setText(porzioniRicetta.toString())
 
-
-
                 if (pathFoto != "default") {
                     btnImmagine.setImageURI(pathFoto.toUri())
                 }
 
-                /*
-                            //per passare i dati in maniera corretta all'adapter una volta recuperati dal db
-                            val segments = preparazione.split("[[passo]]")
+                //per le procedure
+                val segments : List<String>  = preparazione.split("\\[\\[Passo\\]\\]".toRegex());
+                for (segment in segments) {
+                    if(segment!= ""){
+                    listaProcedimenti.add(segment)
+                    }
+                }
 
-                            val listaProcedure = mutableListOf<String>()
+                val adapterProc = RecyclerView_ListaProcedimento(listaProcedimenti)
+                recyclerViewProcedimento.adapter = adapterProc
 
-                            for (segment in segments) {
-                                listaProcedure.add(segment.trim())
-                            }
-
-                            recyclerViewProcedimento.adapter = adapterProcedimento*/
+                adapterProc.notifyDataSetChanged()
 
             }
             cursor.close()
 
             //popolo gli ingredienti
-            /*val cur: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
+            val cursoreIngredienti: Cursor = dbr.rawQuery("SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?", arrayOf(idRicetta.toString()))
 
             val ingredientsList = mutableListOf<String>()
 
-            if (cur.moveToFirst()) {
-                do {
-                    val ingrediente = cur.getString(cur.getColumnIndexOrThrow("ingrediente"))
-                    val quantita = cur.getInt(cur.getColumnIndexOrThrow("quantita"))
-                    val unitaDiMisura = cur.getString(cur.getColumnIndexOrThrow("unita_di_misura"))
+
+            if (cursoreIngredienti.moveToFirst()) {
+                    val ingrediente = cursoreIngredienti.getString(cursoreIngredienti.getColumnIndexOrThrow("ingrediente"))
+                    val quantita = cursoreIngredienti.getInt(cursoreIngredienti.getColumnIndexOrThrow("quantita"))
+                    val unitaDiMisura = cursoreIngredienti.getString(cursoreIngredienti.getColumnIndexOrThrow("unita_di_misura"))
 
                     // Create a string representation of the ingredient
                     val ingredientString = "$quantita $unitaDiMisura di $ingrediente"
                     ingredientsList.add(ingredientString)
 
-                    // Logging all'interno del ciclo
-                    Log.d("Ingredienti", ingredientString)
-
-                } while (cur.moveToNext())
 
                 // Creazione e impostazione dell'adapter dopo il ciclo
-                val adapter = ListView_adapter(this, ingredientsList)
-                val listViewIngredients = findViewById<ListView>(R.id.listviewl)
-                listViewIngredients.adapter = adapter
+                val adapterIng = ListView_adapter(this, ingredientsList)
+                listViewIngredients.adapter = adapterIng
+            }else{
+                Log.d("NON ENTRAAAAAAAAAAAAA9484599", "CQAZZOOZOOOOOOOO")
             }
 
-            cur.close()*/
+            cursoreIngredienti.close()
         }
 
         //----------------------------------------------------------------------------------------------------------------------------
@@ -806,6 +802,9 @@ class newRecipeActivity : AppCompatActivity() {
             }
 
             //CONTROLLO SULLA PREPARAZIONE
+
+            recyclerViewProcedimento
+
             var preparazione = ""
             if (listaProcedimenti.isEmpty()) {
                 esito = false
@@ -850,10 +849,6 @@ class newRecipeActivity : AppCompatActivity() {
             val ricetta = salvataggio()
 
             if (idRicetta != -1) {
-
-
-                Log.d("22222222222222222222222333333333333333333", "modifica")
-                Log.d("22222222222222222222222244444444444444", "${ricetta?.nome}")
                 //controllo che il return di salvataggio() sia != da null
                 if (ricetta != null) {
                     // per AGGIORNARE sul database
@@ -880,7 +875,6 @@ class newRecipeActivity : AppCompatActivity() {
                     //per passare i valori a DETAILFRAGMENT
                     val resultIntent = Intent()
                     resultIntent.putExtra("id_ricetta", idRicetta)
-                    Log.d("666666666666666666666", "$idRicetta")
                     resultIntent.putExtra("nome", ricetta?.nome)
                     resultIntent.putExtra("porzioni", ricetta?.porzioni)
                     resultIntent.putExtra("tempo_di_preparazione", ricetta?.tempo)

@@ -210,7 +210,7 @@ class DetailFragment() : Fragment() {
                         textPortata.text = portata
                         textTipologia.text = tipologia
                         textDieta.text = dieta
-                        txtTempo.text = tempo.toString()
+                        txtTempo.text = "Tempo preparazione: $tempo min"
                         editPorzioni.setText(porzioni.toString())
                         textPreparazione.text = parsePreparazione(preparazione)
 
@@ -219,6 +219,8 @@ class DetailFragment() : Fragment() {
                         } else {
                             //TODO Sostituisci con la tua immagine di default
                         }
+
+
 
 
                         val ingredienti = 0//TODO jack sistema
