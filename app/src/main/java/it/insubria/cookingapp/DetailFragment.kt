@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -42,9 +43,9 @@ class DetailFragment() : Fragment() {
 
     private lateinit var ricettaViewModel: DataModel
     private var ricetta: RicetteModel? = null
-    private var ingredientiNome: MutableList<String> = mutableListOf("pippo", "franco", "topolino")
-    private var ingredientiQuantita: MutableList<Float> = mutableListOf(23.0f, 10.5f, 2.8f)
-    private var ingredientiUnita: MutableList<String> = mutableListOf("cL", "h", "cup")
+    private lateinit var ingredientiNome: MutableList<String>
+    private lateinit var ingredientiQuantita: MutableList<Float>
+    private lateinit var ingredientiUnita: MutableList<String>
     private var porzioniTemp: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +76,10 @@ class DetailFragment() : Fragment() {
         val dbHelper = ricettaViewModel.dbHelper
         //perche devo fare ret. e non subiro findIdviewby
 
+        ingredientiNome = mutableListOf()
+        ingredientiQuantita = mutableListOf()
+        ingredientiUnita = mutableListOf()
+
         val favoriteIcon: ImageView = ret.findViewById(R.id.favoriteIcon)
         val btnModifica: Button = ret.findViewById(R.id.buttonModifica)
         val textTitolo: TextView = ret.findViewById(R.id.titoloRicetta)
@@ -92,8 +97,12 @@ class DetailFragment() : Fragment() {
 
         val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
         val dbH = dataModel.dbHelper
+        //prendo tutti gli ingredienti associati alla ricetta
+        val dbr = dbH!!.readableDatabase
+        val idRecipe = dataModel.ricetta!!.id
 
         if (ricetta != null) {
+
 
             //PER TITOLO CHE SCORRE
             textTitolo.text = ricetta!!.nome
@@ -139,40 +148,14 @@ class DetailFragment() : Fragment() {
             }
 
 
-            //prendo tutti gli ingredienti associati alla ricetta
-            val dbr = dbH!!.readableDatabase
-            val idRicetta = dataModel.ricetta!!.id
-
-            val cursor = dbr.rawQuery(
-                "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
-                arrayOf(idRicetta.toString())
-            )
-
-
-            //--------------------------- PER LEGGERE E MOSTRARE GLI INGREDIENTI DELLA RICETTA
-            //PRENDENDOLI DAL DB
-            if (cursor.moveToFirst()) {
-                do {
-
-                    val ingrediente = cursor.getString(cursor.getColumnIndexOrThrow("ingrediente"))
-                    val quantita = cursor.getInt(cursor.getColumnIndexOrThrow("quantita"))
-                    val unitaDiMisura =
-                        cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
-
-                    ingredientiNome.add(ingrediente)
-                    ingredientiQuantita.add(quantita.toFloat())
-                    ingredientiUnita.add(unitaDiMisura)
-
-                } while (cursor.moveToNext())
-            }
-            cursor.close()
-
+            leggiIngredienti(dbr, idRecipe, ingredientiNome, ingredientiQuantita, ingredientiUnita)
             //ora compongo il testo per gli ingredienti e lo assegno alla TextView
             txtIngredienti.text = componiTestoIngredienti()
-        }
 
-        val dbr = dbH!!.readableDatabase
+        }
 //-----------------------------------------------------------------------------------------------------
+
+
         //quello che mi restituisce
         lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
@@ -184,7 +167,7 @@ class DetailFragment() : Fragment() {
                 val data: Intent? = result.data
                 val idRicetta = data?.getIntExtra("id_ricetta", -1)
                 if (idRicetta != null && idRicetta != -1) {
-                    Log.d("777777777777777777777777777777777777", "$idRicetta")
+
                     // Query per recuperare gli ingredienti usando idRicetta
 
                     val cur: Cursor = dbr.rawQuery(
@@ -221,19 +204,16 @@ class DetailFragment() : Fragment() {
                         }
 
 
-
-
-                        val ingredienti = 0//TODO jack sistema
-                        //TODO prendere ingredienti da DB e mostrarli
+                        leggiIngredienti(dbr, idRecipe, ingredientiNome, ingredientiQuantita, ingredientiUnita)
+                        txtIngredienti.text = componiTestoIngredienti()
 
                         cur.close()
 
                     }
-                }
             }
 
 
-        }
+        }}
 
 
         btnModifica.setOnClickListener {
@@ -302,20 +282,14 @@ class DetailFragment() : Fragment() {
 
                     for (i in 0 until ingredientiQuantita.size) {
 
-                        Log.d(
-                            "CAMBIO PORZIONI",
-                            "cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n"
-                        )
+
 
                         if (!ingredientiUnita[i].equals("qb")) {
                             ingredientiQuantita[i] =
                                 (ingredientiQuantita[i] / porzioniTemp) * newPorz
                         }
 
-                        Log.d(
-                            "CAMBIO PORZIONI",
-                            "cambio ${ingredientiNome[i]} ${ingredientiQuantita[i]} ${ingredientiUnita[i]}\n"
-                        )
+
 
                     }
                     porzioniTemp = newPorz
@@ -371,6 +345,33 @@ class DetailFragment() : Fragment() {
                 }
             }
     }
+
+    private  fun leggiIngredienti(db: SQLiteDatabase, idRicetta : Int, ingredientiNome: MutableList<String>, ingredientiQuantita:MutableList<Float>,  ingredientiUnita:MutableList<String> ) {
+        val cursor = db.rawQuery(
+            "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
+            arrayOf(idRicetta.toString())
+        )
+        //PRENDENDOLI DAL DB
+        if (cursor.moveToFirst()) {
+            do {
+
+                val ingrediente =
+                    cursor.getString(cursor.getColumnIndexOrThrow("ingrediente"))
+                val quantita = cursor.getInt(cursor.getColumnIndexOrThrow("quantita"))
+                val unitaDiMisura =
+                    cursor.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+
+                ingredientiNome.add(ingrediente)
+                ingredientiQuantita.add(quantita.toFloat())
+                ingredientiUnita.add(unitaDiMisura)
+
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+
+    }
+
 
     private fun soloInizioGrassetto(inizio: String, testo: String): SpannableString {
         // Crea un SpannableString con il testo
