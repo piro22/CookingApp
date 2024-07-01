@@ -15,7 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 // Extends the ArrayAdapter class and inherits the getView method
-class ListView_adapter(context: Context, private val items: MutableList<String>) :
+class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Float>, private val unita: MutableList<String>) :
     ArrayAdapter<String>(context, R.layout.row_ingredienti, items) {
     private var arrayListaUnita: MutableList<String> = mutableListOf()
 
@@ -34,7 +34,8 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
 
         // Set ingredient name and position
         ingrediente.text = items[position]
-
+        quantita.setText(quant[position].toString())
+        unit.setText(unita[position])
 
 
         //database
@@ -72,9 +73,10 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
         //------------------------------------------------------------------------------------------------
 
 
-        val i = ingrediente.text.toString()
+
         // Set click listeners for shopping and delete icons
         shoppingIcon.setOnClickListener {
+            val i = ingrediente.text.toString()
             val nuovoValore = ContentValues().apply {
                 put("ingrediente", i)
             }
@@ -85,8 +87,9 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
             Toast.makeText(context, "Aggiungi ${items[position]} alla lista della spesa", Toast.LENGTH_SHORT).show()
         }
 
-        deleteIcon.setOnClickListener {
 
+
+        deleteIcon.setOnClickListener {
             val ingredientToDelete = items[position]
 
             // Delete the item from the database
@@ -96,11 +99,11 @@ class ListView_adapter(context: Context, private val items: MutableList<String>)
 
             // Remove the item from the list and notify the adapter
             items.removeAt(position)
+            quant.removeAt(position)
+            unita.removeAt(position)
             notifyDataSetChanged()
 
             Toast.makeText(context, "Elimina $ingredientToDelete", Toast.LENGTH_SHORT).show()
-
-
         }
 
         // Return the current row view

@@ -42,9 +42,9 @@ class newRecipeActivity : AppCompatActivity() {
     private val PICK_IMAGE_REQUEST = 1
     private lateinit var btnImmagine: ImageView
     private lateinit var imageViewFoto: ImageView
-    private lateinit var ingredientiNome: MutableList<String>
-    private lateinit var ingredientiQuantita: MutableList<Float>
-    private lateinit var ingredientiUnita: MutableList<String>
+    private var ingredientiNome: MutableList<String> = mutableListOf()
+    private var ingredientiQuantita: MutableList<Float> = mutableListOf()
+    private var ingredientiUnita: MutableList<String> = mutableListOf()
     private var uriFoto: String = "default"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -508,10 +508,7 @@ class newRecipeActivity : AppCompatActivity() {
         //aggiungere gli ingredienti
 //----------------------------------------------------------------------------------------------------------------------------
         val input = findViewById<EditText>(R.id.input)
-        val ArrayListaIngredienti = mutableListOf<String>()
-        var ingredientiQuantita = mutableListOf<Float>()
-        var ingredientiUnita = mutableListOf<String>()
-        val adapt = ListView_adapter(this, ArrayListaIngredienti)
+        val adapt = ListView_adapter(this, ingredientiNome, ingredientiQuantita, ingredientiUnita)
         val listViewIngredients = findViewById<ListView>(R.id.listviewl)
         val bottoneIngrediente: ImageView = findViewById(R.id.aggiungiIngrediente)
 
@@ -526,7 +523,6 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
         bottoneIngrediente.setOnClickListener {
-
             // Cambia la tinta e il bkg del drawable
             bottoneIngrediente.setBackgroundResource(R.drawable.custom_bkg_button_full)
             bottoneIngrediente.setColorFilter(
@@ -536,13 +532,18 @@ class newRecipeActivity : AppCompatActivity() {
                 ), PorterDuff.Mode.SRC_IN
             )
 
+
             // Get text from EditText
             val ingredient = input.text.toString()
 
-            // Check if input is not empty
+            //Check if input is not empty
             if (ingredient.isNotEmpty()) {
                 // Add ingredient to the list
-                ArrayListaIngredienti.add(ingredient)
+                ingredientiNome.add(ingredient)
+                //questi valori sono solo dei placeholder per quando verranno inseriti
+                //nuovi valori dall'utente
+                ingredientiQuantita.add(1.0f)
+                ingredientiUnita.add("qb")
 
                 //per aggiungere l'ingrediente al db
                 if (ingredienteEsiste(dbr, ingredient) == false) {
@@ -576,7 +577,7 @@ class newRecipeActivity : AppCompatActivity() {
         }
 
 
-        //PER QUANDO VIENE CLICCATO IL CAMPO MODIFICA SU DETAIL FRAGMENT
+//PER QUANDO VIENE CLICCATO IL CAMPO MODIFICA SU DETAIL FRAGMENT
 //----------------------------------------------------------------------------------------------------------------------------
         val intent = intent
         val idRicetta = intent.getIntExtra("id_ricetta", -1)
@@ -587,7 +588,7 @@ class newRecipeActivity : AppCompatActivity() {
 
         if (idRicetta != -1) {
 
-// Popola i campi con i dati ricevuti
+            // Popola i campi con i dati ricevuti
             val cursor: Cursor =
                 dbr.rawQuery("SELECT * FROM ricetta WHERE id = ?", arrayOf(idRicetta.toString()))
 
@@ -635,31 +636,25 @@ class newRecipeActivity : AppCompatActivity() {
 
 
             //TODO popolo gli ingredienti
-//            val cursoreIngredienti: Cursor = dbr.rawQuery(
-//                "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
-//                arrayOf(idRicetta.toString())
-//            )
-//
-//            if (cursoreIngredienti.moveToFirst()) {
-//                val ingrediente =
-//                    cursoreIngredienti.getString(cursoreIngredienti.getColumnIndexOrThrow("ingrediente"))
-//                val quantita =
-//                    cursoreIngredienti.getFloat(cursoreIngredienti.getColumnIndexOrThrow("quantita"))
-//                val unitaDiMisura =
-//                    cursoreIngredienti.getString(cursoreIngredienti.getColumnIndexOrThrow("unita_di_misura"))
-//
-//                // Create a string representation of the ingredient
-//
-//                ArrayListaIngredienti.add(ingrediente)
-//                ingredientiQuantita.add(quantita)
-//                ingredientiUnita.add(unitaDiMisura)
-//
-//
-//                // Creazione e impostazione dell'adapter dopo il ciclo
-//                val adapterIng = ListView_adapter(this, ArrayListaIngredienti)
-//                listViewIngredients.adapter = adapterIng
-//            }
-//            cursoreIngredienti.close()
+            val cursorIng = dbr.rawQuery(
+                "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
+                arrayOf(idRicetta.toString())
+            )
+            //PRENDENDOLI DAL DB
+            if (cursorIng.moveToFirst()) {
+                do {
+
+                    val ingrediente = cursorIng.getString(cursor.getColumnIndexOrThrow("ingrediente"))
+                    val quantita = cursorIng.getInt(cursor.getColumnIndexOrThrow("quantita"))
+                    val unitaDiMisura = cursorIng.getString(cursor.getColumnIndexOrThrow("unita_di_misura"))
+
+                    ingredientiNome.add(ingrediente)
+                    ingredientiQuantita.add(quantita.toFloat())
+                    ingredientiUnita.add(unitaDiMisura)
+
+                } while (cursorIng.moveToNext())
+            }
+            cursorIng.close()
         }
 
         //----------------------------------------------------------------------------------------------------------------------------
@@ -674,6 +669,27 @@ class newRecipeActivity : AppCompatActivity() {
 
         //-------------------------------------------------------------------------------------------------------------------
 
+
+        fun aggiornaValoriIngredienti(){
+            for (i in 0 until listViewIngredients.count){
+                val view: View = listViewIngredients.getChildAt(i)
+                if(view != null){
+                    val a: EditText = view.findViewById(R.id.tendina)
+                    val b: AutoCompleteTextView = view.findViewById(R.id.tendinaUnita)
+
+                    //se sono vuoti non li modifico e li lascio default
+                    if(!a.text.isEmpty()){
+                        val quant = a.text.toString().toFloat()
+                        ingredientiQuantita[i] = quant
+                    }
+
+                    if(!b.text.isEmpty()) {
+                        val unit = b.text.toString()
+                        ingredientiUnita[i] = unit
+                    }
+                }
+            }
+        }
 
         fun salvataggio(): RicetteModel? {
 
@@ -810,7 +826,7 @@ class newRecipeActivity : AppCompatActivity() {
 
 
             //CONTROLLO SUGLI INGREDIENTI
-            if (ArrayListaIngredienti.isEmpty()) {
+            if (ingredientiNome.isEmpty()) {
                 esito = false
 
                 messaggioErroreModificabile = "Inserire minimo un ingrediente per questa ricetta"
@@ -819,6 +835,13 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                //se non è vuoto posso aggiornare gli ingredienti a quelli inseriti dall'utente
+                aggiornaValoriIngredienti()
+
+                for (i in 0 until listViewIngredients.count){
+                    Log.d("INGREDIENTE", "${ingredientiNome[i]}: ${ingredientiQuantita[i]} ${ingredientiUnita[i]}")
+                }
             }
 
             //CONTROLLO SULLA PREPARAZIONE
