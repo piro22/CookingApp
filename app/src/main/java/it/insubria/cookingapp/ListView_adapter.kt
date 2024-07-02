@@ -77,13 +77,23 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
         // Set click listeners for shopping and delete icons
         shoppingIcon.setOnClickListener {
             val i = ingrediente.text.toString()
-            val nuovoValore = ContentValues().apply {
-                put("ingrediente", i)
+            val q = quantita.text.toString()
+            var nuovoValore = ContentValues().apply {}
+
+            if(q.isEmpty()){
+                nuovoValore = ContentValues().apply {
+                    put("ingrediente", i)
+                    put("quantita", 1)
+                }
+            }else{
+                nuovoValore = ContentValues().apply {
+                    put("ingrediente", i)
+                    put("quantita", q.toInt())
+                }
             }
+
             //aggiungo il nuovoValore all'interno del db
             dbw.insert("listaSpesa", null, nuovoValore)
-
-
             Toast.makeText(context, "Aggiungi ${items[position]} alla lista della spesa", Toast.LENGTH_SHORT).show()
         }
 
