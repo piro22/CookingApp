@@ -1,6 +1,8 @@
 package it.insubria.cookingapp
 
+import android.app.Dialog
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,7 +13,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,8 +37,15 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
     private var param1: String? = null
     private var param2: String? = null
 
-    val ricetteModel: ArrayList<RicetteModel> = ArrayList()
-    var arrayListaPortate: MutableList<String> = mutableListOf()
+    private val ricetteModel: ArrayList<RicetteModel> = ArrayList()
+    private var arrayListaPortate: MutableList<String> = mutableListOf()
+
+    private lateinit var dataModel: DataModel
+    private lateinit var listaPortate: AutoCompleteTextView
+    private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var recView : RecyclerView
+
+    private lateinit var dbr: SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,15 +62,87 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
 
         val ret = inflater.inflate(R.layout.fragment_favorites, container, false)
 
+        dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
 
+        recView = ret.findViewById(R.id.mRecyclerView)
+        //leggo il db e prendo le ricette
+        readFromDB()
+
+        val fab = ret.findViewById<FloatingActionButton>(R.id.btn_fab)
+
+        fab.setOnClickListener {
+            val intent =Intent(requireActivity(), newRecipeActivity::class.java)
+            startActivity(intent)
+        }
+
+
+        //POPOLARE LA TENDINA PER LE PORTATE
+        listaPortate = ret.findViewById(R.id.filtroPortate)
+        popolaTendina()
+
+        //------------------------------------------------------------------------------------------------------------------------------
+        //PER FILTRI
+
+        //filtro nome
+        val editText: EditText = ret.findViewById(R.id.txtRicerca)
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filterNome(s.toString())
+                //Log.d("FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO ", "${s.toString()}")
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+
+        //filtro portata
+        listaPortate.setOnItemClickListener { parent, view, position, id ->
+            val selectedItem = parent.getItemAtPosition(position) as String
+            if (selectedItem.equals("- - -")) {
+                adapter.filterPortata("")
+            } else {
+                adapter.filterPortata(selectedItem)
+            }
+        }
+        //-------------------------------------------------------------------------------------------------------------------------------
+
+
+        //bottone per help
+        val btnHelp: ImageView = ret.findViewById(R.id.helpButton)
+        val dialogHelp = Dialog(requireContext())
+        dialogHelp.setContentView(R.layout.dialog_help)
+        var messaggioHelpModificabile = "Schermata favorite: \nQui si ha una preview delle ricette preferite " +
+                "\n\nSe si vuole veder nel dettaglio una ricetta basta cliccarla" +
+                "\n\nSe si vuole eliminare una ricetta tenere premuto su di essa per qualche secondo"
+
+        val btnok: Button = dialogHelp.findViewById(R.id.buttonOK)
+        val txtHelp: TextView = dialogHelp.findViewById(R.id.messaggioHelp)
+        btnok.setOnClickListener {
+            dialogHelp.dismiss()
+        }
+
+        btnHelp.setOnClickListener {
+            txtHelp.text = messaggioHelpModificabile
+
+            dialogHelp.window!!
+            dialogHelp.setCancelable(false)
+            dialogHelp.show()
+        }
+
+
+        return ret
+    }
+
+    private fun readFromDB() {
         ricetteModel.clear()
-        // Inflate the layout for this fragment
-        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+
         val dbHelper = dataModel.dbHelper
-        val dbr = dbHelper!!.readableDatabase
+        dbr = dbHelper!!.readableDatabase
 
 
-        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito=1", null)
+        val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito = 1", null)
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -96,28 +180,15 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             cursor.close()
         }
 
-
-
-
-        val recView : RecyclerView = ret.findViewById(R.id.mRecyclerView)
-
-        //POSSO METTERE QUI UNA FUNZIONE PER RIEMPIRE LA LISTA ricetteModel
-
-        var adapter : RecyclerViewAdapter = RecyclerViewAdapter(requireContext(), ricetteModel, this)
+        adapter = RecyclerViewAdapter(requireContext(), ricetteModel, this)
         recView.adapter = adapter
         recView.layoutManager = LinearLayoutManager(requireContext())
+    }
 
-
-        val fab = ret.findViewById<FloatingActionButton>(R.id.btn_fab)
-
-
-        fab.setOnClickListener {
-            val intent = Intent(requireActivity(), newRecipeActivity::class.java)
-            startActivity(intent)
-        }
-
+    private fun popolaTendina(){
         //POPOLO TENDINA FILTRO PORTATE---------------------------------------------------------------
-
+        var dbHelper = dataModel.dbHelper
+        var dbr = dbHelper!!.readableDatabase
         val cursorPort = dbr.rawQuery("SELECT portata FROM portate", null)
 
         arrayListaPortate.clear()
@@ -133,8 +204,6 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             cursorPort.close()
         }
 
-        //prendo la tendina
-        val listaPortate: AutoCompleteTextView = ret.findViewById(R.id.filtroPortate)
 
         //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
         val adapterTendina = ArrayAdapter(
@@ -144,37 +213,13 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
         )
         //per aggiornare la vista(tendina)
         listaPortate.setAdapter(adapterTendina)
-        //------------------------------------------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------------
+    }
 
-
-        //-----------------------------------------------------------------------------------------
-        //PER FILTRI
-        val editText: EditText = ret.findViewById(R.id.txtRicerca)
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filterNome(s.toString())
-                Log.d("FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO FILTRO ", "${s.toString()}")
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-
-        //filtro portata
-        listaPortate.setOnItemClickListener { parent, view, position, id ->
-            val selectedItem = parent.getItemAtPosition(position) as String
-            if (selectedItem.equals("- - -")) {
-                adapter.filterPortata("")
-            } else {
-                adapter.filterPortata(selectedItem)
-            }
-        }
-
-        //-------------------------------------------------------------------------------------------------------------------------------
-
-        return ret
+    override fun onResume() {
+        super.onResume()
+        popolaTendina()
+        readFromDB()
     }
 
     companion object {
@@ -219,5 +264,14 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
 //        detail.setRicetta(ricetta)
 
         parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).addToBackStack(null).commit()
+    }
+
+    override fun onItemLongClick(position: Int): Boolean {
+        val id = ricetteModel[position].id
+        dbr.delete("ricetta", "id = ?", arrayOf(id.toString()))
+
+        readFromDB()
+
+        return true
     }
 }

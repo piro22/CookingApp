@@ -46,6 +46,7 @@ class newRecipeActivity : AppCompatActivity() {
     private var ingredientiQuantita: MutableList<Float> = mutableListOf()
     private var ingredientiUnita: MutableList<String> = mutableListOf()
     private var uriFoto: String = "default"
+    private lateinit var adapterProcedimento : RecyclerView_ListaProcedimento
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -422,7 +423,7 @@ class newRecipeActivity : AppCompatActivity() {
         //UI
         val recyclerViewProcedimento = findViewById<RecyclerView>(R.id.recyclerViewProcedure)
         //quello della classe
-        val adapterProcedimento = RecyclerView_ListaProcedimento(listaProcedimenti)
+        adapterProcedimento = RecyclerView_ListaProcedimento(listaProcedimenti)
 
         //gli passo adapter fatto da me, quindi un'istanza della classe
         recyclerViewProcedimento.adapter = adapterProcedimento
@@ -522,6 +523,15 @@ class newRecipeActivity : AppCompatActivity() {
             return exists
         }
 
+        fun foreignKeyEsiste(db: SQLiteDatabase, table: String, column: String, input: String): Boolean {
+            //controllo che le foreign key esistano nel db
+            val query = "SELECT 1 FROM $table WHERE $column = ?"
+            val cursor = db.rawQuery(query, arrayOf(input))
+            val exists = cursor.moveToFirst()
+            cursor.close()
+            return exists
+        }
+
         bottoneIngrediente.setOnClickListener {
             // Cambia la tinta e il bkg del drawable
             bottoneIngrediente.setBackgroundResource(R.drawable.custom_bkg_button_full)
@@ -615,27 +625,26 @@ class newRecipeActivity : AppCompatActivity() {
                 porzioni.setText(porzioniRicetta.toString())
 
                 if (pathFoto != "default") {
-                    btnImmagine.setImageURI(pathFoto.toUri())
+                    imageViewFoto.setImageURI(pathFoto.toUri())
+                }else {
+                    imageViewFoto.setImageResource(R.drawable.logo)
                 }
 
                 //per le procedure
+                listaProcedimenti.clear()
                 val segments: List<String> = preparazione.split("\\[\\[Passo\\]\\]".toRegex());
-                for (segment in segments) {
-                    if (segment != "") {
-                        listaProcedimenti.add(segment)
+                for (i in 0 until segments.size) {
+                    if (segments[i] != "") {
+                        listaProcedimenti.add(segments[i])
+                        //ad ogni item inserito notifico l'adapter
+                        adapterProcedimento.notifyItemInserted(i)
                     }
                 }
-
-                val adapterProc = RecyclerView_ListaProcedimento(listaProcedimenti)
-                recyclerViewProcedimento.adapter = adapterProc
-
-                adapterProc.notifyDataSetChanged()
-
             }
             cursor.close()
 
 
-            //TODO popolo gli ingredienti
+            // popolo gli ingredienti
             val cursorIng = dbr.rawQuery(
                 "SELECT * FROM ingredienti_ricetta WHERE id_ricetta = ?",
                 arrayOf(idRicetta.toString())
@@ -648,14 +657,16 @@ class newRecipeActivity : AppCompatActivity() {
                     val ingrediente = cursorIng.getString(cursorIng.getColumnIndexOrThrow("ingrediente"))
                     val quantita = cursorIng.getInt(cursorIng.getColumnIndexOrThrow("quantita"))
 
-
                     ingredientiNome.add(ingrediente)
                     ingredientiQuantita.add(quantita.toFloat())
                     ingredientiUnita.add(unitaDiMisura)
 
                 } while (cursorIng.moveToNext())
             }
+            //una volta riempite le liste dico all'adapter che deve aggiornarsi
             cursorIng.close()
+            adapt.notifyDataSetChanged()
+            setListViewHeightBasedOnItems(listViewIngredients, adapt)
         }
 
         //----------------------------------------------------------------------------------------------------------------------------
@@ -734,6 +745,17 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                if(!foreignKeyEsiste(dbr, "portate", "portata", txtPortata)){
+                    esito = false
+
+                    messaggioErroreModificabile = "Scegliere una portata esistente"
+                    txtErrore.text = messaggioErroreModificabile
+
+                    dialogError.window!!
+                    dialogError.setCancelable(false)
+                    dialogError.show()
+                }
             }
 
             //CONTROLLO SULLA TIPOLOGIA
@@ -748,6 +770,17 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                if(!foreignKeyEsiste(dbr, "tipologia", "tipologia", txtTipologia)){
+                    esito = false
+
+                    messaggioErroreModificabile = "Scegliere una tipologia esistente"
+                    txtErrore.text = messaggioErroreModificabile
+
+                    dialogError.window!!
+                    dialogError.setCancelable(false)
+                    dialogError.show()
+                }
             }
 
             //CONTROLLO SULLA DIETA
@@ -761,6 +794,17 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                if(!foreignKeyEsiste(dbr, "dieta", "dieta", txtDieta)){
+                    esito = false
+
+                    messaggioErroreModificabile = "Scegliere una dieta esistente"
+                    txtErrore.text = messaggioErroreModificabile
+
+                    dialogError.window!!
+                    dialogError.setCancelable(false)
+                    dialogError.show()
+                }
             }
 
             //CONTROLLO SULL'ETNIA
@@ -775,6 +819,17 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                if(!foreignKeyEsiste(dbr, "etnicita", "etnicita", txtEtnia)){
+                    esito = false
+
+                    messaggioErroreModificabile = "Scegliere una etnicita esistente"
+                    txtErrore.text = messaggioErroreModificabile
+
+                    dialogError.window!!
+                    dialogError.setCancelable(false)
+                    dialogError.show()
+                }
             }
 
             //CONTROLLO SULLA DIFFICOLTA
@@ -789,6 +844,17 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.window!!
                 dialogError.setCancelable(false)
                 dialogError.show()
+            }else{
+                if(!(txtDifficolta.equals("*") || txtDifficolta.equals("**") || txtDifficolta.equals("***") || txtDifficolta.equals("****") || txtDifficolta.equals("*****"))){
+                    esito = false
+
+                    messaggioErroreModificabile = "Scegliere una difficoltà accettata"
+                    txtErrore.text = messaggioErroreModificabile
+
+                    dialogError.window!!
+                    dialogError.setCancelable(false)
+                    dialogError.show()
+                }
             }
 
             //CONTROLLO SUL NUMERO DI PORZIONI
@@ -884,12 +950,27 @@ class newRecipeActivity : AppCompatActivity() {
             return ricettaDaSalvare
         }
 
+        fun deleteIngredientiVecchi(id: Int){
+            dbr.delete("ingredienti_ricetta", "id_ricetta = ?", arrayOf(id.toString()))
+        }
 
-        //-----------------------------------------------------------------------------------------------------
+        fun salvaIngredienti(id: Int){
+            for (i in 0 until ingredientiNome.size){
+                val ingr = ingredientiNome[i]
+                val quan = ingredientiQuantita[i]
+                val unit = ingredientiUnita[i]
 
+                dbr.execSQL("INSERT INTO ingredienti_ricetta VALUES(?,?,?,?)", arrayOf(id, ingr, quan, unit))
+                Log.d("SALVO UN INGREDIENTE", "ricetta ${id}, ingrediente ${ingr} ${quan} ${unit}")
+            }
+        }
+
+
+        // Click del bottone per salvare
         val btnSalva: Button = findViewById(R.id.btnSalvaTutto)
         btnSalva.setOnClickListener {
 
+            //controllo tutti i campi e prendo anche gli ingredienti dal ListAdapter
             val ricetta = salvataggio()
 
             if (idRicetta != -1) {
@@ -915,29 +996,11 @@ class newRecipeActivity : AppCompatActivity() {
                     // Mostra un messaggio di successo o esegui altre azioni necessarie dopo l'update
                     Toast.makeText(this, "Dati salvati con successo", Toast.LENGTH_SHORT).show()
 
-                    //TODO salvare ingredienti
-//                    val totale = mutableListOf<String>()
-//                    for (i in 0 until ArrayListaIngredienti.size) {
-//                        if (!ingredienteRicettaEsiste(
-//                                dbw,
-//                                idRicetta.toLong(),
-//                                ArrayListaIngredienti[i]
-//                            )!!
-//                        ) {
-//                            val contentValues = ContentValues().apply {
-//                                put("id_ricetta", idRicetta)
-//                                put("ingrediente", ArrayListaIngredienti[i])
-//                                put("quantita", ingredientiQuantita[i]) // Default value
-//                                put("unita_di_misura", ingredientiUnita[i])
-//                                // Default value
-//                                var str: String =
-//                                    ArrayListaIngredienti[i] + ingredientiQuantita[i] + ingredientiUnita[i]
-//                                totale.add(str)
-//
-//                            }
-//                            val newRowId = dbw.insert("ingredienti_ricetta", null, contentValues)
-//                        }
-//                    }
+                    //salvare ingredienti aggiornat
+                    //prima elimino dal DB quelli vecchi
+                    deleteIngredientiVecchi(ricetta!!.id)
+                    //poi li riaggiungo tutti aggiornati
+                    salvaIngredienti(ricetta.id)
 
 
                     //per passare i valori a DETAILFRAGMENT
@@ -985,19 +1048,8 @@ class newRecipeActivity : AppCompatActivity() {
 
                     Log.d("INSERIMENTO FATTO", "$id")
 
-                //TODO salvare gli ingredienti della ricetta
-
-//                    for (i in 0 until ArrayListaIngredienti.size) {
-//                        if (!ingredienteRicettaEsiste(dbw, id, ArrayListaIngredienti[i])!!) {
-//                            val contentValues = ContentValues().apply {
-//                                put("id_ricetta", id)
-//                                put("ingrediente", ArrayListaIngredienti[i])
-//                                put("quantita", ingredientiQuantita[i]) // Default value
-//                                put("unita_di_misura", ingredientiUnita[i]) // Default value
-//                            }
-//                            val newRowId = dbw.insert("ingredienti_ricetta", null, contentValues)
-//                        }
-//                    }
+                    // salvare gli ingredienti della ricetta
+                    salvaIngredienti(id.toInt())
 
                 } else {
                     Log.d("INSERIMENTO FALLITO", "NON INSERITO RICETTA")

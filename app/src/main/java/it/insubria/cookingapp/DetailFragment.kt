@@ -180,19 +180,19 @@ class DetailFragment() : Fragment() {
                     if (cur.moveToFirst()) {
                         val nome = cur.getString(cur.getColumnIndexOrThrow("nome"))
                         val porzioni = cur.getInt(cur.getColumnIndexOrThrow("porzioni"))
-                        val difficolta = cur.getString(cur.getColumnIndexOrThrow("difficolta"))
-                        val tipologia = cur.getString(cur.getColumnIndexOrThrow("tipologia"))
-                        val portata = cur.getString(cur.getColumnIndexOrThrow("portata"))
-                        val dieta = cur.getString(cur.getColumnIndexOrThrow("dieta"))
+                        val difficolta = "Difficoltà:\n" + cur.getString(cur.getColumnIndexOrThrow("difficolta"))
+                        val tipologia = "Tipologia:\n" + cur.getString(cur.getColumnIndexOrThrow("tipologia"))
+                        val portata = "Portata:\n" + cur.getString(cur.getColumnIndexOrThrow("portata"))
+                        val dieta = "Dieta:\n" + cur.getString(cur.getColumnIndexOrThrow("dieta"))
                         val tempo = cur.getInt(cur.getColumnIndexOrThrow("tempo_di_preparazione"))
                         val preparazione = cur.getString(cur.getColumnIndexOrThrow("preparazione"))
                         val pathFoto = cur.getString(cur.getColumnIndexOrThrow("pathFoto"))
 
                         textTitolo.text = nome
-                        textDiff.text = difficolta
-                        textPortata.text = portata
-                        textTipologia.text = tipologia
-                        textDieta.text = dieta
+                        textDiff.text = soloInizioGrassetto("Difficoltà:", difficolta)
+                        textPortata.text = soloInizioGrassetto("Portata:", portata)
+                        textTipologia.text = soloInizioGrassetto("Tipologia:", tipologia)
+                        textDieta.text = soloInizioGrassetto("Dieta:", dieta)
                         txtTempo.text = "Tempo preparazione: $tempo min"
                         editPorzioni.setText(porzioni.toString())
                         textPreparazione.text = parsePreparazione(preparazione)
@@ -200,11 +200,14 @@ class DetailFragment() : Fragment() {
                         if (pathFoto != "default") {
                             imgRicetta.setImageURI(pathFoto.toUri())
                         } else {
-                            //TODO Sostituisci con la tua immagine di default
+                            imgRicetta.setImageResource(R.drawable.logo)
                         }
 
                         val idRecipe = ricetta!!.id
 
+                        ingredientiNome.clear()
+                        ingredientiQuantita.clear()
+                        ingredientiUnita.clear()
                         leggiIngredienti(dbr, idRecipe, ingredientiNome, ingredientiQuantita, ingredientiUnita)
                         txtIngredienti.text = componiTestoIngredienti()
 

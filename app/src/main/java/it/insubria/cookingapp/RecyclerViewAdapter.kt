@@ -76,14 +76,22 @@ class RecyclerViewAdapter(private val context: Context,
             portata = itemView.findViewById(R.id.textView3)
 
             itemView.setOnClickListener{
-                if(recyclerViewInterface != null){
-                    var pos : Int = adapterPosition
+                var pos : Int = adapterPosition
 
-                    if(pos != RecyclerView.NO_POSITION){
-                        recyclerViewInterface.onItemClick(pos)
-                    }
+                if(pos != RecyclerView.NO_POSITION){
+                    recyclerViewInterface.onItemClick(pos)
                 }
             }
+
+            itemView.setOnLongClickListener{
+                var pos : Int = adapterPosition
+
+                if(pos != RecyclerView.NO_POSITION){
+                    recyclerViewInterface.onItemLongClick(pos)
+                }
+                return@setOnLongClickListener true
+            }
+
         }
     }
 }

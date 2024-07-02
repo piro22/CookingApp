@@ -1,5 +1,6 @@
 package it.insubria.cookingapp
 
+import android.app.Dialog
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.PorterDuff
@@ -14,6 +15,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -221,6 +223,30 @@ class ShoppingListFragment : Fragment() {
                 btnLista.setColorFilter(ContextCompat.getColor(requireContext(), R.color.coquelicot), PorterDuff.Mode.SRC_IN)
             }, 500) // Ritardo di 500 millisecondi (0.5 secondi)
 
+        }
+
+
+        //bottone per help
+        val btnHelp: ImageView = ret.findViewById(R.id.helpButton)
+        val dialogHelp = Dialog(requireContext())
+        dialogHelp.setContentView(R.layout.dialog_help)
+        var messaggioHelpModificabile = "Schermata Shopping List: \nQui si possono vedere tutti gli ingredienti di cui hai bisogno con le quantità " +
+                "\n\nSe si vuole aumentare la quantità, basta riscrivere l'ingrediente con la quantità da aggiungere e poi schiacciare il pulsante in alto a destra" +
+                "\n\nSe si vuole eliminare un ingrediente basta schiacciare il pulsante a destra di ogni ingrediente" +
+                "\n\nSe si vuole svuotare completamente la lista schiacciare il pulsante in basso a sinistra"
+
+        val btnok: Button = dialogHelp.findViewById(R.id.buttonOK)
+        val txtHelp: TextView = dialogHelp.findViewById(R.id.messaggioHelp)
+        btnok.setOnClickListener {
+            dialogHelp.dismiss()
+        }
+
+        btnHelp.setOnClickListener {
+            txtHelp.text = messaggioHelpModificabile
+
+            dialogHelp.window!!
+            dialogHelp.setCancelable(false)
+            dialogHelp.show()
         }
 
         return ret
