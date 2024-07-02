@@ -1,3 +1,4 @@
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.view.LayoutInflater
@@ -31,25 +32,29 @@ class AutoComplete_adapter(
         } else {
             deleteButton.visibility = View.VISIBLE
             deleteButton.setOnClickListener {
-            val itemToRemove = getItem(position)
-            if (itemToRemove != null) {
-                remove(itemToRemove)
-                deleteItemFromDatabase(itemToRemove)
-                notifyDataSetChanged()
-
+                val itemToRemove = getItem(position)
+                if (itemToRemove != null) {
+                    remove(itemToRemove)
+                    deleteItemFromDatabase(itemToRemove)
+                    notifyDataSetChanged()
+                }
             }
-
         }
-
-
-
-        }
-
-
         return view
     }
 
     private fun deleteItemFromDatabase(item: String) {
+
+        //quando viene eliminato un oggetto dalle AutocompleteTextView
+        //prima aggiorno tutti gli element che avevano quell'elemento
+        val values = ContentValues().apply {
+            put(columnName, "- - -")
+        }
+
+        // Aggiorna la tabella ricetta
+        database.update("ricetta", values, "$columnName = ?", arrayOf(item))
+
+        //successivamente lo elimino
         database.delete(tableName, "$columnName = ?", arrayOf(item))
     }
 }
