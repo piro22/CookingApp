@@ -11,6 +11,7 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.PorterDuff
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -42,7 +43,6 @@ import java.util.Collections
 class newRecipeActivity : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 1
-    private val READ_EXTERNAL_STORAGE = 1001
     private lateinit var btnImmagine: ImageView
     private lateinit var imageViewFoto: ImageView
     private var ingredientiNome: MutableList<String> = mutableListOf()
@@ -1075,14 +1075,6 @@ class newRecipeActivity : AppCompatActivity() {
 
 
     private fun chooseImageFromGallery() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
-        } else {
-            startGalleryIntent()
-        }
-    }
-
-    private fun startGalleryIntent() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
     }
