@@ -15,7 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 // Extends the ArrayAdapter class and inherits the getView method
-class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Float>, private val unita: MutableList<String>) :
+class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Int>, private val unita: MutableList<String>) :
     ArrayAdapter<String>(context, R.layout.row_ingredienti, items) {
     private var arrayListaUnita: MutableList<String> = mutableListOf()
 

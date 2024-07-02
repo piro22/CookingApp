@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.PorterDuff
@@ -27,6 +28,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
@@ -40,10 +42,11 @@ import java.util.Collections
 class newRecipeActivity : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 1
+    private val READ_EXTERNAL_STORAGE = 1001
     private lateinit var btnImmagine: ImageView
     private lateinit var imageViewFoto: ImageView
     private var ingredientiNome: MutableList<String> = mutableListOf()
-    private var ingredientiQuantita: MutableList<Float> = mutableListOf()
+    private var ingredientiQuantita: MutableList<Int> = mutableListOf()
     private var ingredientiUnita: MutableList<String> = mutableListOf()
     private var uriFoto: String = "default"
     private lateinit var adapterProcedimento : RecyclerView_ListaProcedimento
@@ -552,7 +555,7 @@ class newRecipeActivity : AppCompatActivity() {
                 ingredientiNome.add(ingredient)
                 //questi valori sono solo dei placeholder per quando verranno inseriti
                 //nuovi valori dall'utente
-                ingredientiQuantita.add(1.0f)
+                ingredientiQuantita.add(1)
                 ingredientiUnita.add("qb")
 
                 //per aggiungere l'ingrediente al db
@@ -658,7 +661,7 @@ class newRecipeActivity : AppCompatActivity() {
                     val quantita = cursorIng.getInt(cursorIng.getColumnIndexOrThrow("quantita"))
 
                     ingredientiNome.add(ingrediente)
-                    ingredientiQuantita.add(quantita.toFloat())
+                    ingredientiQuantita.add(quantita)
                     ingredientiUnita.add(unitaDiMisura)
 
                 } while (cursorIng.moveToNext())
@@ -691,7 +694,7 @@ class newRecipeActivity : AppCompatActivity() {
 
                     //se sono vuoti non li modifico e li lascio default
                     if(!a.text.isEmpty()){
-                        val quant = a.text.toString().toFloat()
+                        val quant = a.text.toString().toInt()
                         ingredientiQuantita[i] = quant
                     }
 
@@ -1072,6 +1075,14 @@ class newRecipeActivity : AppCompatActivity() {
 
 
     private fun chooseImageFromGallery() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
+        } else {
+            startGalleryIntent()
+        }
+    }
+
+    private fun startGalleryIntent() {
         val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
     }

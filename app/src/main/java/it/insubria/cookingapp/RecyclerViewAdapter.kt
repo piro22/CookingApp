@@ -32,7 +32,8 @@ class RecyclerViewAdapter(private val context: Context,
 
         val path = filteredItemList.get(position).pathFoto
         if(!path.equals("default")){
-            holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
+            //var pth = filteredItemList[position].pathFoto
+            //holder.imageV.setImageURI(pth.toUri())
             //Log.d("HO MESSO L'URI", "${path.toUri()}")
         }
     }
