@@ -242,6 +242,7 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             }
     }
 
+    //override dell'onclick
     override fun onItemClick(position: Int) {
         val ricetta = RicetteModel(
             ricetteModel.get(position).id,
