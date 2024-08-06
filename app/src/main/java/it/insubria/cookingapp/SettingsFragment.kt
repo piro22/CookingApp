@@ -111,28 +111,7 @@ class SettingsFragment : Fragment() {
         //-------------------------------------------------------------------------------------------
 
 
-        //per inserire nella ListView gli elementi della categoria selezionata
-        var radioGroupElimina: RadioGroup = ret.findViewById(R.id.radioGroupElimina)
-        var radioButton0Elimina: RadioButton = ret.findViewById(R.id.radioButton0Elimina)
-        var radioButton1Elimina: RadioButton = ret.findViewById(R.id.radioButton1Elimina)
-        var radioButton2Elimina: RadioButton = ret.findViewById(R.id.radioButton2Elimina)
-        var radioButton3Elimina: RadioButton = ret.findViewById(R.id.radioButton3Elimina)
 
-        radioGroupElimina.setOnCheckedChangeListener { group, checkedId ->
-
-            val selectedRadioButtonId = radioGroupPeso.checkedRadioButtonId
-            if (selectedRadioButtonId.equals(radioButton0Elimina.id)) {
-                //TODO caricare dal DB la lista di PORTATE
-            }else if (selectedRadioButtonId.equals(radioButton1Elimina.id)){
-                //TODO caricare dal DB la lista di TIPOLOGIE
-            }else if(selectedRadioButtonId.equals(radioButton2Elimina.id)){
-                //TODO caricare dal DB la lista di ETNIE
-            }else{
-                //TODO caricare dal DB la lista di DIETE
-            }
-
-            //Log.d("CAMBIO SISTEMA PESOOOOOOOOOO", "${ricettaViewModel.peso}")
-        }
 
 
         return ret

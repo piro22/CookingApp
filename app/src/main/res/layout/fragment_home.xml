@@ -25,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:hint="Pasta al Pomodoro"
                 android:layout_weight="1"
-                android:drawableLeft="@drawable/baseline_home_24"
+                android:drawableLeft="@drawable/search_24dp_fill0_wght400_grad0_opsz24"
+                android:drawableTint="@color/coquelicot"
                 android:id="@+id/txtRicerca"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -49,6 +50,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/helpButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/baseline_help_24"
+            app:tint="@color/coquelicot"/>
 
         <!-- RecyclerView for displaying recipes -->
         <androidx.recyclerview.widget.RecyclerView

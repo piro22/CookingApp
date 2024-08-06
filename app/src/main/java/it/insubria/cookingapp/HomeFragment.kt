@@ -1,6 +1,9 @@
 package it.insubria.cookingapp
 
+import android.app.Dialog
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
+import android.media.Image
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,7 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +45,8 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
     private lateinit var listaPortate: AutoCompleteTextView
     private lateinit var adapter: RecyclerViewAdapter
     private lateinit var recView : RecyclerView
+
+    private lateinit var dbr: SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +108,29 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         }
         //-------------------------------------------------------------------------------------------------------------------------------
 
+
+        //bottone per help
+        val btnHelp: ImageView = ret.findViewById(R.id.helpButton)
+        val dialogHelp = Dialog(requireContext())
+        dialogHelp.setContentView(R.layout.dialog_help)
+        var messaggioHelpModificabile = "Schermata home: \nQui si ha una preview di tutte le ricette salvate " +
+                "\n\nSe si vuole veder nel dettaglio una ricetta basta cliccarla" +
+                "\n\nSe si vuole eliminare una ricetta tenere premuto su di essa per qualche secondo"
+
+        val btnok: Button = dialogHelp.findViewById(R.id.buttonOK)
+        val txtHelp: TextView = dialogHelp.findViewById(R.id.messaggioHelp)
+        btnok.setOnClickListener {
+            dialogHelp.dismiss()
+        }
+
+        btnHelp.setOnClickListener {
+            txtHelp.text = messaggioHelpModificabile
+
+            dialogHelp.window!!
+            dialogHelp.setCancelable(false)
+            dialogHelp.show()
+        }
+
         return ret
     }
 
@@ -107,7 +138,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
         ricetteModel.clear()
 
         val dbHelper = dataModel.dbHelper
-        val dbr = dbHelper!!.readableDatabase
+        dbr = dbHelper!!.readableDatabase
 
 
         val cursor = dbr.rawQuery("SELECT * FROM ricetta", null)
@@ -235,6 +266,15 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
 
         parentFragmentManager.beginTransaction().replace(R.id.fragment_container, DetailFragment()).addToBackStack(null).commit()
 
+    }
+
+    override fun onItemLongClick(position: Int) : Boolean{
+        val id = ricetteModel[position].id
+        dbr.delete("ricetta", "id = ?", arrayOf(id.toString()))
+
+        readFromDB()
+
+        return true
     }
 
 }

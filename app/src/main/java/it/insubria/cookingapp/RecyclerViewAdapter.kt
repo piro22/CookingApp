@@ -32,7 +32,8 @@ class RecyclerViewAdapter(private val context: Context,
 
         val path = filteredItemList.get(position).pathFoto
         if(!path.equals("default")){
-            holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
+            //var pth = filteredItemList[position].pathFoto
+            //holder.imageV.setImageURI(pth.toUri())
             //Log.d("HO MESSO L'URI", "${path.toUri()}")
         }
     }
@@ -76,14 +77,22 @@ class RecyclerViewAdapter(private val context: Context,
             portata = itemView.findViewById(R.id.textView3)
 
             itemView.setOnClickListener{
-                if(recyclerViewInterface != null){
-                    var pos : Int = adapterPosition
+                var pos : Int = adapterPosition
 
-                    if(pos != RecyclerView.NO_POSITION){
-                        recyclerViewInterface.onItemClick(pos)
-                    }
+                if(pos != RecyclerView.NO_POSITION){
+                    recyclerViewInterface.onItemClick(pos)
                 }
             }
+
+            itemView.setOnLongClickListener{
+                var pos : Int = adapterPosition
+
+                if(pos != RecyclerView.NO_POSITION){
+                    recyclerViewInterface.onItemLongClick(pos)
+                }
+                return@setOnLongClickListener true
+            }
+
         }
     }
 }

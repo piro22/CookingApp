@@ -1,6 +1,8 @@
 package it.insubria.cookingapp
 
+import android.app.Dialog
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
@@ -13,9 +15,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ListView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -56,12 +60,19 @@ class ShoppingListFragment : Fragment() {
         val txtQuant : EditText = ret.findViewById(R.id.txtAddQuantita)
 
 
+        //DATABASE
+        //setto variabili  per database
+        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        val dbHelper = dataModel.dbHelper
+        val dbr = dbHelper!!.readableDatabase
+        val dbw = dbHelper!!.writableDatabase
+
         //INIZIALIZZO LA LISTA CHE METTERO' NELLA ListView
         prodotti = ArrayList<String>()
         quantita = ArrayList<Int>()
 
         // adapter per la listview
-        val adapter = ShoppingListAdapter(requireContext(), prodotti, quantita)
+        val adapter = ShoppingListAdapter(requireContext(), dbr, prodotti, quantita)
         lista.adapter = adapter
 
         val button = ret.findViewById<Button>(R.id.buttonClearList)
@@ -99,15 +110,6 @@ class ShoppingListFragment : Fragment() {
 
 
 
-
-        //DATABASE
-        //setto variabili  per database
-        val dbHelper = Database_SQL(requireContext())
-        val dbr = dbHelper.readableDatabase
-        val dbw = dbHelper.writableDatabase
-
-
-
         fun populateIngredientiList() {
             val cursor = dbr.rawQuery("SELECT ingrediente, quantita FROM listaSpesa", null)
 
@@ -135,7 +137,16 @@ class ShoppingListFragment : Fragment() {
 
 
 
-            //AGGIUNGO ITEM ALLA LISTA
+        //AGGIUNGO ITEM ALLA LISTA
+
+        fun ingredienteEsiste(db: SQLiteDatabase, ingrediente: String): Boolean {
+            val cursor =
+                db.rawQuery("SELECT 1 FROM listaSpesa WHERE ingrediente = ?", arrayOf(ingrediente))
+            val exists = cursor.moveToFirst()
+            cursor.close()
+            return exists
+        }
+
         btnLista.setOnClickListener {
 
             btnLista.setBackgroundResource(R.drawable.custom_bkg_button_full)
@@ -147,38 +158,62 @@ class ShoppingListFragment : Fragment() {
             if (food.isNullOrBlank()) {
                 Toast.makeText(requireContext(), "Testo vuoto o nullo", Toast.LENGTH_SHORT).show()
             } else {
-//                dbw = databaseHelper.writableDatabase
-//                dbw.execSQL("INSERT INTO lista VALUES(\"$food\")")
-//                dbw.close()
+                //se l'ingrediente esiste aggiungo 1 di quantita e basta
+                if(ingredienteEsiste(dbr, food)){
+                   //prima prendo la quantita dell'ingrediente
+                    val cursor = dbr.rawQuery("SELECT quantita FROM listaSpesa WHERE ingrediente = ?", arrayOf(food))
+                    if (cursor.moveToFirst()) {
+                        val currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow("quantita"))
+                        var newQuantity = 0
+                        if(quantity.isNullOrBlank())
+                             newQuantity = currentQuantity + 1
+                        else
+                            newQuantity = currentQuantity + quantity.toInt()
 
-                if (quantity.isNullOrBlank()) {
-                    val nuovoValore = ContentValues().apply {
-                        put("ingrediente", food)
+                        //aggiungo 1 alla quantita presa
+                        val values = ContentValues().apply {
+                            put("quantita", newQuantity)
+                        }
+                        //aggiorno la query
+                        dbw.update("listaSpesa", values, "ingrediente = ?", arrayOf(food))
+                    }
+                    cursor.close()
+
+                    //aggiorno poi direttamente dal database
+                    populateIngredientiList()
+
+                }else {
+
+                    if (quantity.isNullOrBlank()) {
+                        val nuovoValore = ContentValues().apply {
+                            put("ingrediente", food)
+                            put("quantita", 1)
+                        }
+
+                        //aggiungo il nuovoValore all'interno del db
+                        dbw.insert("listaSpesa", null, nuovoValore)
+
+                    } else {
+                        val numQ = quantity.toInt()
+                        val nuovoValore = ContentValues().apply {
+                            put("ingrediente", food)
+                            put("quantita", numQ)
+                        }
+
+                        //aggiungo il nuovoValore all'interno del db
+                        dbw.insert("listaSpesa", null, nuovoValore)
                     }
 
-                    //aggiungo il nuovoValore all'interno del db
-                    dbw.insert("listaSpesa", null, nuovoValore)
+                    txtFood.setText("")
+                    txtQuant.setText("")
 
-                }else{
-                    val numQ = quantity.toInt()
-                    val nuovoValore = ContentValues().apply {
-                        put("ingrediente", food)
-                        put("quantita", numQ)
-                    }
+                    prodotti.add("$DOT $food")
+                    quantita.add(quantity.toInt())
 
-                    //aggiungo il nuovoValore all'interno del db
-                    dbw.insert("listaSpesa", null, nuovoValore)
+                    adapter.notifyDataSetChanged()
+
+                    Toast.makeText(requireContext(), "$food aggiunto", Toast.LENGTH_SHORT).show()
                 }
-
-                txtFood.setText("")
-                txtQuant.setText("")
-
-                prodotti.add("$DOT $food")
-                quantita.add(quantity.toInt())
-
-                adapter.notifyDataSetChanged()
-
-                Toast.makeText(requireContext(), "$food aggiunto", Toast.LENGTH_SHORT).show()
             }
 
             Handler(Looper.getMainLooper()).postDelayed({
@@ -188,6 +223,30 @@ class ShoppingListFragment : Fragment() {
                 btnLista.setColorFilter(ContextCompat.getColor(requireContext(), R.color.coquelicot), PorterDuff.Mode.SRC_IN)
             }, 500) // Ritardo di 500 millisecondi (0.5 secondi)
 
+        }
+
+
+        //bottone per help
+        val btnHelp: ImageView = ret.findViewById(R.id.helpButton)
+        val dialogHelp = Dialog(requireContext())
+        dialogHelp.setContentView(R.layout.dialog_help)
+        var messaggioHelpModificabile = "Schermata Shopping List: \nQui si possono vedere tutti gli ingredienti di cui hai bisogno con le quantità " +
+                "\n\nSe si vuole aumentare la quantità, basta riscrivere l'ingrediente con la quantità da aggiungere e poi schiacciare il pulsante in alto a destra" +
+                "\n\nSe si vuole eliminare un ingrediente basta schiacciare il pulsante a destra di ogni ingrediente" +
+                "\n\nSe si vuole svuotare completamente la lista schiacciare il pulsante in basso a sinistra"
+
+        val btnok: Button = dialogHelp.findViewById(R.id.buttonOK)
+        val txtHelp: TextView = dialogHelp.findViewById(R.id.messaggioHelp)
+        btnok.setOnClickListener {
+            dialogHelp.dismiss()
+        }
+
+        btnHelp.setOnClickListener {
+            txtHelp.text = messaggioHelpModificabile
+
+            dialogHelp.window!!
+            dialogHelp.setCancelable(false)
+            dialogHelp.show()
         }
 
         return ret
