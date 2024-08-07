@@ -30,7 +30,9 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -689,6 +691,26 @@ class newRecipeActivity : AppCompatActivity() {
 
 
         //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
+
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                pickImage()
+            } else {
+                // Gestisci il caso in cui il permesso non è stato concesso
+            }
+        }
+
+        pickImageLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback { result ->
+                if (result.resultCode == RESULT_OK && result.data != null) {
+                    handleImageResult(result.data!!)
+                }
+            })
+
+
         val pathImg = "default"
         btnImmagine.setOnClickListener {
             chooseImageFromGallery()
