@@ -1,6 +1,10 @@
 package it.insubria.cookingapp
 
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -8,9 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
+import java.io.InputStream
 
 class RecyclerViewAdapter(private val context: Context,
                           private val ricettaModel: ArrayList<RicetteModel>,
@@ -31,9 +37,36 @@ class RecyclerViewAdapter(private val context: Context,
         holder.portata.text = filteredItemList.get(position).portata
 
         val path = filteredItemList.get(position).pathFoto
-        if(!path.equals("default")){
-            holder.imageV.setImageURI("content://media/external/images/media/1000000028".toUri())
-            //Log.d("HO MESSO L'URI", "${path.toUri()}")
+        if (path != "default") {
+            // Determina il permesso da richiedere in base alla versione di Android
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                "android.permission.READ_MEDIA_IMAGES"
+            } else {
+                "android.permission.READ_EXTERNAL_STORAGE"
+            }
+
+            // Verifica se il permesso è stato concesso
+            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
+                // Usa ContentResolver per accedere in modo sicuro all'immagine
+                val uri = Uri.parse(path)
+                try {
+                    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                    holder.imageV.setImageBitmap(bitmap)
+                    inputStream?.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    holder.imageV.setImageResource(R.drawable.logo)
+                    Log.d("non mette la foto scelta ma il logo", "non mette la foto scelta ma il logo")
+                }
+            } else {
+                // Gestisci il caso in cui il permesso non è stato concesso
+                holder.imageV.setImageResource(R.drawable.logo)
+                Log.d("PERMESSO NEGATO", "Impossibile impostare l'immagine: permesso non concesso")
+            }
+        } else {
+            // Imposta l'immagine di default
+            holder.imageV.setImageResource(R.drawable.logo)
         }
     }
 

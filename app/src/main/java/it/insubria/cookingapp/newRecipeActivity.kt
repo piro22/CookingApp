@@ -9,8 +9,12 @@ import androidx.core.net.toUri
 import android.database.sqlite.SQLiteDatabase
 import android.app.Dialog
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.graphics.PorterDuff
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -27,6 +31,9 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -41,9 +48,19 @@ import java.util.Collections
 class newRecipeActivity : AppCompatActivity() {
 
     private val PICK_IMAGE_REQUEST = 1
+    private lateinit var selectedImage : Uri
+    private lateinit var selectedBitmap : Bitmap
+    private lateinit var pickImageLauncher: ActivityResultLauncher<Intent>
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
     private lateinit var btnImmagine: ImageView
     private lateinit var imageViewFoto: ImageView
     private var uriFoto: String = "default"
+
+    companion object {
+        const val READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES"
+        const val READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -650,6 +667,25 @@ class newRecipeActivity : AppCompatActivity() {
 
 
         //SCEGLIERE IMMAGINE-------------------------------------------------------------------------------------------------
+
+        requestPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                pickImage()
+            } else {
+                // Gestisci il caso in cui il permesso non è stato concesso
+            }
+        }
+
+        pickImageLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback { result ->
+                if (result.resultCode == RESULT_OK && result.data != null) {
+                    handleImageResult(result.data!!)
+                }
+            })
+
         val pathImg = "default"
         btnImmagine.setOnClickListener {
             chooseImageFromGallery()
@@ -918,28 +954,48 @@ class newRecipeActivity : AppCompatActivity() {
 
 
     private fun chooseImageFromGallery() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST)
-    }
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            READ_MEDIA_IMAGES
+        } else {
+            READ_EXTERNAL_STORAGE
+        }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK && data != null) {
-            val selectedImageUri: Uri? = data.data
-            selectedImageUri?.let {
-                uriFoto = selectedImageUri.toString()
-
-                val layoutParams = imageViewFoto.layoutParams
-                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                layoutParams.height = 500 // o qualsiasi altra dimensione desiderata
-                imageViewFoto.layoutParams = layoutParams
-
-                imageViewFoto.setImageURI(selectedImageUri)
-            }
-        }else{
-            uriFoto = "default"
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(permission)
+        } else {
+            pickImage()
         }
     }
+
+    private fun pickImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        pickImageLauncher.launch(intent)
+    }
+
+    private fun handleImageResult(data: Intent) {
+        selectedImage = data.data!!
+        uriFoto = selectedImage.toString()
+
+        try {
+            if (Build.VERSION.SDK_INT >= 28) {
+                val source = ImageDecoder.createSource(this.contentResolver, selectedImage)
+                selectedBitmap = ImageDecoder.decodeBitmap(source)
+            } else {
+                selectedBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImage)
+            }
+
+            val layoutParams = imageViewFoto.layoutParams
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+            layoutParams.height = 500 // o qualsiasi altra dimensione desiderata
+            imageViewFoto.layoutParams = layoutParams
+
+            imageViewFoto.setImageBitmap(selectedBitmap)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     //funzione per comporre la procedura a partire dai passi inseriti dal'utenteto
     private fun componiProcedura(listaProcedimenti: ArrayList<String>): String {
