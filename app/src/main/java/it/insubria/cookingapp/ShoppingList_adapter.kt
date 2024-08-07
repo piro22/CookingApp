@@ -1,6 +1,7 @@
 package it.insubria.cookingapp
 
 import android.content.Context
+import android.database.sqlite.SQLiteDatabase
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import android.widget.Toast
 
 class ShoppingListAdapter(
     context: Context,
+    val dbr: SQLiteDatabase,
     private val items: MutableList<String>,
     private val quant: MutableList<Int>
 ) : ArrayAdapter<String>(context, R.layout.row_shopping_list, items) {
@@ -32,6 +34,10 @@ class ShoppingListAdapter(
 
         // Set up the delete icon click listener
         deleteIcon.setOnClickListener {
+
+            dbr.delete("listaSpesa", "ingrediente = ?", arrayOf(items[position]))
+
+
             items.removeAt(position)
             quant.removeAt(position)
             notifyDataSetChanged()

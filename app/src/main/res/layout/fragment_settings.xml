@@ -163,71 +163,7 @@
                 android:layout_marginBottom="4dp"
                 android:background="@color/coquelicot"
                 app:layout_constraintTop_toBottomOf="@id/primolayout" />
-
-            <TextView
-                android:id="@+id/txtEliminare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Eliminare dati inseriti"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/smokey_black"
-                android:layout_marginTop="15dp"
-                android:layout_marginLeft="15dp"/>
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <RadioGroup
-                    android:id="@+id/radioGroupElimina"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    >
-
-                    <RadioButton
-                        android:id="@+id/radioButton0Elimina"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Portata"
-                        android:checked="true" />
-
-                    <RadioButton
-                        android:id="@+id/radioButton1Elimina"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tipologia"
-                        android:checked="false"/>
-
-                    <RadioButton
-                        android:id="@+id/radioButton2Elimina"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Etnia"
-                        android:checked="false"/>
-
-                    <RadioButton
-                        android:id="@+id/radioButton3Elimina"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dieta"
-                        android:checked="false"/>
-
-                </RadioGroup>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/listElimina"
-                />
-
+            
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
