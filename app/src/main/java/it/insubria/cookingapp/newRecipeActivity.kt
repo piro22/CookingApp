@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -42,6 +43,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.InputStream
 import java.util.Collections
 
 
@@ -642,9 +644,35 @@ class newRecipeActivity : AppCompatActivity() {
                 editTitolo.setText(nomeRicetta)
                 porzioni.setText(porzioniRicetta.toString())
 
-                if (pathFoto != "default") {
-                    imageViewFoto.setImageURI(pathFoto.toUri())
-                }else {
+                if (!pathFoto.equals("default")) {
+                    // Determina il permesso da richiedere in base alla versione di Android
+                    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        "android.permission.READ_MEDIA_IMAGES"
+                    } else {
+                        "android.permission.READ_EXTERNAL_STORAGE"
+                    }
+
+                    // Verifica se il permesso è stato concesso
+                    if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+                        // Usa ContentResolver per accedere in modo sicuro all'immagine
+                        val uri = Uri.parse(pathFoto)
+                        try {
+                            val inputStream: InputStream? = this.contentResolver.openInputStream(uri)
+                            val bitmap = BitmapFactory.decodeStream(inputStream)
+                            imageViewFoto.setImageBitmap(bitmap)
+                            inputStream?.close()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            imageViewFoto.setImageResource(R.drawable.logo)
+                            Log.d("non mette la foto scelta ma il logo", "non mette la foto scelta ma il logo")
+                        }
+                    } else {
+                        // Gestisci il caso in cui il permesso non è stato concesso
+                        imageViewFoto.setImageResource(R.drawable.logo)
+                        Log.d("PERMESSO NEGATO", "Impossibile impostare l'immagine: permesso non concesso")
+                    }
+
+                }else{
                     imageViewFoto.setImageResource(R.drawable.logo)
                 }
 
