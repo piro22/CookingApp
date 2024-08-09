@@ -40,7 +40,6 @@ class RecyclerViewAdapter(private val context: Context,
         if (foto.size != 0) {
             val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
             holder.imageV.setImageBitmap(bitmap)
-
         }else{
             holder.imageV.setImageResource(R.drawable.logo)
         }

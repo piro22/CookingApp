@@ -141,7 +141,7 @@ class DetailFragment() : Fragment() {
             textPreparazione.text = parsePreparazione(ricetta!!.preparazione)
 
             val foto = ricetta!!.pathFoto
-            if (!foto.contentEquals(byteArrayOf(0x01))) {
+            if (foto.size != 0) {
                 val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
                 imgRicetta.setImageBitmap(bitmap)
 
@@ -197,7 +197,8 @@ class DetailFragment() : Fragment() {
                         val dieta = "Dieta:\n" + cur.getString(cur.getColumnIndexOrThrow("dieta"))
                         val tempo = cur.getInt(cur.getColumnIndexOrThrow("tempo_di_preparazione"))
                         val preparazione = cur.getString(cur.getColumnIndexOrThrow("preparazione"))
-                        val pathFoto = cur.getString(cur.getColumnIndexOrThrow("pathFoto"))
+                        val foto = cur.getBlob(cur.getColumnIndexOrThrow("pathFoto"))
+
 
                         textTitolo.text = nome
                         textDiff.text = soloInizioGrassetto("Difficoltà:", difficolta)
@@ -208,9 +209,11 @@ class DetailFragment() : Fragment() {
                         editPorzioni.setText(porzioni.toString())
                         textPreparazione.text = parsePreparazione(preparazione)
 
-                        if (pathFoto != "default") {
-                            imgRicetta.setImageURI(pathFoto.toUri())
-                        } else {
+                        if (foto.size != 0) {
+                            val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
+                            imgRicetta.setImageBitmap(bitmap)
+
+                        }else{
                             imgRicetta.setImageResource(R.drawable.logo)
                         }
 
@@ -287,7 +290,7 @@ class DetailFragment() : Fragment() {
             //controllo che ci sia scritto qualcosa e che ricetta esista
             if (!porz.isEmpty()) {
 
-                Log.d("CAMBIO PORZIONI", "---------Da ${porzioniTemp} a $porz---------\n")
+                //Log.d("CAMBIO PORZIONI", "---------Da ${porzioniTemp} a $porz---------\n")
 
                 var newPorz = porz.toInt()
 

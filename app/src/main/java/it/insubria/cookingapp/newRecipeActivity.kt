@@ -221,7 +221,7 @@ class newRecipeActivity : AppCompatActivity() {
         val btn_annulla: ImageView = dialog.findViewById(R.id.annullaBtn)
         btn_annulla.setOnClickListener {
             dialog.dismiss()
-            Log.d("MainActivity2", "Dialogo chiuso")
+            //Log.d("MainActivity2", "Dialogo chiuso")
         }
 
         val btn_salva: Button = dialog.findViewById(R.id.saveBtn)
@@ -279,7 +279,7 @@ class newRecipeActivity : AppCompatActivity() {
         val btn_annullaD: ImageView = dialogD.findViewById(R.id.annullaBtnD)
         btn_annullaD.setOnClickListener {
             dialogD.dismiss()
-            Log.d("MainActivity2", "Dialogo chiuso")
+            //Log.d("MainActivity2", "Dialogo chiuso")
         }
 
 
@@ -334,7 +334,7 @@ class newRecipeActivity : AppCompatActivity() {
 
         btn_annullaE.setOnClickListener {
             dialogE.dismiss()
-            Log.d("MainActivity2", "Dialogo chiuso")
+            //Log.d("MainActivity2", "Dialogo chiuso")
         }
 
 
@@ -369,7 +369,7 @@ class newRecipeActivity : AppCompatActivity() {
         val btn_annullaT: ImageView = dialogT.findViewById(R.id.annullaBtnT)
         btn_annullaT.setOnClickListener {
             dialogT.dismiss()
-            Log.d("MainActivity2", "Dialogo chiuso")
+            //Log.d("MainActivity2", "Dialogo chiuso")
         }
 
 
@@ -486,7 +486,7 @@ class newRecipeActivity : AppCompatActivity() {
                         R.color.coquelicot
                     ), PorterDuff.Mode.SRC_IN
                 )
-            }, 500) // Ritardo di 500 millisecondi (0.5 secondi)
+            }, 300) // Ritardo di 300 millisecondi (0.3 secondi)
         }
 
 
@@ -585,7 +585,7 @@ class newRecipeActivity : AppCompatActivity() {
                     }
                     val newRowId = dbr.insert("ingrediente", null, contentValues)
                 } else {
-                    Log.d("INGREDIENTE GIA INSERITO", ingredient)
+                    Toast.makeText(this, "Ingrediente gia presente", Toast.LENGTH_SHORT).show()
                 }
 
                 // Notify the adapter of data change
@@ -606,7 +606,7 @@ class newRecipeActivity : AppCompatActivity() {
                         R.color.coquelicot
                     ), PorterDuff.Mode.SRC_IN
                 )
-            }, 500) // Ritardo di 500 millisecondi (0.5 secondi)
+            }, 300) // Ritardo di 300 millisecondi (0.3 secondi)
         }
 
 
@@ -955,7 +955,7 @@ class newRecipeActivity : AppCompatActivity() {
                 aggiornaValoriIngredienti()
 
                 for (i in 0 until listViewIngredients.count){
-                    Log.d("INGREDIENTE", "${ingredientiNome[i]}: ${ingredientiQuantita[i]} ${ingredientiUnita[i]}")
+                    //Log.d("INGREDIENTE", "${ingredientiNome[i]}: ${ingredientiQuantita[i]} ${ingredientiUnita[i]}")
                 }
             }
 
@@ -976,6 +976,7 @@ class newRecipeActivity : AppCompatActivity() {
             } else {
                 preparazione = componiProcedura(listaProcedimenti)
             }
+
 
             if (esito) {
                 ricettaDaSalvare = RicetteModel(
@@ -1009,7 +1010,7 @@ class newRecipeActivity : AppCompatActivity() {
                 val unit = ingredientiUnita[i]
 
                 dbr.execSQL("INSERT INTO ingredienti_ricetta VALUES(?,?,?,?)", arrayOf(id, ingr, quan, unit))
-                Log.d("SALVO UN INGREDIENTE", "ricetta ${id}, ingrediente ${ingr} ${quan} ${unit}")
+                //Log.d("SALVO UN INGREDIENTE", "ricetta ${id}, ingrediente ${ingr} ${quan} ${unit}")
             }
         }
 
@@ -1025,21 +1026,25 @@ class newRecipeActivity : AppCompatActivity() {
                 //controllo che il return di salvataggio() sia != da null
                 if (ricetta != null) {
                     // per AGGIORNARE sul database
-                    val updateQuery = """
-                    UPDATE ricetta 
-                    SET nome = '${ricetta?.nome}', 
-                    porzioni = '${ricetta?.porzioni}', 
-                    tempo_di_preparazione ='${ricetta?.tempo}', 
-                    difficolta = '${ricetta?.difficolta}', 
-                    tipologia = '${ricetta?.tipologia}', 
-                    portata = '${ricetta?.portata}', 
-                    dieta = '${ricetta?.dieta}', 
-                    etnicita = '${ricetta?.etnicita}', 
-                    pathFoto = '${ricetta?.pathFoto}',
-                    preparazione = '${ricetta?.preparazione}'
-                    WHERE id = '${idRicetta}'
-                    """
-                    dbw.execSQL(updateQuery)
+                    val contentValues = ContentValues().apply {
+                        put("nome", ricetta?.nome)
+                        put("porzioni", ricetta?.porzioni)
+                        put("tempo_di_preparazione", ricetta?.tempo)
+                        put("difficolta", ricetta?.difficolta)
+                        put("tipologia", ricetta?.tipologia)
+                        put("portata", ricetta?.portata)
+                        put("dieta", ricetta?.dieta)
+                        put("etnicita", ricetta?.etnicita)
+                        put("preparazione", ricetta?.preparazione)
+
+                        // Aggiungi il BLOB solo se è presente
+                        ricetta?.pathFoto?.let {
+                            put("pathFoto", it)
+                        }
+                    }
+
+                    dbw.update("ricetta", contentValues, "id = ?", arrayOf(idRicetta.toString()))
+
 
                     // Mostra un messaggio di successo o esegui altre azioni necessarie dopo l'update
                     Toast.makeText(this, "Dati salvati con successo", Toast.LENGTH_SHORT).show()
@@ -1067,9 +1072,9 @@ class newRecipeActivity : AppCompatActivity() {
 
                     setResult(Activity.RESULT_OK, resultIntent)
                     finish()
-                    Log.d("AGGIORNAMENTO FATTO", "INSERITA RICETTA NUOVAAAAAAAA")
+                    //Log.d("AGGIORNAMENTO FATTO", "INSERITA RICETTA NUOVAAAAAAAA")
                 } else {
-                    Log.d("AGGIORNAMENTO FALLITO", "NON INSERITO RICETTA")
+                    //Log.d("AGGIORNAMENTO FALLITO", "NON INSERITO RICETTA")
                 }
             } else {
                 //controllo che il return di salvataggio() sia != da null
@@ -1094,13 +1099,14 @@ class newRecipeActivity : AppCompatActivity() {
                     // insert mi restituisce id
                     val id = dbw.insert("ricetta", null, nuovoValore)
 
-                    Log.d("INSERIMENTO FATTO", "$id")
+                    //Log.d("INSERIMENTO FATTO", "$id")
 
                     // salvare gli ingredienti della ricetta
                     salvaIngredienti(id.toInt())
-
+                    Toast.makeText(this, "Nuova ricetta creata correttamente", Toast.LENGTH_SHORT).show()
                 } else {
-                    Log.d("INSERIMENTO FALLITO", "NON INSERITO RICETTA")
+                    //Log.d("INSERIMENTO FALLITO", "NON INSERITO RICETTA")
+                    Toast.makeText(this, "Errore creazione ricetta", Toast.LENGTH_SHORT).show()
                 }
             }
         }
