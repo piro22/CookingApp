@@ -57,7 +57,7 @@ class newRecipeActivity : AppCompatActivity() {
     private var ingredientiNome: MutableList<String> = mutableListOf()
     private var ingredientiQuantita: MutableList<Int> = mutableListOf()
     private var ingredientiUnita: MutableList<String> = mutableListOf()
-    private lateinit var uriFoto: ByteArray
+    private var uriFoto: ByteArray = byteArrayOf()
     private lateinit var adapterProcedimento : RecyclerView_ListaProcedimento
 
     private lateinit var selectedImage: Uri
@@ -638,6 +638,8 @@ class newRecipeActivity : AppCompatActivity() {
                 val preparazione = cursor.getString(cursor.getColumnIndexOrThrow("preparazione"))
                 val foto = cursor.getBlob(cursor.getColumnIndexOrThrow("pathFoto"))
 
+                uriFoto = foto
+
                 listaTipo.setText(tipologia)
                 listaPortate.setText(portata)
                 listaDieta.setText(dieta)
@@ -648,7 +650,7 @@ class newRecipeActivity : AppCompatActivity() {
                 porzioni.setText(porzioniRicetta.toString())
 
                 //CARICO LA FOTO
-                if (!foto.contentEquals(byteArrayOf(0x01))) {
+                if (foto.size != 0) {
                     val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
                     imageViewFoto.setImageBitmap(bitmap)
 
@@ -973,12 +975,6 @@ class newRecipeActivity : AppCompatActivity() {
                 dialogError.show()
             } else {
                 preparazione = componiProcedura(listaProcedimenti)
-            }
-
-
-            //controllo su foto, se è vuoto inserisco un byte solo e lo uso come default
-            if(uriFoto.size <= 0){
-                uriFoto = byteArrayOf(0x01)
             }
 
             if (esito) {

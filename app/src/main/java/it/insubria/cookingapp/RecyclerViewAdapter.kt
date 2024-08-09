@@ -37,7 +37,7 @@ class RecyclerViewAdapter(private val context: Context,
         holder.portata.text = filteredItemList.get(position).portata
 
         val foto = filteredItemList.get(position).pathFoto
-        if (!foto.contentEquals(byteArrayOf(0x01))) {
+        if (foto.size != 0) {
             val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
             holder.imageV.setImageBitmap(bitmap)
 
