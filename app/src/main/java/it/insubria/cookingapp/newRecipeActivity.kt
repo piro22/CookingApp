@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -43,6 +44,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.Collections
 
@@ -55,7 +57,7 @@ class newRecipeActivity : AppCompatActivity() {
     private var ingredientiNome: MutableList<String> = mutableListOf()
     private var ingredientiQuantita: MutableList<Int> = mutableListOf()
     private var ingredientiUnita: MutableList<String> = mutableListOf()
-    private var uriFoto: String = "default"
+    private lateinit var uriFoto: ByteArray
     private lateinit var adapterProcedimento : RecyclerView_ListaProcedimento
 
     private lateinit var selectedImage: Uri
@@ -69,6 +71,7 @@ class newRecipeActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_newrecipe)
@@ -633,7 +636,7 @@ class newRecipeActivity : AppCompatActivity() {
                 val etnicita = cursor.getString(cursor.getColumnIndexOrThrow("etnicita"))
                 val tempoPrep = cursor.getInt(cursor.getColumnIndexOrThrow("tempo_di_preparazione"))
                 val preparazione = cursor.getString(cursor.getColumnIndexOrThrow("preparazione"))
-                val pathFoto = cursor.getString(cursor.getColumnIndexOrThrow("pathFoto"))
+                val foto = cursor.getBlob(cursor.getColumnIndexOrThrow("pathFoto"))
 
                 listaTipo.setText(tipologia)
                 listaPortate.setText(portata)
@@ -644,33 +647,10 @@ class newRecipeActivity : AppCompatActivity() {
                 editTitolo.setText(nomeRicetta)
                 porzioni.setText(porzioniRicetta.toString())
 
-                if (!pathFoto.equals("default")) {
-                    // Determina il permesso da richiedere in base alla versione di Android
-                    val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        "android.permission.READ_MEDIA_IMAGES"
-                    } else {
-                        "android.permission.READ_EXTERNAL_STORAGE"
-                    }
-
-                    // Verifica se il permesso è stato concesso
-                    if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-                        // Usa ContentResolver per accedere in modo sicuro all'immagine
-                        val uri = Uri.parse(pathFoto)
-                        try {
-                            val inputStream: InputStream? = this.contentResolver.openInputStream(uri)
-                            val bitmap = BitmapFactory.decodeStream(inputStream)
-                            imageViewFoto.setImageBitmap(bitmap)
-                            inputStream?.close()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            imageViewFoto.setImageResource(R.drawable.logo)
-                            Log.d("non mette la foto scelta ma il logo", "non mette la foto scelta ma il logo")
-                        }
-                    } else {
-                        // Gestisci il caso in cui il permesso non è stato concesso
-                        imageViewFoto.setImageResource(R.drawable.logo)
-                        Log.d("PERMESSO NEGATO", "Impossibile impostare l'immagine: permesso non concesso")
-                    }
+                //CARICO LA FOTO
+                if (!foto.contentEquals(byteArrayOf(0x01))) {
+                    val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
+                    imageViewFoto.setImageBitmap(bitmap)
 
                 }else{
                     imageViewFoto.setImageResource(R.drawable.logo)
@@ -995,11 +975,17 @@ class newRecipeActivity : AppCompatActivity() {
                 preparazione = componiProcedura(listaProcedimenti)
             }
 
+
+            //controllo su foto, se è vuoto inserisco un byte solo e lo uso come default
+            if(uriFoto.size <= 0){
+                uriFoto = byteArrayOf(0x01)
+            }
+
             if (esito) {
                 ricettaDaSalvare = RicetteModel(
                     idRicetta,
                     titoloFinale,
-                    uriFoto.toString(),
+                    uriFoto,
                     preparazione,
                     numPorzioni,
                     numTempo,
@@ -1158,7 +1144,6 @@ class newRecipeActivity : AppCompatActivity() {
 
     private fun handleImageResult(data: Intent) {
         selectedImage = data.data!!
-        uriFoto = selectedImage.toString()
 
         try {
             if (Build.VERSION.SDK_INT >= 28) {
@@ -1167,6 +1152,8 @@ class newRecipeActivity : AppCompatActivity() {
             } else {
                 selectedBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, selectedImage)
             }
+
+            uriFoto = getCompressedBitmap(selectedBitmap)
 
             val layoutParams = imageViewFoto.layoutParams
             layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -1178,6 +1165,18 @@ class newRecipeActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+//    fun getBitmapAsByteArray(bitmap: Bitmap): ByteArray {
+//        val outputStream = ByteArrayOutputStream()
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+//        return outputStream.toByteArray()
+//    }
+
+    fun getCompressedBitmap(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream) // Usa 50% di qualità per ridurre la dimensione
+        return outputStream.toByteArray()
     }
 
     //funzione per comporre la procedura a partire dai passi inseriti dal'utenteto

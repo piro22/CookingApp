@@ -161,7 +161,7 @@ class HomeFragment : Fragment(), RecyclerViewInterface {
                 val tempRic: RicetteModel = RicetteModel(
                     cursor.getInt(idIndex),
                     cursor.getString(nomeIndex),
-                    cursor.getString(pathIndex),
+                    cursor.getBlob(pathIndex),
                     cursor.getString(preparazioneIndex),
                     cursor.getInt(porzioniIndex),
                     cursor.getInt(tempoIndex),

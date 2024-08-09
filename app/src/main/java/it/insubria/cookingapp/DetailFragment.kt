@@ -3,6 +3,7 @@ package it.insubria.cookingapp
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -139,34 +140,10 @@ class DetailFragment() : Fragment() {
 
             textPreparazione.text = parsePreparazione(ricetta!!.preparazione)
 
-            val path = ricetta!!.pathFoto
-            if (!path.equals("default")) {
-                // Determina il permesso da richiedere in base alla versione di Android
-                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    "android.permission.READ_MEDIA_IMAGES"
-                } else {
-                    "android.permission.READ_EXTERNAL_STORAGE"
-                }
-
-                // Verifica se il permesso è stato concesso
-                if (ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-                    // Usa ContentResolver per accedere in modo sicuro all'immagine
-                    val uri = Uri.parse(path)
-                    try {
-                        val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        imgRicetta.setImageBitmap(bitmap)
-                        inputStream?.close()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        imgRicetta.setImageResource(R.drawable.logo)
-                        Log.d("non mette la foto scelta ma il logo", "non mette la foto scelta ma il logo")
-                    }
-                } else {
-                    // Gestisci il caso in cui il permesso non è stato concesso
-                    imgRicetta.setImageResource(R.drawable.logo)
-                    Log.d("PERMESSO NEGATO", "Impossibile impostare l'immagine: permesso non concesso")
-                }
+            val foto = ricetta!!.pathFoto
+            if (!foto.contentEquals(byteArrayOf(0x01))) {
+                val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
+                imgRicetta.setImageBitmap(bitmap)
 
             }else{
                 imgRicetta.setImageResource(R.drawable.logo)

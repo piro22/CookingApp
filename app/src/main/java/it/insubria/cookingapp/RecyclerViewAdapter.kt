@@ -36,36 +36,12 @@ class RecyclerViewAdapter(private val context: Context,
         holder.difficolta.text = filteredItemList.get(position).difficolta
         holder.portata.text = filteredItemList.get(position).portata
 
-        val path = filteredItemList.get(position).pathFoto
-        if (path != "default") {
-            // Determina il permesso da richiedere in base alla versione di Android
-            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                "android.permission.READ_MEDIA_IMAGES"
-            } else {
-                "android.permission.READ_EXTERNAL_STORAGE"
-            }
+        val foto = filteredItemList.get(position).pathFoto
+        if (!foto.contentEquals(byteArrayOf(0x01))) {
+            val bitmap = BitmapFactory.decodeByteArray(foto, 0, foto.size)
+            holder.imageV.setImageBitmap(bitmap)
 
-            // Verifica se il permesso è stato concesso
-            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-                // Usa ContentResolver per accedere in modo sicuro all'immagine
-                val uri = Uri.parse(path)
-                try {
-                    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    holder.imageV.setImageBitmap(bitmap)
-                    inputStream?.close()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    holder.imageV.setImageResource(R.drawable.logo)
-                    Log.d("non mette la foto scelta ma il logo", "non mette la foto scelta ma il logo")
-                }
-            } else {
-                // Gestisci il caso in cui il permesso non è stato concesso
-                holder.imageV.setImageResource(R.drawable.logo)
-                Log.d("PERMESSO NEGATO", "Impossibile impostare l'immagine: permesso non concesso")
-            }
-        } else {
-            // Imposta l'immagine di default
+        }else{
             holder.imageV.setImageResource(R.drawable.logo)
         }
     }

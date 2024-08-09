@@ -2,7 +2,7 @@ package it.insubria.cookingapp
 
 class RicetteModel(id: Int,
     nome: String,
-                    pathFoto: String,
+                    pathFoto: ByteArray,
                     preparazione: String,
                     porzioni: Int,
                     tempo: Int,
@@ -14,7 +14,7 @@ class RicetteModel(id: Int,
                     preferito: Int) {
     val id: Int
     val nome: String
-    val pathFoto: String
+    val pathFoto: ByteArray
     val preparazione: String
     val porzioni: Int
     val tempo: Int
