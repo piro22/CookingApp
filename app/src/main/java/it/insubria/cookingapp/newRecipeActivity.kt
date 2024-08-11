@@ -519,7 +519,6 @@ class newRecipeActivity : AppCompatActivity() {
 
             }
 
-
         }
 
         val item = ItemTouchHelper(simpleCallBack)

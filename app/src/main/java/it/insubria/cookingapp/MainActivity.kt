@@ -14,6 +14,7 @@ import com.google.android.material.navigation.NavigationView
 import android.os.Build
 import android.view.Window
 import android.view.WindowManager
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 
@@ -23,7 +24,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerLayout : DrawerLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -45,12 +48,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dataModel = ViewModelProvider(this).get(DataModel::class.java)
         dataModel.dbHelper = Database_SQL(this)
 
-        //TODO DA ELIMINARE POI
-        val dbw = dataModel.dbHelper!!.writableDatabase
-        dbw.execSQL("DELETE FROM unita_di_misura")
-        dbw.execSQL("INSERT INTO unita_di_misura VALUES ('- - -'), ('L'), ('dL'), ('cL'), ('mL'), ('Kg'), ('h'), ('g'), ('tsp'), ('tbsp'), ('cup'), ('pt'), ('qt'), ('gal'), ('Oz'), ('lb'), ('qb')")
-        //-----------------------------
-
         //SETUP DRAWER
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
 
@@ -69,20 +66,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .replace(R.id.fragment_container, HomeFragment()).commit()
             navigationView.setCheckedItem(R.id.nav_home)
         }
+
+        // Imposta il callback per gestire l'evento di pressione del tasto "Indietro"
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    // Chiama il metodo di default se non ci sono azioni personalizzate
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()  // Chiama il backstack predefinito
+                }
+            }
+        })
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-
         when(item.itemId){
             R.id.nav_home -> {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container, HomeFragment()).commit()
             }
             R.id.nav_settings -> {
-                val settingFragment = SettingsFragment()
-                //settingFragment.setDatabaseHelper(databaseHelper)
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, settingFragment).commit()
+                    .replace(R.id.fragment_container, SettingsFragment()).commit()
             }
             R.id.nav_favorites -> {
                 supportFragmentManager.beginTransaction()
@@ -99,15 +106,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
-
-    }
-
-    override fun onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
-            drawerLayout.closeDrawer(GravityCompat.START)
-        }else{
-            //onBackPressedDispatcher.onBackPressed()
-            super.onBackPressed()
-        }
     }
 }

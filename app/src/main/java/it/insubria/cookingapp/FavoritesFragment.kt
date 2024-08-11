@@ -44,7 +44,6 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
     private lateinit var listaPortate: AutoCompleteTextView
     private lateinit var adapter: RecyclerViewAdapter
     private lateinit var recView : RecyclerView
-
     private lateinit var dbr: SQLiteDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,7 +130,6 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             dialogHelp.show()
         }
 
-
         return ret
     }
 
@@ -140,7 +138,6 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
 
         val dbHelper = dataModel.dbHelper
         dbr = dbHelper!!.readableDatabase
-
 
         val cursor = dbr.rawQuery("SELECT * FROM ricetta WHERE preferito = 1", null)
 
@@ -258,8 +255,8 @@ class FavoritesFragment : Fragment(), RecyclerViewInterface {
             ricetteModel.get(position).etnicita,
             ricetteModel.get(position).preferito)
 
-        val ricettaViewModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
-        ricettaViewModel.ricetta = ricetta
+        val dataModel = ViewModelProvider(requireActivity()).get(DataModel::class.java)
+        dataModel.ricetta = ricetta
 
 //        val detail: DetailFragment = DetailFragment()
 //        detail.setRicetta(ricetta)
