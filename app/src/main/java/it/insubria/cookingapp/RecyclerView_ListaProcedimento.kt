@@ -63,9 +63,4 @@ class RecyclerView_ListaProcedimento(private val listaProcedimenti: MutableList<
             view.rimuoviProcedura(posizione)
         }
 
-
-
-
-
-
     }}

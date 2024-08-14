@@ -41,6 +41,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.size
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -531,11 +532,12 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
         //aggiungere gli ingredienti
 //----------------------------------------------------------------------------------------------------------------------------
         val input = findViewById<EditText>(R.id.input)
-        val adapt = ListView_adapter(this, ingredientiNome, ingredientiQuantita, ingredientiUnita, this)
-        val listViewIngredients = findViewById<ListView>(R.id.listviewl)
+        val adapteringredienti = RecyclerView_ListaIngredienti(this, ingredientiNome, ingredientiQuantita, ingredientiUnita, this)
+        val listViewIngredients = findViewById<RecyclerView>(R.id.listviewl)
         val bottoneIngrediente: ImageView = findViewById(R.id.aggiungiIngrediente)
 
-        listViewIngredients.adapter = adapt
+        listViewIngredients.adapter = adapteringredienti
+        listViewIngredients.layoutManager = LinearLayoutManager(this)
 
         fun ingredienteEsiste(db: SQLiteDatabase, ingrediente: String): Boolean {
             val cursor =
@@ -571,7 +573,6 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
             //Check if input is not empty
             if (ingredient.isNotEmpty()) {
 
-
                 if(ingredientiNome.contains(ingredient)){
 
                     //raddoppio la quantita del primo
@@ -596,8 +597,8 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
                 }
 
                 // Notify the adapter of data change
-                adapt.notifyDataSetChanged()
-                setListViewHeightBasedOnItems(listViewIngredients, adapt)
+                adapteringredienti.notifyDataSetChanged()
+                //setListViewHeightBasedOnItems(listViewIngredients, adapt)
 
                 // Clear the input field
                 input.text.clear()
@@ -700,8 +701,8 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
             }
             //una volta riempite le liste dico all'adapter che deve aggiornarsi
             cursorIng.close()
-            adapt.notifyDataSetChanged()
-            setListViewHeightBasedOnItems(listViewIngredients, adapt)
+            adapteringredienti.notifyDataSetChanged()
+            //setListViewHeightBasedOnItems(listViewIngredients, adapt)
         }
 
         //----------------------------------------------------------------------------------------------------------------------------
@@ -738,7 +739,7 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
 
 
         fun aggiornaValoriIngredienti(){
-            for (i in 0 until listViewIngredients.count){
+            for (i in 0 until listViewIngredients.size){
                 val view: View = listViewIngredients.getChildAt(i)
                 if(view != null){
                     val a: EditText = view.findViewById(R.id.tendina)
@@ -961,7 +962,7 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
                 //se non è vuoto posso aggiornare gli ingredienti a quelli inseriti dall'utente
                 aggiornaValoriIngredienti()
 
-                for (i in 0 until listViewIngredients.count){
+                for (i in 0 until listViewIngredients.size){
                     //Log.d("INGREDIENTE", "${ingredientiNome[i]}: ${ingredientiQuantita[i]} ${ingredientiUnita[i]}")
                 }
             }
@@ -1119,19 +1120,6 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
         }
     }
 
-    private fun ingredienteRicettaEsiste(
-        dbw: SQLiteDatabase?,
-        idRicetta: Long,
-        s: String
-    ): Boolean? {
-        val query = "SELECT 1 FROM ingredienti_ricetta WHERE id_ricetta = ? AND ingrediente = ?"
-        val cursor = dbw?.rawQuery(query, arrayOf(idRicetta.toString(), s))
-        val exists = cursor?.moveToFirst()
-        cursor?.close()
-        return exists
-    }
-
-
     private fun chooseImageFromGallery() {
         val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             READ_MEDIA_IMAGES
@@ -1176,12 +1164,6 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
         }
     }
 
-//    fun getBitmapAsByteArray(bitmap: Bitmap): ByteArray {
-//        val outputStream = ByteArrayOutputStream()
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-//        return outputStream.toByteArray()
-//    }
-
     fun getCompressedBitmap(bitmap: Bitmap): ByteArray {
         val outputStream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream) // Usa 50% di qualità per ridurre la dimensione
@@ -1201,27 +1183,27 @@ class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
     }
 
 
-    //FUNZIONE CHE CAMBIA LA DIMENSIONE DELLA LIST VIEW IN BASE AL NUMERO DI ELEMENTI
-    private fun setListViewHeightBasedOnItems(listView: ListView, adapter: ListView_adapter) {
-        if (adapter == null) {
-            return
-        }
-
-        var totalHeight = 0
-        for (i in 0 until adapter.count) {
-            val listItem = adapter.getView(i, null, listView)
-            listItem.measure(
-                View.MeasureSpec.makeMeasureSpec(listView.width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            )
-            totalHeight += listItem.measuredHeight
-        }
-
-        val params = listView.layoutParams
-        params.height = totalHeight + (listView.dividerHeight * (adapter.count - 1))
-        listView.layoutParams = params
-        listView.requestLayout()
-    }
+//FUNZIONE CHE CAMBIA LA DIMENSIONE DELLA LIST VIEW IN BASE AL NUMERO DI ELEMENTI
+//    private fun setListViewHeightBasedOnItems(listView: ListView, adapter: ListView_adapter) {
+//        if (adapter == null) {
+//            return
+//        }
+//
+//        var totalHeight = 0
+//        for (i in 0 until adapter.count) {
+//            val listItem = adapter.getView(i, null, listView)
+//            listItem.measure(
+//                View.MeasureSpec.makeMeasureSpec(listView.width, View.MeasureSpec.EXACTLY),
+//                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+//            )
+//            totalHeight += listItem.measuredHeight
+//        }
+//
+//        val params = listView.layoutParams
+//        params.height = totalHeight + (listView.dividerHeight * (adapter.count - 1))
+//        listView.layoutParams = params
+//        listView.requestLayout()
+//    }
 
     override fun onQuantityChanged(position: Int, newQuantity: Int) {
         ingredientiQuantita[position] = newQuantity

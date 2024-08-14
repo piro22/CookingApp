@@ -1,9 +1,7 @@
 package it.insubria.cookingapp
 
-import AutoComplete_adapter
 import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteDatabase
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -16,43 +14,58 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 
-// Extends the ArrayAdapter class and inherits the getView method
-class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Int>, private val unita: MutableList<String>, private val listener: OnItemChangeListener) :
-    ArrayAdapter<String>(context, R.layout.row_ingredienti, items) {
+class RecyclerView_ListaIngredienti(
+    private val context: Context,
+    private val items: MutableList<String>,
+    private val quant: MutableList<Int>,
+    private val unita: MutableList<String>,
+    private val listener: OnItemChangeListener
+) : RecyclerView.Adapter<RecyclerView_ListaIngredienti.ViewHolder>() {
+
     private var arrayListaUnita: MutableList<String> = mutableListOf()
 
-    // Passes parameters: position, view, and viewGroup
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        // Recycle or create a new view as necessary
-        val view: View = convertView ?: LayoutInflater.from(context).inflate(R.layout.row_ingredienti, parent, false)
+    inner class ViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+        val quantita: EditText
+        val ingrediente: TextView
+        val unit: AutoCompleteTextView
+        val shoppingIcon: ImageView
+        val deleteIcon: ImageView
 
-        // Find views
+        init{
+            quantita = view.findViewById(R.id.tendina)
+            ingrediente = view.findViewById(R.id.ingrediente)
+            unit = view.findViewById(R.id.tendinaUnita)
+            shoppingIcon = view.findViewById(R.id.calendarIcon)
+            deleteIcon = view.findViewById(R.id.deleteIcon)
+        }
+    }
 
-        val quantita: EditText = view.findViewById(R.id.tendina)
-        val ingrediente: TextView = view.findViewById(R.id.ingrediente)
-        val unit: AutoCompleteTextView = view.findViewById(R.id.tendinaUnita)
-        val shoppingIcon: ImageView = view.findViewById(R.id.calendarIcon)
-        val deleteIcon: ImageView = view.findViewById(R.id.deleteIcon)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView_ListaIngredienti.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_ingredienti, parent, false)
 
-        // Set ingredient name and position
-        ingrediente.text = items[position]
-        quantita.setText(quant[position].toString())
-        unit.setText(unita[position])
+        //restituisce un oggetto di tipo ViewHolder
+        return ViewHolder(view)
+    }
 
+    override fun onBindViewHolder(holder: RecyclerView_ListaIngredienti.ViewHolder, position: Int) {
+        holder.ingrediente.text = items[position]
+        holder.quantita.setText(quant[position].toString())
+        holder.unit.setText(unita[position])
 
-        //database
-        //setto variabili  per database
+        // Database setup
         val dbHelper = Database_SQL(context)
         val dbr = dbHelper.readableDatabase
         val dbw = dbHelper.writableDatabase
 
-
-        //POPOLO LA TENDINA-------------------------------------------------------------------------------
+        //popola tendina---------------------------------------------------------------------------------------
         val cursorPort = dbr.rawQuery("SELECT unita FROM unita_di_misura", null)
 
         arrayListaUnita.clear()
-
         if (cursorPort != null && cursorPort.moveToFirst()) {
             do {
                 val unitaIndex = cursorPort.getColumnIndex("unita")
@@ -64,25 +77,21 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
             cursorPort.close()
         }
 
-
-        //creo un adapter per passare i valori dell'array delle portate all'interno della tendina
         val adapterTendina = ArrayAdapter(
             context,
             android.R.layout.simple_dropdown_item_1line,
             arrayListaUnita.toTypedArray()
         )
-        //per aggiornare la vista(tendina)
-        unit.setAdapter(adapterTendina)
-        //------------------------------------------------------------------------------------------------
+        holder.unit.setAdapter(adapterTendina)
+        //-----------------------------------------------------------------------------------------------------
 
 
-
-        //METODI PER SALVARE LE MODIFICHE DEI DATI DI QUANTITA E UNITA
-        quantita.addTextChangedListener(object : TextWatcher {
+        //funzione per salvare cambiamento in quantità
+        holder.quantita.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val newQuantity = s.toString().toIntOrNull()
                 if (newQuantity != null) {
-                    listener.onQuantityChanged(position, newQuantity)
+                    listener.onQuantityChanged(holder.adapterPosition, newQuantity)
                 }
             }
 
@@ -90,7 +99,8 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        unit.setOnItemClickListener { parent, view, unitposition, id ->
+        //funzione per salvare cambiamento in unità
+        holder.unit.setOnItemClickListener { parent, view, unitposition, id ->
             val selectedUnit = parent.getItemAtPosition(unitposition).toString()
             Log.d("ERRORE", "$selectedUnit posizione: $position")
             listener.onUnitChanged(position, selectedUnit)
@@ -98,49 +108,49 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
 
 
 
-        // Set click listeners for shopping and delete icons
-        shoppingIcon.setOnClickListener {
-            val i = ingrediente.text.toString()
-            val q = quantita.text.toString()
+        //OnClickListeners per shopping e delete icons-------------------------------------------------------------
+        holder.shoppingIcon.setOnClickListener {
+            val i = holder.ingrediente.text.toString()
+            val q = holder.quantita.text.toString()
             var nuovoValore = ContentValues().apply {}
 
-            if(q.isEmpty()){
+            if (q.isEmpty()) {
                 nuovoValore = ContentValues().apply {
                     put("ingrediente", i)
                     put("quantita", 1)
                 }
-            }else{
+            } else {
                 nuovoValore = ContentValues().apply {
                     put("ingrediente", i)
                     put("quantita", q.toInt())
                 }
             }
 
-            //aggiungo il nuovoValore all'interno del db
             dbw.insert("listaSpesa", null, nuovoValore)
             Toast.makeText(context, "Aggiungi ${items[position]} alla lista della spesa", Toast.LENGTH_SHORT).show()
         }
 
 
-
-        deleteIcon.setOnClickListener {
+        holder.deleteIcon.setOnClickListener {
             val ingredientToDelete = items[position]
 
-            // Delete the item from the database
             val whereClause = "ingrediente = ?"
             val whereArgs = arrayOf(ingredientToDelete)
             dbw.delete("listaSpesa", whereClause, whereArgs)
 
-            // Remove the item from the list and notify the adapter
             items.removeAt(position)
             quant.removeAt(position)
             unita.removeAt(position)
-            notifyDataSetChanged()
+            notifyItemRemoved(position)
 
             Toast.makeText(context, "Elimina $ingredientToDelete", Toast.LENGTH_SHORT).show()
         }
+        //-------------------------------------------------------------------------------------------------------
 
-        // Return the current row view
-        return view
     }
+
+    override fun getItemCount(): Int {
+        return items.size
+    }
+
 }

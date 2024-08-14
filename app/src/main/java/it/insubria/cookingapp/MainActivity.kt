@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        //SETUP DATABASE
+        val dataModel = ViewModelProvider(this).get(DataModel::class.java)
+        dataModel.dbHelper = Database_SQL(this)
+
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
         super.onCreate(savedInstanceState)
@@ -43,10 +47,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.statusBarColor = ContextCompat.getColor(this, R.color.coquelicot)
         }
-
-        //SETUP DATABASE
-        val dataModel = ViewModelProvider(this).get(DataModel::class.java)
-        dataModel.dbHelper = Database_SQL(this)
 
         //SETUP DRAWER
         drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)

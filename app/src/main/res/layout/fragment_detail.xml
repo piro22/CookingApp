@@ -248,13 +248,15 @@
 
             <TextView
                 android:id="@+id/textPreparazione"
-                android:layout_width="180dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Per preparare il tiramisù preparate il caffé con la moka per ottenerne 300 g, poi zuccherate a piacere (noi abbiamo messo un cucchiaino) e lasciatelo raffreddare in una ciotolina bassa e ampia. Separate le uova dividendo gli albumi dai tuorli 1, ricordando che per montare bene gli albumi non dovranno presentare alcuna traccia di tuorlo. Montate i tuorli con le fruste elettriche, versando solo metà dose di zucchero 2. Non appena il composto sarà diventato chiaro e spumoso, e con le fruste ancora in funzione, potrete aggiungere il mascarpone, poco alla volta 3. "
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/txtFissoPreparazione"
-                android:layout_marginTop="7dp"
+                app:layout_constraintTop_toBottomOf="@id/imgRicetta"
+                android:paddingEnd="20dp"
+                android:layout_marginTop="5dp"
                 />
 
             <ImageView
@@ -262,7 +264,9 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_marginEnd="5dp"
+                android:layout_marginTop="5dp"
                 app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/txtFissoPreparazione"
                 android:src="@drawable/logo"
                 />
