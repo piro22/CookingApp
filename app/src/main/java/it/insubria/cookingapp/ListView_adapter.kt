@@ -4,6 +4,9 @@ import AutoComplete_adapter
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 // Extends the ArrayAdapter class and inherits the getView method
-class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Int>, private val unita: MutableList<String>) :
+class ListView_adapter(context: Context, private val items: MutableList<String>, private val quant: MutableList<Int>, private val unita: MutableList<String>, private val listener: OnItemChangeListener) :
     ArrayAdapter<String>(context, R.layout.row_ingredienti, items) {
     private var arrayListaUnita: MutableList<String> = mutableListOf()
 
@@ -45,7 +48,7 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
         val dbw = dbHelper.writableDatabase
 
 
-        //POPOLO LA TENDINA
+        //POPOLO LA TENDINA-------------------------------------------------------------------------------
         val cursorPort = dbr.rawQuery("SELECT unita FROM unita_di_misura", null)
 
         arrayListaUnita.clear()
@@ -71,6 +74,27 @@ class ListView_adapter(context: Context, private val items: MutableList<String>,
         //per aggiornare la vista(tendina)
         unit.setAdapter(adapterTendina)
         //------------------------------------------------------------------------------------------------
+
+
+
+        //METODI PER SALVARE LE MODIFICHE DEI DATI DI QUANTITA E UNITA
+        quantita.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val newQuantity = s.toString().toIntOrNull()
+                if (newQuantity != null) {
+                    listener.onQuantityChanged(position, newQuantity)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        unit.setOnItemClickListener { parent, view, unitposition, id ->
+            val selectedUnit = parent.getItemAtPosition(unitposition).toString()
+            Log.d("ERRORE", "$selectedUnit posizione: $position")
+            listener.onUnitChanged(position, selectedUnit)
+        }
 
 
 

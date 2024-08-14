@@ -49,7 +49,7 @@ import java.io.InputStream
 import java.util.Collections
 
 
-class newRecipeActivity : AppCompatActivity() {
+class newRecipeActivity : AppCompatActivity(), OnItemChangeListener {
 
     private val PICK_IMAGE_REQUEST = 1
     private lateinit var btnImmagine: ImageView
@@ -531,7 +531,7 @@ class newRecipeActivity : AppCompatActivity() {
         //aggiungere gli ingredienti
 //----------------------------------------------------------------------------------------------------------------------------
         val input = findViewById<EditText>(R.id.input)
-        val adapt = ListView_adapter(this, ingredientiNome, ingredientiQuantita, ingredientiUnita)
+        val adapt = ListView_adapter(this, ingredientiNome, ingredientiQuantita, ingredientiUnita, this)
         val listViewIngredients = findViewById<ListView>(R.id.listviewl)
         val bottoneIngrediente: ImageView = findViewById(R.id.aggiungiIngrediente)
 
@@ -570,21 +570,29 @@ class newRecipeActivity : AppCompatActivity() {
 
             //Check if input is not empty
             if (ingredient.isNotEmpty()) {
-                // Add ingredient to the list
-                ingredientiNome.add(ingredient)
-                //questi valori sono solo dei placeholder per quando verranno inseriti
-                //nuovi valori dall'utente
-                ingredientiQuantita.add(1)
-                ingredientiUnita.add("qb")
+
+
+                if(ingredientiNome.contains(ingredient)){
+
+                    //raddoppio la quantita del primo
+                    val index = ingredientiNome.indexOf(ingredient)
+                    ingredientiQuantita[index] = ingredientiQuantita[index] * 2
+
+                }else{
+                    // Add ingredient to the list
+                    ingredientiNome.add(ingredient)
+                    //questi valori sono solo dei placeholder per quando verranno inseriti
+                    //nuovi valori dall'utente
+                    ingredientiQuantita.add(1)
+                    ingredientiUnita.add("qb")
+                }
 
                 //per aggiungere l'ingrediente al db
                 if (ingredienteEsiste(dbr, ingredient) == false) {
                     val contentValues = ContentValues().apply {
                         put("nome", ingredient)
                     }
-                    val newRowId = dbr.insert("ingrediente", null, contentValues)
-                } else {
-                    Toast.makeText(this, "Ingrediente gia presente", Toast.LENGTH_SHORT).show()
+                    dbr.insert("ingrediente", null, contentValues)
                 }
 
                 // Notify the adapter of data change
@@ -1215,6 +1223,15 @@ class newRecipeActivity : AppCompatActivity() {
         listView.requestLayout()
     }
 
+    override fun onQuantityChanged(position: Int, newQuantity: Int) {
+        ingredientiQuantita[position] = newQuantity
+        // Eventuali altre azioni da eseguire
+    }
+
+    override fun onUnitChanged(position: Int, newUnit: String) {
+        ingredientiUnita[position] = newUnit
+        // Eventuali altre azioni da eseguire
+    }
 
 }
 
