@@ -1,18 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Neutri -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colori per test -->
     <color name="lavender">#8692f7</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="tiffany">#0ABAB5</color>
     <color name="teal_700">#FF018786</color>
     <color name="purple">#5d0b9c</color>
     <color name="light_purple">#7f5fcf</color>
+    <color name="giallino">#FFE7A8</color>
+    <color name="azzurrino">#B3E5FC</color>
+    <color name="violetto">#B3B1E2</color>
+    <color name="verdeAcqua">#D6E8E1</color>
+    <color name="pale_dogwood2">#F4D8CD</color>
 
+
+    <!-- Colore primario -->
     <color name="coquelicot">#FF4510</color>
+    <!-- Colore testo -->
     <color name="smokey_black">#131200</color>
-    <color name="pale_dogwood">#F4D8CD</color>
-    <color name="fern_green">#3F784C</color>
+    <!-- Colore secondario (non è pale dogwood è giallino) -->
+    <color name="pale_dogwood">#FFE7A8</color>
+    <!-- Colore per bottone + -->
+    <color name="fern_green">#4B8B3B</color>
+    <!-- Colore per bottoni rossi -->
     <color name="vermilion">#FF3333</color>
 
 </resources>

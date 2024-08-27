@@ -7,6 +7,7 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -94,14 +95,15 @@ class ShoppingListFragment : Fragment() {
 
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Confirm Clear")
-            .setMessage("Are you sure you want to clear this list?")
-            .setPositiveButton("Yes") { _, _ ->
+            .setMessage("Sei sicuro di voler cancellare tutta la lista della spesa?")
+            .setPositiveButton("Si") { _, _ ->
                 clearDatabase(adapter)
             }
             .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
+
 
         // Set an OnClickListener on the clear button
         button.setOnClickListener {
@@ -129,6 +131,8 @@ class ShoppingListFragment : Fragment() {
                 } while (cursor.moveToNext())
                 cursor.close()
             }
+
+            adapter.notifyDataSetChanged()
         }
 
         // Popola arrayListaPortate con i dati esistenti nel database all'avvio
@@ -179,7 +183,6 @@ class ShoppingListFragment : Fragment() {
                     }
                     cursor.close()
 
-                    //aggiorno poi direttamente dal database
                     populateIngredientiList()
 
                 }else {
@@ -193,6 +196,9 @@ class ShoppingListFragment : Fragment() {
                         //aggiungo il nuovoValore all'interno del db
                         dbw.insert("listaSpesa", null, nuovoValore)
 
+                        prodotti.add("$DOT $food")
+                        quantita.add(1)
+
                     } else {
                         val numQ = quantity.toInt()
                         val nuovoValore = ContentValues().apply {
@@ -202,13 +208,13 @@ class ShoppingListFragment : Fragment() {
 
                         //aggiungo il nuovoValore all'interno del db
                         dbw.insert("listaSpesa", null, nuovoValore)
+
+                        txtFood.setText("")
+                        txtQuant.setText("")
+
+                        prodotti.add("$DOT $food")
+                        quantita.add(quantity.toInt())
                     }
-
-                    txtFood.setText("")
-                    txtQuant.setText("")
-
-                    prodotti.add("$DOT $food")
-                    quantita.add(quantity.toInt())
 
                     adapter.notifyDataSetChanged()
 
@@ -221,8 +227,7 @@ class ShoppingListFragment : Fragment() {
                 btnLista.setBackgroundResource(R.drawable.custom_bkg_button)
                 // Ripristina la tinta del drawable a coquelicot
                 btnLista.setColorFilter(ContextCompat.getColor(requireContext(), R.color.coquelicot), PorterDuff.Mode.SRC_IN)
-            }, 500) // Ritardo di 500 millisecondi (0.5 secondi)
-
+            }, 300) // Ritardo di 300 millisecondi (0.3 secondi)
         }
 
 
