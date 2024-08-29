@@ -94,7 +94,7 @@ class ShoppingListFragment : Fragment() {
 
 
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Confirm Clear")
+            .setTitle("Conferma")
             .setMessage("Sei sicuro di voler cancellare tutta la lista della spesa?")
             .setPositiveButton("Si") { _, _ ->
                 clearDatabase(adapter)

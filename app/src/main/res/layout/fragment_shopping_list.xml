@@ -75,7 +75,7 @@
         android:id="@+id/buttonClearList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="clear ALL"
+        android:text="CANCELLA TUTTO"
         android:backgroundTint="@color/vermilion"
         android:layout_weight="0"
         android:layout_gravity="bottom"
